@@ -1,0 +1,154 @@
+body{
+    margin: 10px;
+    padding: 0;
+    font-family: sans-serif;
+    background: #f9f9f9;
+}
+
+strong{
+    color: red;
+}
+
+.logo{
+    padding-left: 40px;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    border-radius: 12px;
+}
+
+.bar-btn{
+    display: inline-block;
+    padding-right: 40px;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.bar-btn:hover{
+    color: violet;
+}
+
+.logo:hover{
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+}
+
+.dropdown{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-content{
+    display: none;
+    top: 100%;
+    position: absolute;
+    min-width: 160px;
+    background: antiquewhite;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.dropdown-content a{
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: 0.3s;
+}
+
+.dropdown-content a:hover{
+    background-color: #f5f5f5;
+    color: violet;
+}
+.dropdown:hover  .dropdown-content{
+    display: block;
+}
+
+.Usericon{
+    font-size: 30px;
+    cursor: pointer;
+    padding-right: 40px;
+}
+
+.profile{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.profile-down{
+    display: none;
+    top: 100%;
+    right: 0;
+    position: absolute;
+    min-width: 160px;
+    background: antiquewhite;
+    border-radius: 20px;
+    text-align: center;
+    width: 230px;
+}
+
+
+
+.profile-down a{
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.profile-down a:hover{
+    background-color: #f5f5f5;
+    color: violet;
+}
+
+.profile:hover .profile-down{
+    display: block;
+}
+
+.btn-deco{
+    width: 80%;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    background: red;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    color: white;
+    transition: 0.5s ;
+}
+
+.btn-deco:hover{
+    background: blue;
+    color: red;
+}
+
+
+
+.img-pro{
+  width: 80px;   /* قد ما بغيتي - 35px 40px 45px */
+  height: 80px;
+  border-radius: 50%; /* هادي لي كتردها مدورة */
+  object-fit: cover; /* باش ما تتعوجش التصويرة */
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  margin-top: 20px;
+}
+.Shopicon{
+    font-size: 30px;
+    cursor: pointer;
+    padding-right: 40px;
+}

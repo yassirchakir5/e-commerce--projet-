@@ -1,0 +1,82 @@
+body{
+    font-family: sans-serif;
+}
+
+.card-btns{
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0; /* إطار خفيف */
+    border-radius: 12px; /* الجوانب دايرين */
+    padding: 10px;
+    width: 300px;
+    display: flex;
+    height: 350px;
+    flex-direction: column;
+    gap: 5px; /* المسافة بين الروابط */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-top: 100px;
+    margin-left: 40px;
+}
+
+.card-btns button{
+    display: flex;
+    gap: 12px; /* المسافة بين الأيقونة والكلمة */
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333333;
+     font-size: 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+.menu-icon{
+    font-size: 18px;
+    color: #666666;
+}
+
+.menu-icon:hover{
+    color: white;
+    background-color: blue;
+}
+.active {
+  background-color: #e8f0fe; /* خلفية زرقاء باردة */
+  color: #1a73e8; /* لون خط أزرق مغلوق */
+  font-weight: 600;
+}
+
+.menu-icon.active .menu-icon{
+    color: #1a73e8;
+}
+
+.settings{
+    font-size: 25px;
+}
+
+.info{
+    display: flex;
+}
+
+.second-card{
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0; /* إطار خفيف */
+    border-radius: 12px; /* الجوانب دايرين */
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    height: 50vh;
+    flex-direction: column;
+    gap: 5px; /* المسافة بين الروابط */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-top: 100px;
+    margin-left: 40px;
+    height: 100vh;
+}
+.second-card h1{
+    text-align: center;
+}
+
+.second-card p{
+    font-size: 30px;
+}

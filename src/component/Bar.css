@@ -1,11 +1,11 @@
 body{
-    margin: 10px;
+    margin: 0;
     padding: 0;
     font-family: sans-serif;
     background: #f9f9f9;
 }
 
-strong{
+.sb{
     color: red;
 }
 
@@ -20,8 +20,9 @@ strong{
     justify-content: space-between;
     align-items: center;
     padding: 12px 30px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-    border-radius: 12px;
+    background: #002B5B;
+    color: white;
+    height: 50px;
 }
 
 .bar-btn{
@@ -31,14 +32,17 @@ strong{
     transition: 0.5s;
 }
 
-.bar-btn:hover{
+.home:hover{
+    color: violet;
+}
+
+.categorie:hover{
     color: violet;
 }
 
 .logo:hover{
     font-size: 28px;
     font-weight: bold;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
 
 }
 
@@ -53,9 +57,10 @@ strong{
     top: 100%;
     position: absolute;
     min-width: 160px;
-    background: antiquewhite;
+    background: white;
     border-radius: 20px;
     text-align: center;
+    color: black;
 }
 
 .dropdown-content a{
@@ -92,10 +97,12 @@ strong{
     right: 0;
     position: absolute;
     min-width: 160px;
-    background: antiquewhite;
+    background: white;
     border-radius: 20px;
     text-align: center;
     width: 230px;
+    color: black;
+    cursor: auto;
 }
 
 
@@ -128,6 +135,10 @@ strong{
     margin-bottom: 20px;
     color: white;
     transition: 0.5s ;
+}
+
+.profile-down img{
+    cursor: auto;
 }
 
 .btn-deco:hover{

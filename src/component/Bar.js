@@ -4,16 +4,17 @@ import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
 
 
+
 class Bar extends Component{
     
     render(){
         return(
             <div className="bar">
-                <h2 className="logo"><strong>E</strong>-commerce</h2>
+                <h2 className="logo"><strong className="sb">E</strong>-commerce</h2>
                 <div className="bar-btn">
-                    <a href="#" className="bar-btn">Home</a>
+                    <a href="/" className="bar-btn home">Home</a>
                     <div className="dropdown">
-                        <a className="dopdownbtn bar-btn">Categorie</a>
+                        <a className="dopdownbtn bar-btn categorie">Categorie</a>
                         <div className="dropdown-content">
                             <h3>Technologie</h3>
                             <a href="#">Phones</a>
@@ -31,8 +32,7 @@ class Bar extends Component{
                         <div className="profile-down">
                             <img src="images/ya.jpeg" className="img-pro"/>
                             <h2>Yassir Chakir</h2>
-                            <a href="#">Information Personnel</a>
-                            <a>errf</a>
+                            <a href="/infos">Information Personnel</a>
                             <button className="btn-deco">Déconnexion</button>
                         </div>
                     </div>
@@ -43,4 +43,6 @@ class Bar extends Component{
         );
     }
 }
+
 export default Bar;
+

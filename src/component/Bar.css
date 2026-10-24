@@ -12,6 +12,8 @@ body{
 .logo{
     padding-left: 40px;
     transition: 0.5s;
+    text-decoration: none;
+    color: white;
     cursor: pointer;
 }
 

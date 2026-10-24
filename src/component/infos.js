@@ -7,13 +7,47 @@ import { CiSettings } from "react-icons/ci";
 import { FiBox } from "react-icons/fi";
 import { FaPen } from "react-icons/fa"; 
 import { FaTrash } from "react-icons/fa";
+
+const genererCommandes = () => {
+    const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
+    let faussesCommandes = [];
+
+    for (let i = 1; i <= 50; i++) {
+        const statutAleatoire = statuts[Math.floor(Math.random() * statuts.length)];
+        
+        const totalAleatoire = (Math.random() * (1500 - 50) + 50).toFixed(2);
+        
+        const jour = Math.floor(Math.random() * 28) + 1;
+        const mois = Math.floor(Math.random() * 12) + 1;
+        const dateAleatoire = `${jour < 10 ? '0'+jour : jour}/${mois < 10 ? '0'+mois : mois}/2024`;
+
+        faussesCommandes.push({
+            numero: `#10025${300 + i}`,
+            date: dateAleatoire,
+            statut: statutAleatoire,
+            total: `${totalAleatoire} MAD`,
+            articlesQuantite: Math.floor(Math.random() * 4) + 1 
+        });
+    }
+    return faussesCommandes;
+};
+
+
+
 class Infos extends Component{
     
     constructor(props){
         super(props);
+
+        const commandes = genererCommandes();
+        const itemerge = 10;
+        const currentPage = 1;
+        const startindex = (currentPage - 1) * itemerge; 
+        const endIndex = startindex + itemerge;
         this.state = {
             actuelle: "infos",
-            
+            iscardopen: false,
+            iscardajoopen: false,
             addres: [
                 {
                     title : "Domicile",
@@ -33,7 +67,16 @@ class Infos extends Component{
                     pays: "Maroc",
                     numtel: "0679593058" 
                 }
-            ]
+            ],
+            a: null,
+            editIndex: null,
+            commande : commandes,
+            currentPage: currentPage,
+            startindex: startindex,
+            endIndex: endIndex,
+            itemerge: itemerge,
+            totalpage: Math.ceil(commandes.length/itemerge),
+            pagin: commandes.slice(startindex,endIndex)
         };
     }
     supp = (indexs) => {
@@ -48,12 +91,100 @@ class Infos extends Component{
             actuelle: a
         });
     }
+
+    togllecardaj = () => {
+        this.setState(() => ({
+            iscardajoopen: !this.state.iscardajoopen
+        }));
+    };
+
+    togllecard = (a,index) => {
+        this.setState(() => ({
+            iscardopen: !this.state.iscardopen,
+            a: a ? {...a}: null,
+            editIndex: index !== undefined ? index : null
+        }));
+    };
+    
+    modifier = (e,field) => {
+        const modif = e.target.value;
+        this.setState((prevState) => ({
+            a:{
+                ...prevState.a,
+                [field] : modif
+            }
+        }));
+    }
+    
+    saveChange = () => {
+        this.setState((prevState) => {
+            const updatea = [...prevState.addres];
+            if(prevState.editIndex !== null){
+                updatea[prevState.editIndex] = prevState.a;
+            }
+            return {
+                addres: updatea,
+                iscardopen: false,
+                a: null,
+                editIndex: null
+            };
+        });
+    }
+
+    ajouaddre = (e,field) => {
+        const newa = e.target.value;
+        this.setState((prevState) => ({
+            a:{
+                ...prevState.a,
+                [field]: newa
+            }
+        }));
+    }
+
+    saveajou = () => {
+        this.setState((prevState) => ({
+            addres: [...prevState.addres,prevState.a],
+            a: null,
+            iscardajoopen: false
+        }))
+    }
+
+    suiv = () => {
+        this.setState((prevState) => {
+            if(prevState.currentPage < prevState.totalpage){
+                const newcure = prevState.currentPage + 1;
+                const starti = (newcure - 1) * prevState.itemerge;
+                const endi = starti + prevState.itemerge;
+                return{
+                    currentPage: newcure,
+                    startindex: starti,
+                    endIndex: endi,
+                    pagin: prevState.commande.slice(starti,endi)
+                };
+            }
+        });
+    }
+    prec = () => {
+        this.setState((prevState) => {
+            if(prevState.currentPage > 1){
+                const newcu = prevState.currentPage - 1;
+                const startin = (newcu - 1) * prevState.itemerge;
+                const endin = startin + prevState.itemerge;
+                return{
+                    currentPage: newcu,
+                    startindex: startin,
+                    endIndex: endin,
+                    pagin: prevState.commande.slice(startin,endin)
+                }
+            }
+        })
+    }
     render(){
         return(
             <div>
                 <div className="info">
                     <div className="card-btns">
-                        <button className="menu-icon active" onClick={() => {this.change("infos")}}><FaUser className="settings"/> Information Personnel</button>
+                        <button className="menu-icon active" onClick={() => {this.change("infos")}}><FaUser className="settings"/>Information Personnel</button>
                         <button className="menu-icon" onClick={() => {this.change("adre")}}> <FaAddressCard className="settings"/> Mes Addresses</button>
                         <button className="menu-icon" onClick={() => {this.change("commad")}}><FiBox className="settings"/> Mes commandes</button>
                         <button className="menu-icon" onClick={() => {this.change("favo")}}><MdFavoriteBorder className="settings"/>Mes Favoris</button>
@@ -65,7 +196,7 @@ class Infos extends Component{
                                 <h1>Mes informations Personnel</h1>
                                 <p><strong>Nom </strong> : Yassir</p>
                                 <p><strong>Prenom </strong> : Chakir</p>
-                                <p><strong>email </strong> : yassirchakir5@gmail.com</p>
+                                <p><strong>email </strong> :yassirchakir5@gmail.com</p>
                                 <p><strong>adresse de livraison </strong> : Ouled teima dounia 2</p>
                                 <p><strong>CNE </strong> : JT117484</p>
                                 <p><strong>Numéro de téléphone </strong> : 0777040217</p>
@@ -74,25 +205,94 @@ class Infos extends Component{
                         {this.state.actuelle === "adre" && (
                             <div>
                                 <h1>Mes Addresses</h1>
+                                <button className="btnajoa" onClick={this.togllecardaj}>Ajoute une nouvelle addresse</button>
+                                {this.state.iscardajoopen && (
+                                        <div className="overlay">
+                                            <div className="card">
+                                                <div className="carsHeader">
+                                                    <h2 style={{margin: 0,fontStyle: 'italic', color: '#333'}}>Modifier L'addresse</h2>
+                                                </div>
+
+                                                <div className="cardBody">
+                                                        <input type="text" placeholder="Title"  className="input" onChange={(e) => {this.ajouaddre(e,"title")}}/>
+                                                        <input type="text" placeholder="addresse" className="input" onChange={(e) => {this.ajouaddre(e,"addresse")}}/>
+                                                        <input type="text" placeholder="pays" className="input" onChange={(e) => {this.ajouaddre(e,"pays")}}/>
+                                                        <input type="text" placeholder="numéro de téléphone" className="input" onChange={(e) => {this.ajouaddre(e,"numtel")}}/>
+                                                        <button className="btnmodif" onClick={this.saveajou}>Modifier</button>
+                                                        <button className="btnferm" onClick={this.togllecardaj}>Fermer</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 <div className="adre">
+                                    
                                     {this.state.addres.map((a,index) => {
                                         return <div className="cardadr">
                                                 <h3 key={index}>{a.title}</h3>
                                                 <p key={index}>{a.addresse}</p>
                                                 <p key={index}>{a.pays}</p>
                                                 <p key={index}>{a.numtel}</p>
-                                                <button><FaPen /> Modifier</button>
+                                                <button onClick={() => {this.togllecard(a,index)}}><FaPen /> Modifier</button>
                                                 <button onClick={() => {this.supp(index)}}><FaTrash /> Supprimer</button>
                                             </div>
                                     })}
+                                    {this.state.iscardopen && (
+                                        <div className="overlay">
+                                            <div className="card">
+                                                <div className="carsHeader">
+                                                    <h2 style={{margin: 0,fontStyle: 'italic', color: '#333'}}>Modifier L'addresse</h2>
+                                                </div>
+
+                                                <div className="cardBody">
+                                                        <input type="text" value={this.state.a.title} className="input" onChange={(e) => {this.modifier(e,"title")}} />
+                                                        <input type="text" value={this.state.a.addresse} className="input" onChange={(e) => {this.modifier(e,"addresse")}}/>
+                                                        <input type="text" value={this.state.a.pays} className="input" onChange={(e) => {this.modifier(e,"pays")}}/>
+                                                        <input type="text" value={this.state.a.numtel} className="input" onChange={(e) => {this.modifier(e,"numtel")}}/>
+                                                        <button className="btnmodif" onClick={this.saveChange}>Modifier</button>
+                                                        <button className="btnferm" onClick={() => {this.togllecard(null,null)}}>Fermer</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                
+                                {this.state.addres.length === 0 && (
+                                        <h2>Aucun address available</h2>
+                                    )}
                                 
                             </div>
                         )}
                         {this.state.actuelle === "commad" && (
                             <div>
                                 <h1>Mes commandes</h1>
+                                <table border={1} className="tab">
+                                    <thead className="table-head">
+                                        <tr>
+                                            <th className="tco">Numéro de la commandes</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="table-body">
+                                        {this.state.pagin.map((com,index) => {
+                                            return (<tr key={index}>
+                                                <td>{com.numero}</td>
+                                                <td>{com.date}</td>
+                                                <td>{com.statut}</td>
+                                                <td>{com.total}</td>
+                                                <td><button>Voir détaille</button></td>
+                                            </tr>
+                                            )
+                                        })}
+                                        
+                                    </tbody>
+                                </table>
+                                <div className="btnsuipre">
+                                    <button disabled={this.state.currentPage === 1} onClick={() => {this.prec()}}>Precedent</button>
+                                    <p>{this.state.currentPage}/{this.state.totalpage}</p>
+                                    <button disabled={this.state.currentPage === this.state.totalpage} onClick={() => {this.suiv()}}>Suivant</button>
+                                </div>
                             </div>
                         )}
                         {this.state.actuelle === "favo" && (

@@ -10,7 +10,7 @@ class Bar extends Component{
     render(){
         return(
             <div className="bar">
-                <h2 className="logo"><strong className="sb">E</strong>-commerce</h2>
+                <h2><a href="/" className="logo"><strong className="sb">E</strong>-commerce</a></h2>
                 <div className="bar-btn">
                     <a href="/" className="bar-btn home">Home</a>
                     <div className="dropdown">

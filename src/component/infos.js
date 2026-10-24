@@ -68,6 +68,14 @@ class Infos extends Component{
                     numtel: "0679593058" 
                 }
             ],
+            mesinfos: {
+                name: "Yassir",
+                prenom: "Chakir",
+                email: "yassirchakir5@gmail.com",
+                addresse: "Ouled teima dounia 2",
+                CNE: "JT117484",
+                numtel: "0777040217"
+            },
             a: null,
             editIndex: null,
             iscardaction: false,
@@ -205,12 +213,12 @@ class Infos extends Component{
                         {this.state.actuelle === "infos" && (
                             <div>
                                 <h1>Mes informations Personnel</h1>
-                                <p className="pad"><strong>Nom </strong> : Yassir</p>
-                                <p className="pad"><strong>Prenom </strong> : Chakir</p>
-                                <p className="pad"><strong>email </strong> :yassirchakir5@gmail.com</p>
-                                <p className="pad"><strong>adresse de livraison </strong> : Ouled teima dounia 2</p>
-                                <p className="pad"><strong>CNE </strong> : JT117484</p>
-                                <p className="pad"><strong>Numéro de téléphone </strong> : 0777040217</p>
+                                <p className="pad"><strong>Nom </strong> : {this.state.mesinfos.name}</p>
+                                <p className="pad"><strong>Prenom </strong> : {this.state.mesinfos.prenom}</p>
+                                <p className="pad"><strong>email </strong> :{this.state.mesinfos.email}</p>
+                                <p className="pad"><strong>adresse de livraison </strong> : {this.state.mesinfos.addresse}</p>
+                                <p className="pad"><strong>CNE </strong> : {this.state.mesinfos.CNE}</p>
+                                <p className="pad"><strong>Numéro de téléphone </strong> : {this.state.mesinfos.numtel}</p>
                             </div>
                         )}
                         {this.state.actuelle === "adre" && (
@@ -350,7 +358,12 @@ class Infos extends Component{
                         {this.state.actuelle === "set" && (
                             <div>
                                 <h1>Settings</h1>
-                                
+                                <div>
+                                    <h2 style={{textAlign: 'left'}}>Mes information Personnel : </h2>
+                                    <p><strong>Nom </strong>: <input type="text" value={this.state.mesinfos.name} /> <button>Modifier</button> </p>
+                                    <p><strong>Prenom </strong>: <input type="text" value={this.state.mesinfos.prenom} /> <button>Modifier</button> </p>
+                                    <p><strong>email </strong>: <input type="email" value={this.state.mesinfos.email} /> <button>Modifier</button> </p>
+                                </div>
                             </div>
                         )}
                     </div>

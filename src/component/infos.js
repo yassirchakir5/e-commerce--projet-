@@ -70,13 +70,16 @@ class Infos extends Component{
             ],
             a: null,
             editIndex: null,
+            iscardaction: false,
             commande : commandes,
             currentPage: currentPage,
             startindex: startindex,
             endIndex: endIndex,
             itemerge: itemerge,
             totalpage: Math.ceil(commandes.length/itemerge),
-            pagin: commandes.slice(startindex,endIndex)
+            pagin: commandes.slice(startindex,endIndex),
+            indexac: null,
+            b: null
         };
     }
     supp = (indexs) => {
@@ -179,6 +182,14 @@ class Infos extends Component{
             }
         })
     }
+
+    togleaction = (ba,index) => {
+        this.setState(() => ({
+            iscardaction: !this.state.iscardaction,
+            b: ba ? {...ba} : null,
+            indexac: index !== undefined ? index : null
+        }))
+    }
     render(){
         return(
             <div>
@@ -194,12 +205,12 @@ class Infos extends Component{
                         {this.state.actuelle === "infos" && (
                             <div>
                                 <h1>Mes informations Personnel</h1>
-                                <p><strong>Nom </strong> : Yassir</p>
-                                <p><strong>Prenom </strong> : Chakir</p>
-                                <p><strong>email </strong> :yassirchakir5@gmail.com</p>
-                                <p><strong>adresse de livraison </strong> : Ouled teima dounia 2</p>
-                                <p><strong>CNE </strong> : JT117484</p>
-                                <p><strong>Numéro de téléphone </strong> : 0777040217</p>
+                                <p className="pad"><strong>Nom </strong> : Yassir</p>
+                                <p className="pad"><strong>Prenom </strong> : Chakir</p>
+                                <p className="pad"><strong>email </strong> :yassirchakir5@gmail.com</p>
+                                <p className="pad"><strong>adresse de livraison </strong> : Ouled teima dounia 2</p>
+                                <p className="pad"><strong>CNE </strong> : JT117484</p>
+                                <p className="pad"><strong>Numéro de téléphone </strong> : 0777040217</p>
                             </div>
                         )}
                         {this.state.actuelle === "adre" && (
@@ -229,9 +240,9 @@ class Infos extends Component{
                                     {this.state.addres.map((a,index) => {
                                         return <div className="cardadr">
                                                 <h3 key={index}>{a.title}</h3>
-                                                <p key={index}>{a.addresse}</p>
-                                                <p key={index}>{a.pays}</p>
-                                                <p key={index}>{a.numtel}</p>
+                                                <p key={index} className="pad">{a.addresse}</p>
+                                                <p key={index} className="pad">{a.pays}</p>
+                                                <p key={index} className="pad">{a.numtel}</p>
                                                 <button onClick={() => {this.togllecard(a,index)}}><FaPen /> Modifier</button>
                                                 <button onClick={() => {this.supp(index)}}><FaTrash /> Supprimer</button>
                                             </div>
@@ -281,13 +292,49 @@ class Infos extends Component{
                                                 <td>{com.date}</td>
                                                 <td>{com.statut}</td>
                                                 <td>{com.total}</td>
-                                                <td><button>Voir détaille</button></td>
+                                                <td><button onClick={() => {this.togleaction(com,index)}}>Voir détaille</button></td>
                                             </tr>
                                             )
                                         })}
                                         
                                     </tbody>
                                 </table>
+                                {this.state.iscardaction && this.state.b && (
+                                    <div className="overlay">
+                                        <div className="card" style={{ width: '450px' }}>
+                                            <div className="carsHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <h2 style={{margin: 0, color: '#333'}}>Détails de la commande</h2>
+                                                <button onClick={() => {this.togleaction(null)}} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#888' }}>✖</button>
+                                            </div>
+
+                                            <div className="cardBozdy" style={{marginTop: '15px' }}>
+                                                <p style={{ margin: '5px 0' }}><strong>Commande :</strong> {this.state.b.numero}</p>
+                                                <p style={{ margin: '5px 0' }}><strong>Date :</strong> {this.state.b.date}</p>
+                                                <p style={{ margin: '15px 0' }}>
+                                                    <strong>Statut : </strong> 
+                                                    <span style={{ padding: '4px 10px', borderRadius: '15px', backgroundColor: '#e2e3e5', fontWeight: 'bold' }}>
+                                                        {this.state.b.statut}
+                                                    </span>
+                                                </p>
+                                                
+                                                <hr style={{ border: '0', borderTop: '1px solid #ddd', margin: '15px 0' }} />
+                                                
+                                                <p style={{ margin: '5px 0' }}><strong>Quantité d'articles :</strong> {this.state.b.articlesQuantite}</p>
+                                                
+                                                <hr style={{ border: '0', borderTop: '1px solid #ddd', margin: '15px 0' }} />
+                                                
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px' }}>
+                                                    <strong>Total :</strong>
+                                                    <strong>{this.state.b.total}</strong>
+                                                </div>
+
+                                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '25px' }}>
+                                                    <button className="btnmodif" onClick={() => {this.togleaction(null)}} style={{ padding: '10px 30px' }}>Fermer</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="btnsuipre">
                                     <button disabled={this.state.currentPage === 1} onClick={() => {this.prec()}}>Precedent</button>
                                     <p>{this.state.currentPage}/{this.state.totalpage}</p>

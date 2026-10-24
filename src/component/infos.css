@@ -76,9 +76,9 @@ body{
     text-align: center;
 }
 
-.second-card p{
+.pad{
     font-size: 30px;
-}
+} 
 
 .cardadr{
     background-color: #ffffff;
@@ -295,4 +295,10 @@ body{
 .table-body button:hover{
     background-color: grey;
     color: white;
+}
+
+.cardBozdy{
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
 }

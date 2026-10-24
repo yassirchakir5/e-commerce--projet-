@@ -5,12 +5,43 @@ import { FaAddressCard } from "react-icons/fa";
 import { MdFavoriteBorder } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import { FiBox } from "react-icons/fi";
+import { FaPen } from "react-icons/fa"; 
+import { FaTrash } from "react-icons/fa";
 class Infos extends Component{
+    
     constructor(props){
         super(props);
         this.state = {
-            actuelle: "infos"
+            actuelle: "infos",
+            
+            addres: [
+                {
+                    title : "Domicile",
+                    addresse: "Ouled teima dounia 2",
+                    pays: "Maroc",
+                    numtel: "0777040217" 
+                },
+                {
+                    title : "Home",
+                    addresse: "agadir dcheira",
+                    pays: "Maroc",
+                    numtel: "0679593058" 
+                },
+                {
+                    title : "Home",
+                    addresse: "agadir dcheira",
+                    pays: "Maroc",
+                    numtel: "0679593058" 
+                }
+            ]
         };
+    }
+    supp = (indexs) => {
+        const nova = this.state.addres.filter((_,index) => index !== indexs);
+
+        this.setState({
+            addres : nova
+        });
     }
     change = (a) => {
         this.setState({
@@ -43,6 +74,20 @@ class Infos extends Component{
                         {this.state.actuelle === "adre" && (
                             <div>
                                 <h1>Mes Addresses</h1>
+                                <div className="adre">
+                                    {this.state.addres.map((a,index) => {
+                                        return <div className="cardadr">
+                                                <h3 key={index}>{a.title}</h3>
+                                                <p key={index}>{a.addresse}</p>
+                                                <p key={index}>{a.pays}</p>
+                                                <p key={index}>{a.numtel}</p>
+                                                <button><FaPen /> Modifier</button>
+                                                <button onClick={() => {this.supp(index)}}><FaTrash /> Supprimer</button>
+                                            </div>
+                                    })}
+                                </div>
+                                
+                                
                             </div>
                         )}
                         {this.state.actuelle === "commad" && (
@@ -58,6 +103,7 @@ class Infos extends Component{
                         {this.state.actuelle === "set" && (
                             <div>
                                 <h1>Settings</h1>
+                                
                             </div>
                         )}
                     </div>

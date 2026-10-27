@@ -3,7 +3,7 @@ import './Bar.css';
 import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-
+import { FaChevronDown } from 'react-icons/fa';
 
 
 function withRouter(Component){
@@ -14,20 +14,16 @@ function withRouter(Component){
 }
 
 class Bar extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            connected: false
-        }
-    }
-    render(){
+
+    render(props){
+        const {connected,navigate} = this.props;
         return(
             <div className="bar">
                 <h2><a href="/" className="logo"><strong className="sb">E</strong>-commerce</a></h2>
                 <div className="bar-btn">
-                    <a href="/" className="bar-btn home">Home</a>
+                    <a href="/" className="bar-btn">Home</a>
                     <div className="dropdown">
-                        <a className="dopdownbtn bar-btn categorie">Categorie</a>
+                        <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>
                         <div className="dropdown-content">
                             <h3>Technologie</h3>
                             <a href="#">Phones</a>
@@ -39,9 +35,12 @@ class Bar extends Component{
                         </div>
                     </div>
                 </div>
+                
                 <div className="icons">
-                    {this.state.connected && 
+                    
+                    {connected && 
                         <div>
+                            <a className="Shopicon"><CiShoppingCart /></a>
                             <div className="profile">
                                 <a className="Usericon"><FaUser /></a>
                                 <div className="profile-down">
@@ -51,15 +50,16 @@ class Bar extends Component{
                                     <button className="btn-deco">Déconnexion</button>
                                 </div>
                             </div>
-                        <a className="Shopicon"><CiShoppingCart /></a>
                         </div>
                     }
-                    {this.state.connected === false &&
+                    {connected === false &&
+                    
                         <div className="in">
-                            <button onClick={() => this.props.navigate("/login")} className="btn-inscrire">
+                            <a className="Shopicon"><CiShoppingCart /></a>
+                            <button onClick={() => navigate("/login")} className="btn-inscrire">
                                 Connect/inscrire
                             </button>
-                            <a className="Shopicon"><CiShoppingCart /></a>
+                            
                         </div>
                     }
                     

@@ -7,6 +7,7 @@ import Infos from './component/infos';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from "./component/Login";
 import Inscrit from './component/Inscrit';
+import Home from './component/Home';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -17,6 +18,7 @@ function Index(){
     <BrowserRouter>
       <Bar connected={connected}/>
       <Routes>
+        <Route path='/' element={<Home />}/>
         <Route path='/infos' element={<Infos />} />
         <Route path='/login' element={<Login connected={connected} setconnected={setconnected}/>}/>
         <Route path='/inscrit' element={<Inscrit />} />

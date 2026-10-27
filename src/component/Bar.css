@@ -22,9 +22,10 @@ body{
     justify-content: space-between;
     align-items: center;
     padding: 12px 30px;
-    background: #002B5B;
+    background: #2200ff;
     color: white;
     height: 50px;
+    border-bottom: 3px solid black;
 }
 
 .bar-btn{
@@ -32,15 +33,11 @@ body{
     padding-right: 40px;
     text-decoration: none;
     transition: 0.5s;
+    color: white;
 }
 
-.home:hover{
-    color: violet;
-}
 
-.categorie:hover{
-    color: violet;
-}
+
 
 .logo:hover{
     font-size: 28px;
@@ -179,7 +176,7 @@ body{
 .btn-inscrire{
     padding: 15px;
     border: none;
-    border-radius: 30px;
+    border-radius: 15px;
     margin-right: 30px;
     cursor: pointer;
     background-color: red;

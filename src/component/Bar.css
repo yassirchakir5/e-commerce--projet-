@@ -148,13 +148,16 @@ body{
     color: red;
 }
 
-
+.icons{
+    text-align: center;
+    align-items: center;
+}
 
 .img-pro{
-  width: 80px;   /* قد ما بغيتي - 35px 40px 45px */
+  width: 80px; 
   height: 80px;
-  border-radius: 50%; /* هادي لي كتردها مدورة */
-  object-fit: cover; /* باش ما تتعوجش التصويرة */
+  border-radius: 50%; 
+  object-fit: cover; 
   border: 2px solid white;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   cursor: pointer;
@@ -164,4 +167,27 @@ body{
     font-size: 30px;
     cursor: pointer;
     padding-right: 40px;
+    
+}
+
+.in{
+    align-items: center;
+    text-align: center;
+    display: flex;
+}
+
+.btn-inscrire{
+    padding: 15px;
+    border: none;
+    border-radius: 30px;
+    margin-right: 30px;
+    cursor: pointer;
+    background-color: red;
+    color: white;
+    transition: 0.4s;
+}
+
+.btn-inscrire:hover{
+    background-color: gray;
+    color: black;
 }

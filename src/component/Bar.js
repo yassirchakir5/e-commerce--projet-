@@ -2,11 +2,24 @@ import { Component } from "react";
 import './Bar.css';
 import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 
+
+function withRouter(Component){
+    return(props) => {
+        const navigate = useNavigate();
+        return <Component {...props} navigate={navigate} />;
+    };
+}
 
 class Bar extends Component{
-    
+    constructor(props){
+        super(props);
+        this.state = {
+            connected: false
+        }
+    }
     render(){
         return(
             <div className="bar">
@@ -27,16 +40,29 @@ class Bar extends Component{
                     </div>
                 </div>
                 <div className="icons">
-                    <div className="profile">
-                        <a className="Usericon"><FaUser /></a>
-                        <div className="profile-down">
-                            <img src="images/ya.jpeg" className="img-pro"/>
-                            <h2>Yassir Chakir</h2>
-                            <a href="/infos">Information Personnel</a>
-                            <button className="btn-deco">Déconnexion</button>
+                    {this.state.connected && 
+                        <div>
+                            <div className="profile">
+                                <a className="Usericon"><FaUser /></a>
+                                <div className="profile-down">
+                                    <img src="images/ya.jpeg" className="img-pro"/>
+                                    <h2>Yassir Chakir</h2>
+                                    <a href="/infos">Information Personnel</a>
+                                    <button className="btn-deco">Déconnexion</button>
+                                </div>
+                            </div>
+                        <a className="Shopicon"><CiShoppingCart /></a>
                         </div>
-                    </div>
-                    <a className="Shopicon"><CiShoppingCart /></a>
+                    }
+                    {this.state.connected === false &&
+                        <div className="in">
+                            <button onClick={() => this.props.navigate("/login")} className="btn-inscrire">
+                                Connect/inscrire
+                            </button>
+                            <a className="Shopicon"><CiShoppingCart /></a>
+                        </div>
+                    }
+                    
                 </div>
                 
             </div>
@@ -44,5 +70,5 @@ class Bar extends Component{
     }
 }
 
-export default Bar;
+export default withRouter(Bar);
 

@@ -90,14 +90,16 @@ class Infos extends Component{
             b: null,
             favo: [
                 {
-                image: "images/product/redmi_note_15_4g.jpg",
-                name: "Redmi note 15 4g",
-                prix: "2000 DH"
+                    id: 1,
+                    image: "images/product/redmi_note_15_4g.jpg",
+                    name: "Redmi note 15 4g",
+                    prix: "2000 DH"
                 },
                 {
-                image: "images/product/redmi_note_15_4g.jpg",
-                name: "Redmi note 15 4g",
-                prix: "2000 DH"
+                    id: 2,
+                    image: "images/product/redmi_note_15_4g.jpg",
+                    name: "Redmi note 15 4g",
+                    prix: "2000 DH"
                 }
             ]
         };
@@ -222,6 +224,15 @@ class Infos extends Component{
             indexac: index !== undefined ? index : null
         }))
     }
+
+    supprif = (indexs) => {
+        const nouvf = this.state.favo.filter((_,index) => index !== indexs);
+
+        this.setState({
+            favo: nouvf
+        });
+    };
+
     render(){
         return(
             <div>
@@ -384,18 +395,18 @@ class Infos extends Component{
                             <div className="az">
                                 <h1>Mes favoris</h1>
                                 <div className="section-fa">
-                                    {this.state.favo.map((fa) => {
+                                    {this.state.favo.map((fa,index) => {
                                         return (<div className="card-f">
                                         <div  className="card-fa">
-                                            <img src={fa.image}/>
+                                            <img src={fa.image} key={index}/>
                                             <div>
-                                                <h2>{fa.name}</h2>
-                                                <p>{fa.prix}</p>
+                                                <h2 key={index}>{fa.name}</h2>
+                                                <p key={index}>{fa.prix}</p>
                                             </div>
                                         </div>
                                         <div>
                                             <button className="btn-det">Voir détails</button>
-                                            <button className="btn-ret">Retirer</button>
+                                            <button className="btn-ret" onClick={() => {this.supprif(index)}}>Retirer</button>
                                         </div>
                                     </div>)
                                     })}

@@ -1,0 +1,86 @@
+.card-I{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-Inscrit{
+    background-color: white;
+    height: 100px;
+    width: 500px;
+    height: 650px;
+    border-radius: 30px;
+    margin-top: 40px;
+}
+
+.section-title{
+    text-align: center;
+}
+
+.section-no-pre{
+    display: flex;
+    justify-content: space-around;
+}
+
+.section-nom{
+    margin-left: 20px;
+}
+.section-nom label{
+    font-size: 20px;
+}
+
+.section-nom input{
+    width: 200px;
+    padding: 10px 0;
+    padding-left: 10px;
+    margin-top: 10px;
+    font-size: 20px;
+    border-radius: 15px;
+    border: 2px solid #102239;
+}
+
+.section-prenom{
+    margin-left: 20px;
+}
+
+.section-prenom label{
+    font-size: 20px;
+}
+
+.section-prenom input{
+    width:  200px;
+    padding: 10px 0;
+    padding-left: 10px;
+    margin-top: 10px;
+    font-size: 20px;
+    border-radius: 15px;
+    border: 2px solid #102239;
+}
+
+.section-form{
+    margin-top: 30px;
+    margin-left: 25px;
+}
+
+.section-form label{
+    font-size: 20px;
+}
+
+.section-form input{
+    width: 450px;
+    margin-top: 10px;
+    padding: 10px 0;
+    padding-left: 10px;
+    font-size: 20px;
+    border-radius: 15px;
+    border: 2px solid #102239;
+}
+
+.section-form input:not(:placeholder-shown):valid{
+    border: 2px solid green;
+}
+
+.section-form input:not(:placeholder-shown):invalid{
+    border: 2px solid red;
+}

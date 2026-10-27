@@ -316,7 +316,12 @@ class Infos extends Component{
                                             </tr>
                                             )
                                         })}
-                                        
+                                        {this.state.pagin.length === 0 && 
+                                        <tr>
+                                            <td colSpan="5" style={{textAlign: 'center',padding: '20px',fontSize: '16px'}}>
+                                                Aucun Commande Actuelle
+                                            </td>
+                                        </tr>}
                                     </tbody>
                                 </table>
                                 {this.state.iscardaction && this.state.b && (
@@ -358,7 +363,8 @@ class Infos extends Component{
                                 <div className="btnsuipre">
                                     <button disabled={this.state.currentPage === 1} onClick={() => {this.prec()}}>Precedent</button>
                                     <p>{this.state.currentPage}/{this.state.totalpage}</p>
-                                    <button disabled={this.state.currentPage === this.state.totalpage} onClick={() => {this.suiv()}}>Suivant</button>
+                                    
+                                    <button disabled={this.state.currentPage === this.state.totalpage || this.state.totalpage === 0} onClick={() => {this.suiv()}}>Suivant</button>
                                 </div>
                             </div>
                         )}

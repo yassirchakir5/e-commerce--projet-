@@ -87,7 +87,19 @@ class Infos extends Component{
             totalpage: Math.ceil(commandes.length/itemerge),
             pagin: commandes.slice(startindex,endIndex),
             indexac: null,
-            b: null
+            b: null,
+            favo: [
+                {
+                image: "images/product/redmi_note_15_4g.jpg",
+                name: "Redmi note 15 4g",
+                prix: "2000 DH"
+                },
+                {
+                image: "images/product/redmi_note_15_4g.jpg",
+                name: "Redmi note 15 4g",
+                prix: "2000 DH"
+                }
+            ]
         };
     }
     supp = (indexs) => {
@@ -369,8 +381,26 @@ class Infos extends Component{
                             </div>
                         )}
                         {this.state.actuelle === "favo" && (
-                            <div>
+                            <div className="az">
                                 <h1>Mes favoris</h1>
+                                <div className="section-fa">
+                                    {this.state.favo.map((fa) => {
+                                        return (<div className="card-f">
+                                        <div  className="card-fa">
+                                            <img src={fa.image}/>
+                                            <div>
+                                                <h2>{fa.name}</h2>
+                                                <p>{fa.prix}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button className="btn-det">Voir détails</button>
+                                            <button className="btn-ret">Retirer</button>
+                                        </div>
+                                    </div>)
+                                    })}
+                                </div>
+                                {this.state.favo.length === 0 && <p className="aze">Aucun favoris available</p>}
                             </div>
                         )}
                         {this.state.actuelle === "set" && (

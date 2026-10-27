@@ -357,3 +357,71 @@ body{
 .tt{
     text-align: center;
 }
+
+.card-fa{
+    display: flex;
+    margin: 40px;
+    gap: 20px   ;
+}
+
+.card-fa img{
+    width: 20%;
+}
+
+.card-fa p{
+    font-size: 25px;
+}
+
+.btn-det{
+    padding: 15px 40px;
+    margin: 15px;
+    background-color: #2E67D7;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.btn-det:hover{
+    background-color: red;
+    color: black;
+}
+
+.btn-ret{
+    padding: 15px 40px;
+    margin: 15px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-ret:hover{
+    background-color: blue;
+}
+
+.section-fa{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    text-align: center;
+}
+
+.card-f{
+    transition: 0.5s;
+    border-radius: 15px;
+    margin: 10px;
+}
+
+.card-f:hover{
+    flex-direction: column;
+    box-shadow: 2px 2px 8px black;
+}
+
+.aze{
+    text-align: center;
+    font-size: 30px;
+}

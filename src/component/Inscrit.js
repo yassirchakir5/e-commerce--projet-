@@ -41,7 +41,7 @@ class Inscrit extends Component{
                             <label for="password">Mot de passe</label>
                         </div>
                         <div>
-                            <input type="password" placeholder="Mot de passe" id="password" />
+                            <input type="password" minLength={8} placeholder="Mot de passe" id="password" />
                         </div>
                     </div>
                     <div className="section-form">

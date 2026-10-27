@@ -141,7 +141,19 @@ class Infos extends Component{
             };
         });
     }
+    modifierpro = (e,field) => {
+        const valuep = e.target.value;
+        this.setState((prevState) => ({
+            mesinfos:{
+                ...prevState.mesinfos,
+                [field]: valuep
+            }
+        }));
+    }
 
+    savechangepro = (field) => {
+        alert(`Change avec succes ${this.state.mesinfos[field]}`)
+    }
     ajouaddre = (e,field) => {
         const newa = e.target.value;
         this.setState((prevState) => ({
@@ -360,9 +372,52 @@ class Infos extends Component{
                                 <h1>Settings</h1>
                                 <div>
                                     <h2 style={{textAlign: 'left'}}>Mes information Personnel : </h2>
-                                    <p><strong>Nom </strong>: <input type="text" value={this.state.mesinfos.name} /> <button>Modifier</button> </p>
-                                    <p><strong>Prenom </strong>: <input type="text" value={this.state.mesinfos.prenom} /> <button>Modifier</button> </p>
-                                    <p><strong>email </strong>: <input type="email" value={this.state.mesinfos.email} /> <button>Modifier</button> </p>
+                                    <div className="div-inpt">
+                                        <label for="nom">Nom : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="text" id="nom" value={this.state.mesinfos.name} className="input" onChange={(e) => {this.modifierpro(e,"name")}} />
+                                            <button className="btnmod" onClick={() => {this.savechangepro("name")}}>Modifier</button> 
+                                        </div>
+                                    </div>
+                                    <div className="div-inpt">
+                                        <label for="prenom">Prenom : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="text" id="prenom" value={this.state.mesinfos.prenom} className="input" onChange={(e) => {this.modifierpro(e,"prenom")}}/>
+                                            <button className="btnmod" onClick={() => {this.savechangepro("prenom")}}>Modifier</button> 
+                                            </div>
+                                    </div>
+                                    <div className="div-inpt">
+                                        <label for="email">Email : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="email" id="email" value={this.state.mesinfos.email} className="input" onChange={(e) => {this.modifierpro(e,"email")}}/>
+                                            <button className="btnmod" onClick={() => {this.savechangepro("email")}}>Modifier</button> 
+                                        </div>
+                                    </div>
+                                    <div className="div-inpt">
+                                        <label for="adr">Addresse : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="text" id="adr" value={this.state.mesinfos.addresse} className="input" onChange={(e) => {this.modifierpro(e,"addresse")}}/>
+                                            <button className="btnmod" onClick={() => {this.savechangepro("addresse")}}>Modifier</button> 
+                                        </div>
+                                    </div>
+                                    <div className="div-inpt">
+                                        <label for="cne">CNE : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="text" id="cne" value={this.state.mesinfos.CNE} className="input" onChange={(e) => {this.modifierpro(e,"CNE")}} />
+                                            <button className="btnmod" onClick={() => {this.savechangepro("CNE")}}>Modifier</button> 
+                                        </div>
+                                    </div>
+                                    <div className="div-inpt">
+                                        <label for="numtel">Numéro de téléphone : </label>
+                                        <div style={{display: 'flex', width: '100%',gap: '10px'}}>
+                                            <input type="number" id="numtel" value={this.state.mesinfos.numtel} className="input" onChange={(e) => {this.modifierpro(e,"numtel")}}/>
+                                            <button className="btnmod" onClick={() => {this.savechangepro("numtel")}}>Modifier</button> 
+                                        </div>
+                                    </div>
+                                    <div className="btn-bat basp">
+                                        <button className="btnmod">Déconnexion</button>
+                                        <button className="btnmod">Supprimer Account</button>
+                                    </div>
                                 </div>
                             </div>
                         )}

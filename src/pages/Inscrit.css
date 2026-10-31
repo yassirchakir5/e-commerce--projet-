@@ -256,3 +256,9 @@
 .btn-prsu button:hover{
     opacity: 0.5;
 }
+
+.label-select{
+    font-Size: 20px;
+    display: block;
+    margin-Left: 50px;
+}

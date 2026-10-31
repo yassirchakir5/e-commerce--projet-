@@ -38,7 +38,7 @@ body{
 
 .menu-icon:hover{
     color: white;
-    background-color: blue;
+    background-color: lightblue;
 }
 .active {
   background-color: #e8f0fe;
@@ -110,7 +110,7 @@ body{
 }
 
 .cardadr button:hover{
-    background-color: blue;
+    background-color: lightblue;
     color: white;
 }
 
@@ -228,7 +228,6 @@ body{
 }
 
 .btnajoa:hover{
-    background-color: blue;
     color: white;
 }
 
@@ -258,13 +257,13 @@ body{
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    background-color: blue;
-    color: white;
+    background-color: lightblue;
+    color: black;
     transition: 0.5s;
 }
 
 .btnsuipre button:hover{
-    background-color: red;
+    opacity: 0.5;
 }
 
 .btnsuipre button:disabled{
@@ -288,13 +287,12 @@ body{
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    background-color: green;
+    background-color: lightgreen;
     transition: 0.4s;
 }
 
 .table-body button:hover{
-    background-color: grey;
-    color: white;
+    opacity: 0.5;
 }
 
 .cardBozdy{
@@ -319,29 +317,13 @@ body{
     border: none;
     margin: 10px;
     cursor: pointer;
-    background-color: blue;
-    overflow: hidden;
-    z-index: 1;
-    color: white;
+    color: black;
+    transition: 0.4s;
 }
 
-.btnmod::before{
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: red;
-    z-index: -1;
-    transition: width 0.4s ease;
-}
-
-.btnmod:hover::before{
-    width: 100%;
-}
 
 .btnmod:hover{
+    background-color: lightblue;
     color: white;
 }
 
@@ -375,8 +357,7 @@ body{
 .btn-det{
     padding: 15px 40px;
     margin: 15px;
-    background-color: #2E67D7;
-    color: white;
+    color: black;
     border: none;
     border-radius: 15px;
     cursor: pointer;
@@ -384,15 +365,14 @@ body{
 }
 
 .btn-det:hover{
-    background-color: red;
-    color: black;
+    background-color: lightblue;
+    color: white;
 }
 
 .btn-ret{
     padding: 15px 40px;
     margin: 15px;
-    background-color: red;
-    color: white;
+    color: black;
     border: none;
     border-radius: 15px;
     cursor: pointer;
@@ -400,7 +380,8 @@ body{
 }
 
 .btn-ret:hover{
-    background-color: blue;
+    background-color: lightblue;
+    color: white;
 }
 
 .section-fa{

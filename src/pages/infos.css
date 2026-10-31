@@ -406,3 +406,78 @@ body{
     text-align: center;
     font-size: 30px;
 }
+
+.cart{
+    display: flex;
+}
+
+.carts{
+    margin: 50px;
+    box-shadow: 2px 2px 8px black;
+    padding: 20px;
+    border-radius: 12px;
+    transition: .7s;
+}
+
+.carts:hover{
+    transform: scale(1.2);
+}
+
+.cart img{
+    height: 200px;
+    padding-right: 40px;
+    padding-left: 20px;
+}
+
+.cart-btn button{
+    border: none;
+    padding: 20px;
+    width: 150px;
+    margin: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.cart-btn button:hover{
+    background-color: lightblue;
+    color: white;
+}
+
+.container-mespr{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    text-align: center;
+}
+
+#btn-del{
+    padding: 0;
+    width: 60px;
+    padding: 10px;
+}
+
+.title{
+    display: flex;
+    justify-content: space-around;
+}
+
+.total{
+    text-align: center;
+}
+
+.aucunp{
+    text-align: center;
+}
+
+.input-search{
+    text-align: right;
+}
+
+.input-search input{
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f9f9f9;
+    border: 1px solid #cccccc;
+    color: #333333;
+}

@@ -1,25 +1,19 @@
 import { Component } from "react";
-import { FaUser } from "react-icons/fa";
 import './infos.css';
-import { FaAddressCard } from "react-icons/fa";
-import { MdFavoriteBorder } from "react-icons/md";
-import { CiSettings } from "react-icons/ci";
-import { FiBox } from "react-icons/fi";
 import Infospe from "../component/infospe";
 import Mesadr from "../component/mesadr";
 import Commande from "../component/command";
 import Favoris from "../component/favoris";
 import Settings from "../component/settings";
-
+import Cardinfos from "../component/card-info";
+import Mesproduct from "../component/mesproduct";
 const genererCommandes = () => {
     const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
     let faussesCommandes = [];
 
     for (let i = 1; i <= 50; i++) {
         const statutAleatoire = statuts[Math.floor(Math.random() * statuts.length)];
-        
         const totalAleatoire = (Math.random() * (1500 - 50) + 50).toFixed(2);
-        
         const jour = Math.floor(Math.random() * 28) + 1;
         const mois = Math.floor(Math.random() * 12) + 1;
         const dateAleatoire = `${jour < 10 ? '0'+jour : jour}/${mois < 10 ? '0'+mois : mois}/2024`;
@@ -36,10 +30,8 @@ const genererCommandes = () => {
 };
 
 class Infos extends Component{
-    
     constructor(props){
         super(props);
-
         const commandes = genererCommandes();
         const itemerge = 10;
         const currentPage = 1;
@@ -115,8 +107,6 @@ class Infos extends Component{
         });
     }
 
-    
-    
     modifierpro = (e,field) => {
         const valuep = e.target.value;
         this.setState((prevState) => ({
@@ -131,7 +121,6 @@ class Infos extends Component{
         alert(`Change avec succes ${this.state.mesinfos[field]}`)
     }
     
-
     saveChange = (adresseModifiee, index) => {
         this.setState((prevState) => {
             const updatea = [...prevState.addres];
@@ -201,13 +190,9 @@ class Infos extends Component{
         return(
             <div>
                 <div className="info">
-                    <div className="card-btns">
-                        <button className="menu-icon active" onClick={() => {this.change("infos")}}><FaUser className="settings"/>Information Personnel</button>
-                        <button className="menu-icon" onClick={() => {this.change("adre")}}> <FaAddressCard className="settings"/> Mes Addresses</button>
-                        <button className="menu-icon" onClick={() => {this.change("commad")}}><FiBox className="settings"/> Mes commandes</button>
-                        <button className="menu-icon" onClick={() => {this.change("favo")}}><MdFavoriteBorder className="settings"/>Mes Favoris</button>
-                        <button className="menu-icon" onClick={() => {this.change("set")}}><CiSettings className="settings" />Settings</button>
-                    </div>
+                    {<Cardinfos
+                        change = {this.change}
+                    />}
                     <div className="second-card">
                         {this.state.actuelle === "infos" && (
                             <Infospe mesi ={this.state.mesinfos}/>
@@ -242,6 +227,9 @@ class Infos extends Component{
                                 savechangepro = {this.savechangepro}
                                 modifierpro = {this.modifierpro}
                             />
+                        )}
+                        {this.state.actuelle === "product" && (
+                            <Mesproduct />
                         )}
                     </div>
                 </div>

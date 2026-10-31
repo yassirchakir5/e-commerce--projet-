@@ -484,6 +484,10 @@ class Inscrit extends Component{
                                     <option value="Zimbabwe">Zimbabwe</option>
                                 </select>
                             </div>
+                            <div className="form2">
+                                <label for="daten">Date naissance : </label><br/>
+                                <input type="date" id="daten" name="daten"/>
+                            </div>
                         </div>
                         <div className="btn-prsu">
                             <button onClick={this.previset}>Precedent</button>
@@ -492,7 +496,6 @@ class Inscrit extends Component{
                     </form>
                 }
                 </div>
-            
         )
     }
 }

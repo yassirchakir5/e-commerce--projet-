@@ -1,25 +1,12 @@
 import { Component } from "react";
 import { FaPen, FaTrash } from "react-icons/fa"; 
+import mesdata from '../data/mesproduct.json'
+
 class Mesproduct extends Component{
     constructor(props){
         super(props);
         this.state = {
-            mesproduct: [
-                {
-                    id: 1,
-                    image: "images/product/redmi_note_15_4g.jpg",
-                    name: "Redmi note 15 4g",
-                    prix: "2000 DH",
-                    description: "Storage : 128g,RAM: 6GB"
-                },
-                {
-                    id: 2,
-                    image: "images/product/redmi_note_14_4g.jpg",
-                    name: "Redmi note 14 4g",
-                    prix: "1800 DH",
-                    description: "Storage : 128g,RAM: 6GB"
-                }
-            ],
+            mesproduct: mesdata,
             search: ""
         }
     }
@@ -51,7 +38,7 @@ class Mesproduct extends Component{
         })
         return(
             <div className="mespr">
-                <h1>Mes Products</h1>
+                <h1 style={{textAlign: 'center'}}>Mes Products</h1>
                 <div className="input-search">
                     <input type="text" placeholder="Search product"   onChange={this.setsear}/>
                 </div>

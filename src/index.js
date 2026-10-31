@@ -8,6 +8,7 @@ import Infos from './pages/infos'
 import Login from './pages/Login'
 import Inscrit from './pages/Inscrit'
 import Home from './pages/Home'
+import Mesproduct from './component/mesproduct';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,6 +23,7 @@ function Index(){
         <Route path='/infos' element={<Infos />} />
         <Route path='/login' element={<Login connected={connected} setconnected={setconnected}/>}/>
         <Route path='/inscrit' element={<Inscrit />} />
+        <Route path='/mesproduct' element={<Mesproduct />} />
       </Routes>
     </BrowserRouter>
   );

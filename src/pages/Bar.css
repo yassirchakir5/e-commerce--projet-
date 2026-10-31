@@ -101,6 +101,7 @@ body{
     width: 230px;
     color: black;
     cursor: auto;
+    z-index: 1;
 }
 
 

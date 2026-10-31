@@ -4,7 +4,7 @@ import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { FaChevronDown } from 'react-icons/fa';
-
+import mesinf from "../data/mesinfos.json"
 
 function withRouter(Component){
     return(props) => {
@@ -17,6 +17,7 @@ class Bar extends Component{
 
     render(props){
         const {connected,navigate} = this.props;
+        const info = mesinf;
         return(
             <div className="bar">
                 <h2><a href="/" className="logo"><strong className="sb">E</strong>-commerce</a></h2>
@@ -44,9 +45,10 @@ class Bar extends Component{
                             <div className="profile">
                                 <a className="Usericon"><FaUser /></a>
                                 <div className="profile-down">
-                                    <img src="images/ya.jpeg" className="img-pro"/>
-                                    <h2>Yassir Chakir</h2>
+                                    <img src={info.imgpro} className="img-pro"/>
+                                    <h2>{info.name} {info.prenom}</h2>
                                     <a href="/infos">Information Personnel</a>
+                                    <a href="/mesproduct">Mes Products</a>
                                     <button className="btn-deco">Déconnexion</button>
                                 </div>
                             </div>

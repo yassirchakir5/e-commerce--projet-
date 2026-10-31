@@ -7,6 +7,9 @@ import Favoris from "../component/favoris";
 import Settings from "../component/settings";
 import Cardinfos from "../component/card-info";
 import Mesproduct from "../component/mesproduct";
+import mesadr from "../data/mesadress.json";
+import mesinf from "../data/mesinfos.json"
+
 const genererCommandes = () => {
     const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
     let faussesCommandes = [];
@@ -39,34 +42,8 @@ class Infos extends Component{
         const endIndex = startindex + itemerge;
         this.state = {
             actuelle: "infos",
-            addres: [
-                {
-                    title : "Domicile",
-                    addresse: "Ouled teima dounia 2",
-                    pays: "Maroc",
-                    numtel: "0777040217" 
-                },
-                {
-                    title : "Home",
-                    addresse: "agadir dcheira",
-                    pays: "Maroc",
-                    numtel: "0679593058" 
-                },
-                {
-                    title : "Home",
-                    addresse: "agadir dcheira",
-                    pays: "Maroc",
-                    numtel: "0679593058" 
-                }
-            ],
-            mesinfos: {
-                name: "Yassir",
-                prenom: "Chakir",
-                email: "yassirchakir5@gmail.com",
-                addresse: "Ouled teima dounia 2",
-                CNE: "JT117484",
-                numtel: "0777040217"
-            },
+            addres: mesadr,
+            mesinfos: mesinf,
             iscardaction: false,
             commande : commandes,
             currentPage: currentPage,

@@ -69,7 +69,7 @@ class Bar extends Component{
                                                     </div>
                                                 ))}
                                             </div>
-                                            <button onClick={() => navigate("/cart")} className="btn-aller-panier">
+                                            <button onClick={() => navigate("/Component/Carte")} className="btn-aller-panier">
                                                 Voir le panier
                                             </button>
                                         </div>
@@ -84,6 +84,7 @@ class Bar extends Component{
                                     <Link to="/infos">Information Personnel</Link>
                                     <Link to="/mesproduct">Mes Products</Link>
                                     <Link to="/mesfavoris">Mes Favoris</Link>
+                                    <Link to="/mescartes">Mes Cartes</Link>
                                     <button className="btn-deco">Déconnexion</button>
                                 </div>
                             </div>

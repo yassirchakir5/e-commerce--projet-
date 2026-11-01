@@ -9,7 +9,7 @@ body{
     padding: 10px;
     width: 300px;
     display: flex;
-    height: 350px;
+    height: auto;
     flex-direction: column;
     gap: 5px; 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -480,4 +480,96 @@ body{
     background-color: #f9f9f9;
     border: 1px solid #cccccc;
     color: #333333;
+}
+
+.form-addcar {
+  background-color: #f2f9f9; 
+  padding: 25px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box; /* هادي لي غتقاد العرض مع الجناب باش مايخرجش */
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  text-align: left; 
+}
+
+.input-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+.input-row {
+  display: flex;
+  gap: 20px; 
+  width: 100%;
+}
+
+.input-row > div {
+  flex: 1; 
+}
+
+.btn-retour {
+  background-color: #e0e0e0;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px; 
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.mespr {
+  width: 100%;
+}
+
+.sub{
+    background-color: #1a73e8; 
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    width: 100%; 
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.sub:hover{
+    background-color: #1557b0;
 }

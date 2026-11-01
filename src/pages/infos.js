@@ -9,6 +9,8 @@ import Cardinfos from "../component/card-info";
 import Mesproduct from "../component/mesproduct";
 import mesadr from "../data/mesadress.json";
 import mesinf from "../data/mesinfos.json"
+import Cartes from "../component/Cartes";
+
 
 const genererCommandes = () => {
     const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
@@ -183,6 +185,9 @@ class Infos extends Component{
                         )}
                         {this.state.actuelle === "product" && (
                             <Mesproduct />
+                        )}
+                        {this.state.actuelle === "Cartes" && (
+                            <Cartes />
                         )}
                     </div>
                 </div>

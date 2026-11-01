@@ -5,6 +5,9 @@ import { FaAddressCard } from "react-icons/fa";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
+import { CiBank } from "react-icons/ci";
+
+
 class Cardinfos extends Component{
     render(){
         return(
@@ -14,6 +17,7 @@ class Cardinfos extends Component{
                 <button className="menu-icon" onClick={() => {this.props.change("commad")}}><FiBox className="settings"/> Mes commandes</button>
                 <button className="menu-icon" onClick={() => {this.props.change("favo")}}><MdFavoriteBorder className="settings"/>Mes Favoris</button>
                 <button className="menu-icon" onClick={() => {this.props.change("product")}}><FaShoppingCart className="settings" />Mes Products</button>
+                <button className="menu-icon" onClick={() => {this.props.change("Cartes")}}><CiBank className="settings" />Mes Cartes</button>
                 <button className="menu-icon" onClick={() => {this.props.change("set")}}><CiSettings className="settings" />Settings</button>
             </div>
         )

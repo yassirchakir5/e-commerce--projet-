@@ -19,6 +19,8 @@ import Computer from './component/computer';
 import Casques from './component/Casque';
 import Favoris from './component/favoris';
 import { CartProvider } from './context/CartContext';
+import Carte from './component/Carte';
+import Cartes from './component/Cartes';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -42,6 +44,8 @@ function Index(){
           <Route path='/categorie/Computer' element={<Computer product={Products}/>} />
           <Route path='/categorie/Casques' element={<Casques product={Products}/>} />
           <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
+          <Route path='/Component/Carte' element={<Carte />} /> 
+          <Route path='/mescartes' element={<Cartes />} /> 
           <Route path='*' element={<Navigate to="/" replace />}/>
         </Routes>
       </BrowserRouter>

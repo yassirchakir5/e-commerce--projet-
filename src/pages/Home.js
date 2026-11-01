@@ -1,5 +1,6 @@
 import { Component } from "react";
-import Homeimgs from "../component/homeimgs";
+import Categories from "../component/categories";
+import Derrniprodu from "../component/derniprodu";
 import './Home.css'
 
 
@@ -8,7 +9,8 @@ class Home extends Component{
         
         return(
             <div>
-                {<Homeimgs />}
+                {<Categories />}
+                {<Derrniprodu />}
             </div>
         )
     }

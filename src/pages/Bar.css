@@ -71,6 +71,14 @@ body{
     transition: 0.3s;
 }
 
+.d{
+    transition: none;
+}
+
+.d:hover{
+    border-radius: 20px;
+}
+
 .dropdown-content a:hover{
     background-color: #f5f5f5;
 }

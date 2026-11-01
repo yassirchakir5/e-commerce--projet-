@@ -32,7 +32,7 @@ class Bar extends Component{
                             <a href="#">Casques</a>
                             <h3>Vétement</h3>
                             <a href="#">Home</a>
-                            <a href="#">Women</a>
+                            <a href="#" className="d">Women</a>
                         </div>
                     </div>
                 </div>

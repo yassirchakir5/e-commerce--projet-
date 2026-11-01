@@ -1,56 +1,211 @@
-.imgs {
-    width: 90%; 
-    max-width: 1200px; 
-    height: 450px; 
-    margin: 30px auto;
-    display: flex;
-    border-radius: 20px; 
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
+.gap-4{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
 }
 
-.imgs img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.imgs img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.slider-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px; 
-    height: 40px; 
-    background-color: rgba(245, 245, 245, 0.9);
-    border: none;
-    border-radius: 12px;
-    color: #444; 
-    font-size: 20px; 
+.categorie-h{
+    margin: 20px 60px;
+    padding: 20px 120px;
     display: flex;
-    justify-content: center; 
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); 
-    transition: all 0.2s ease;
+    text-align: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    animation: popIn 0.6s ease-out forwards;
 }
 
-.slider-btn:hover {
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.categorie-h:hover{
+    transform: translateY(-8px) scale(1.02); 
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1); 
 }
 
-.slider-btn.prev{
-    left: 20px;
-    right: auto;
+.art{
+    background-color: #FFEDD5;
 }
 
-.slider-btn.next{
-    right: 20px;
-    left: auto;
+.elec{
+    background-color: #CCFBF1;
+}
+
+.vet{
+    background-color: #FCE7F3;
+}
+
+.w-4{
+  rotate: 270deg;
+  padding: 0;
+  margin: 0;
+}
+
+.der-pro{
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.der-pro h2{
+  margin: 20px;
+}
+
+.btn-tout{
+  background-color: transparent;
+  font-size: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px;
+  color: red;
+}
+
+.btn-tout:hover{
+  opacity: 0.5;
+}
+
+.carts-der{
+  margin: 50px;
+  height: auto;
+  width: 300px;
+  box-shadow: 2px 2px 8px black;
+  border-radius: 20px;
+  padding-right: 10px;
+  padding-left: 10px;
+  transition: 0.3s;
+}
+
+.carts-der:hover{
+  transform: scale(1.07);
+}
+
+.carts-der h3{
+  margin-bottom: 0;
+}
+
+.carts-der img{
+  width: 100%;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  height: 200px;
+}
+
+.carts-der:hover  h3{
+  color: red;
+}
+
+.span-pri{
+  color: red;
+  font-size: 25px;
+}
+
+.stars{
+  display: flex;
+  align-items: center;
+}
+
+.stars p{
+  margin: 0;
+  padding: 0;
+}
+
+.st{
+  margin: 0;
+  padding: 0;
+  fill: yellow;
+  color: yellow;
+}
+
+.vendu{
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+
+.image-container{
+  position: relative;
+  width: 100%;
+}
+
+.image-container img{
+  width: 100%;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  height: 200px;
+}
+
+.heart-btn{
+  position: absolute; 
+  top: 10px; 
+  display: none;
+  right: 10px; 
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.heart{
+  color: gray;
+}
+.heart:hover{
+  color: red;
+}
+
+.carts-der:hover .heart-btn{
+  display: block;
+}
+
+.carts-dern{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+}
+
+.msg-vide {
+  grid-column: 1 / -1;
+  text-align: center;  
+  margin-top: 50px;   
+  color: #666;    
+}
+
+.btn-ajout{
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: lightblue;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.btn-ajout:hover{
+  opacity: 0.5;
+}
+
+.input-sea{
+  height: 50px;
+  width: 400px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: 20px;
+  border: none;
+  background-color: lightblue;
+}
+
+.meu{
+  background-color: #E5E7EB;
+}
+
+.beau{
+  background-color: #F3E8FF;
+}
+
+.tel{
+  background-color: #DBEAFE;
 }

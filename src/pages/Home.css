@@ -196,6 +196,7 @@
   border-radius: 20px;
   border: none;
   background-color: lightblue;
+  margin-top: 20px;
 }
 
 .meu{
@@ -208,4 +209,10 @@
 
 .tel{
   background-color: #DBEAFE;
+}
+
+.input-searc{
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }

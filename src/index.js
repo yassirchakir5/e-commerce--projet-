@@ -9,7 +9,8 @@ import Login from './pages/Login'
 import Inscrit from './pages/Inscrit'
 import Home from './pages/Home'
 import Mesproduct from './component/mesproduct';
-
+import Derrniprodu from './component/derniprodu';
+import Products from './data/product.json';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -24,6 +25,7 @@ function Index(){
         <Route path='/login' element={<Login connected={connected} setconnected={setconnected}/>}/>
         <Route path='/inscrit' element={<Inscrit />} />
         <Route path='/mesproduct' element={<Mesproduct />} />
+        <Route path='/dernierprodu' element={<Derrniprodu filterpro={Products}/>} />
       </Routes>
     </BrowserRouter>
   );

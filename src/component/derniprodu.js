@@ -9,7 +9,8 @@ class Derrniprodu extends Component{
     constructor(props){
         super(props);
         this.state = {
-            search: ""
+            search: "",
+            sorto: "datep"
         }
     }
 
@@ -18,14 +19,37 @@ class Derrniprodu extends Component{
             search: e.target.value
         })
     }
+    
+    setsort = (e) => {
+        this.setState({
+            sorto: e.target.value
+        });
+    }
+
     render(){
         const filterpro = Products.filter((fil) => {
             const lowersear = this.state.search.toLowerCase();
             return fil.name.toLowerCase().includes(lowersear);
         })
+
+        const { sorto } = this.state;
+
+        if(sorto === "prixcr"){
+            filterpro.sort((a, b) => a.prix - b.prix)
+        }else if(sorto === "prixdecr"){
+            filterpro.sort((a,b) => b.prix - a.prix)
+        }else if(sorto === "datep"){
+            filterpro.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
         return(
             <div>
                 <div className="input-searc">
+                    <select onChange={this.setsort} className="sele-sort" value={sorto}>
+                        <option value="datep">Date publication</option>
+                        <option value="prixcr">prix croissant</option>
+                        <option value="prixdecr">prix decroissant</option>
+                    </select>
                     <input type="text" placeholder="Search" className="input-sea" onChange={this.setsearch}/>
                 </div>
                 <div className="carts-dern">
@@ -44,7 +68,10 @@ class Derrniprodu extends Component{
                                     <p>{p.stars} ({p.countst})</p>
                                 </div>
                                 <h4><span className="span-pri"> {p.prix} </span> DH</h4>
-                                <button  className="btn-ajout">Ajouter au panier</button>
+                                <div style={{display: 'flex',justifyContent: 'space-between'}}>
+                                    <button  className="btn-ajout">Ajouter au panier</button>
+                                    <button  className="btn-ajout">Détails</button>
+                                </div>
                                 <div className="vendu">
                                     <Store /> &nbsp;&nbsp;
                                     <p >Vendu par : {p.vendupa}</p>

@@ -26,9 +26,6 @@
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1); 
 }
 
-.art{
-    background-color: #FFEDD5;
-}
 
 .elec{
     background-color: #CCFBF1;
@@ -197,15 +194,12 @@
   border: none;
   background-color: lightblue;
   margin-top: 20px;
+  margin-right: 20px;
 }
 
-.meu{
-  background-color: #E5E7EB;
-}
 
-.beau{
-  background-color: #F3E8FF;
-}
+
+
 
 .tel{
   background-color: #DBEAFE;
@@ -215,4 +209,13 @@
   align-items: center;
   justify-content: center;
   display: flex;
+  justify-content: space-between;
+}
+
+.sele-sort{
+  margin: 30px;
+  padding: 10px 30px;
+  border: none;
+  background: transparent;
+  outline: none;
 }

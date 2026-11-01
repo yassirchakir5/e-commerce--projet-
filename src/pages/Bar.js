@@ -27,12 +27,10 @@ class Bar extends Component{
                         <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>
                         <div className="dropdown-content">
                             <h3>Technologie</h3>
-                            <a href="#">Phones</a>
-                            <a href="#">Computer</a>
-                            <a href="#">Casques</a>
-                            <h3>Vétement</h3>
-                            <a href="#">Home</a>
-                            <a href="#" className="d">Women</a>
+                            <a href="/categorie/telephone">Phones</a>
+                            <a href="/categorie/Computer">Computer</a>
+                            <a href="/categorie/Casques">Casques</a>
+                            <a href="/categorie/Vetements">Vétement</a>
                         </div>
                     </div>
                 </div>

@@ -1,19 +1,58 @@
 [
     {
         "name" : "Redmi note 15 4g",
-        "image" : "images/product/redmi_note_15_4g.jpg",
+        "image" : "/images/product/redmi_note_15_4g.jpg",
         "stars" : 2,
         "countst" : 8,
         "prix": "2000",
         "categorie": "telephone",
-        "vendupa" : "Yassir Chakir"
+        "genre": "éléctronique",
+        "vendupa" : "Yassir Chakir",
+        "date": "2026-11-15"
+
     },
     {
         "name" : "Redmi note 14 4g",
-        "image" : "images/product/redmi_note_14_4g.jpg",
+        "image" : "/images/product/redmi_note_14_4g.jpg",
         "stars" : 6,
         "countst" : 20,
         "prix": "1800",
-        "vendupa" : "Yassir Chakir"
+        "categorie": "telephone",
+        "genre": "éléctronique",
+        "vendupa" : "Yassir Chakir",
+        "date": "2026-10-20"
+    },
+    {
+        "name" : "Vêtements1",
+        "image" : "/images/product/redmi_note_14_4g.jpg",
+        "stars" : 4,
+        "countst" : 20,
+        "prix": "1800",
+        "categorie": "Vêtements",
+        "genre": "Homme",
+        "vendupa" : "Yassir Chakir",
+        "date": "2026-11-01"
+    },
+    {
+        "name" : "Lenovo LOQ",
+        "image" : "/images/product/LOQ.jpg",
+        "stars" : 4,
+        "countst" : 20,
+        "prix": "9500",
+        "categorie": "Computer",
+        "genre": "éléctronique",
+        "vendupa" : "Yassir Chakir",
+        "date": "2026-10-31"
+    },
+    {
+        "name" : "Casque JBL sans fil",
+        "image" : "/images/product/Casques(JBL).jpg",
+        "stars" : 4,
+        "countst" : 20,
+        "prix": "500",
+        "categorie": "Casques",
+        "genre": "éléctronique",
+        "vendupa" : "Yassir Chakir",
+        "date": "2026-10-30"
     }
 ]

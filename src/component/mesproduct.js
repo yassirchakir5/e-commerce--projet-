@@ -1,18 +1,21 @@
 import { Component } from "react";
 import { FaPen, FaTrash } from "react-icons/fa"; 
-import mesdata from '../data/mesproduct.json'
+import mesdata from '../data/mesproduct.json';
+import FormAddProduct from "./FormAddProduct";
+
 
 class Mesproduct extends Component{
     constructor(props){
         super(props);
         this.state = {
             mesproduct: mesdata,
-            search: ""
+            search: "",
+            current: "mesprod"
         }
     }
 
     supprimerpro = (index) => {
-        const nouva = this.state.mesproduct.filter((_,indexs) => index !== indexs);
+        const nouva = this.state.mesproduct.filter((_, indexs) => index !== indexs);
 
         this.setState({
             mesproduct: nouva
@@ -25,48 +28,67 @@ class Mesproduct extends Component{
         });
     }
 
-    render(){
-        
+    setcurrent = () => {
+        this.setState({
+            current: this.state.current === "mesprod" ? "addpro" : "mesprod"
+        })
+    }
 
+    render(){
         const filtrerproduc = this.state.mesproduct.filter((mespr) => {
             const lowersearch = this.state.search.toLowerCase();
-
             const findpro = mespr.name.toLowerCase().includes(lowersearch);
-
             return findpro;
+        });
 
-        })
         return(
             <div className="mespr">
                 <h1 style={{textAlign: 'center'}}>Mes Products</h1>
-                <div className="input-search">
-                    <input type="text" placeholder="Search product"   onChange={this.setsear}/>
+                
+                <div className="input-search" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', padding: '0 20px'}}>
+                    <button className="btn-retour" onClick={this.setcurrent}>
+                        {this.state.current === "mesprod" ? "Add product" : "< Retour"}
+                    </button>
+                    
+                    {this.state.current === "mesprod" && 
+                        <input type="text" placeholder="Search product" style={{marginRight: '20px'}} onChange={this.setsear}/>
+                    }
                 </div>
-                <h4 className="total">total publié : {this.state.mesproduct.length}</h4>
-                <div className="container-mespr">
-                    {filtrerproduc.map((mesp,index) => {
-                        return(
-                            <div className="carts">
-                                <div className="cart">
-                                    <div>
-                                        <img src={mesp.image} key={index} />
+
+                {this.state.current === "mesprod" && (
+                    <>
+                        <div className="container-mespr">
+                            {filtrerproduc.map((mesp, index) => {
+                                return(
+                                    <div className="carts" key={index}> 
+                                        <div className="cart">
+                                            <div>
+                                                <img src={mesp.image} alt={mesp.name} /> 
+                                            </div>
+                                            <div>
+                                                <h3>{mesp.name}</h3>
+                                                <h4>{mesp.prix}</h4>
+                                                <p>{mesp.description}</p>  
+                                            </div> 
+                                        </div>
+                                        <div className="cart-btn">
+                                            <button><FaPen/> Editer</button>
+                                            <button> Voir le produit</button>
+                                            <button id="btn-del" onClick={() => {this.supprimerpro(index)}}><FaTrash/></button>
+                                        </div>
                                     </div>
-                                    <div>
-                                    <h3 key={index}>{mesp.name}</h3>
-                                        <h4 key={index}>{mesp.prix}</h4>
-                                        <p key={index}>{mesp.description}</p>  
-                                    </div> 
-                                </div>
-                                <div className="cart-btn">
-                                    <button key={index}><FaPen/> Editer</button>
-                                    <button key={index}> Voir le produit</button>
-                                    <button id="btn-del" key={index} onClick={() => {this.supprimerpro(index)}}><FaTrash/></button>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-                {filtrerproduc.length === 0 && <h4 className="aucunp">Aucun produit publié</h4>}
+                                )
+                            })}
+                        </div>
+                        {filtrerproduc.length === 0 && <h4 className="aucunp">Aucun produit publié</h4>}
+                    </>
+                )}
+                {this.state.current === "addpro" && (
+                    <div>
+                        
+                        { <FormAddProduct /> }
+                    </div>
+                )}
             </div>
         )
     }

@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "image": "images/product/redmi_note_15_4g.jpg",
+        "name": "Redmi note 15 4g",
+        "prix": "2000 DH"
+    },
+    {
+        "id": 2,
+        "image": "images/product/redmi_note_15_4g.jpg",
+        "name": "Redmi note 15 4g",
+        "prix": "2000 DH"
+    }
+]

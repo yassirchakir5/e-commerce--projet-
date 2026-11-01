@@ -195,3 +195,136 @@ body{
     background-color: gray;
     color: black;
 }
+
+
+.Shopicon {
+    font-size: 30px;
+    cursor: pointer;
+    padding-right: 0 !important;
+    color: black;
+}
+
+.cart-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 40px;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;          
+    right: -10px;      
+    background-color: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    width: 20px;    
+    height: 20px;  
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-dropdown-content {
+    display: none;
+    position: absolute;
+    right: -10px; 
+    top: calc(100% + 15px); 
+    background-color: white;
+    min-width: 280px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.cart-dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -15px; 
+    left: 0;
+    right: 0;
+    height: 15px;
+    background-color: transparent;
+}
+
+.cart-dropdown-wrapper:hover .cart-dropdown-content {
+    display: block;
+}
+
+.cart-items-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.cart-mini-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+    gap: 12px;
+}
+
+.cart-mini-item:last-child {
+    border-bottom: none;
+}
+
+.cart-mini-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.cart-mini-info h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.cart-mini-info p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #ff4757; 
+    font-weight: bold;
+}
+
+.btn-aller-panier {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-aller-panier:hover {
+    background-color: #ff4757;
+}
+
+.btn-remove-item {
+    background: none;
+    border: none;
+    color: #ff4757;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: auto; 
+    padding: 5px;
+    transition: 0.2s;
+}
+
+.btn-remove-item:hover {
+    color: #cc0000;
+    transform: scale(1.1);
+}

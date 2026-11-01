@@ -53,21 +53,7 @@ class Infos extends Component{
             totalpage: Math.ceil(commandes.length/itemerge),
             pagin: commandes.slice(startindex,endIndex),
             indexac: null,
-            b: null,
-            favo: [
-                {
-                    id: 1,
-                    image: "images/product/redmi_note_15_4g.jpg",
-                    name: "Redmi note 15 4g",
-                    prix: "2000 DH"
-                },
-                {
-                    id: 2,
-                    image: "images/product/redmi_note_15_4g.jpg",
-                    name: "Redmi note 15 4g",
-                    prix: "2000 DH"
-                }
-            ]
+            b: null
         };
     }
     // supprimer les addresses
@@ -155,14 +141,7 @@ class Infos extends Component{
         }))
     }
 
-    supprif = (indexs) => {
-        const nouvf = this.state.favo.filter((_,index) => index !== indexs);
-
-        this.setState({
-            favo: nouvf
-        });
-    };
-
+    
     render(){
         return(
             <div>
@@ -193,10 +172,7 @@ class Infos extends Component{
                             />
                         )}
                         {this.state.actuelle === "favo" && (
-                            <Favoris 
-                                favo = {this.state.favo}
-                                supprif = {this.supprif}
-                            />
+                            <Favoris  />
                         )}
                         {this.state.actuelle === "set" && (
                             <Settings 

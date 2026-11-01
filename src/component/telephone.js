@@ -2,8 +2,10 @@ import { Component } from "react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
 import { Heart } from "lucide-react";
+import { CartContext } from "../context/CartContext";
 
 class Telephone extends Component{
+    static contextType = CartContext;
     constructor(props){
         super(props);
         this.state = {
@@ -24,6 +26,7 @@ class Telephone extends Component{
         });
     }
     render(){
+        const { addToCart } = this.context;
         const product = this.props.product.filter((p) => {
             return p.categorie === "telephone"
         })
@@ -68,7 +71,7 @@ class Telephone extends Component{
                                     </div>
                                     <h4><span className="span-pri"> {p.prix} </span> DH</h4>
                                     <div style={{display: 'flex',justifyContent: 'space-between'}}>
-                                        <button  className="btn-ajout">Ajouter au panier</button>
+                                        <button  className="btn-ajout" onClick={() => {addToCart(p)}}>Ajouter au panier</button>
                                         <button  className="btn-ajout">Détails</button>
                                     </div>
                                     <div className="vendu">

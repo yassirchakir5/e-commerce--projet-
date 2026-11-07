@@ -12,32 +12,11 @@ import mesinf from "../data/mesinfos.json"
 import Cartes from "../component/InfosPersonnel/Cartes";
 
 
-const genererCommandes = () => {
-    const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
-    let faussesCommandes = [];
-
-    for (let i = 1; i <= 50; i++) {
-        const statutAleatoire = statuts[Math.floor(Math.random() * statuts.length)];
-        const totalAleatoire = (Math.random() * (1500 - 50) + 50).toFixed(2);
-        const jour = Math.floor(Math.random() * 28) + 1;
-        const mois = Math.floor(Math.random() * 12) + 1;
-        const dateAleatoire = `${jour < 10 ? '0'+jour : jour}/${mois < 10 ? '0'+mois : mois}/2024`;
-
-        faussesCommandes.push({
-            numero: `#10025${300 + i}`,
-            date: dateAleatoire,
-            statut: statutAleatoire,
-            total: `${totalAleatoire} MAD`,
-            articlesQuantite: Math.floor(Math.random() * 4) + 1 
-        });
-    }
-    return faussesCommandes;
-};
 
 class Infos extends Component{
     constructor(props){
         super(props);
-        const commandes = genererCommandes();
+        const commandes = [];
         const itemerge = 10;
         const currentPage = 1;
         const startindex = (currentPage - 1) * itemerge; 

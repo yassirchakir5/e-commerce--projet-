@@ -73,8 +73,8 @@ class ProductDetails extends Component {
             <div className="availability-badge inline">{product.status.toUpperCase()}</div>
 
             <div className="product-seller">
-  Vendu par : <Link to={`/profile/${product.vendupa}`}><strong>{product.vendupa}</strong></Link>
-</div>
+              Vendu par : <Link to={`/profile/${product.vendupa}`}><strong>{product.vendupa}</strong></Link>
+            </div>
             
             <div className="product-date">
               Date de publication : {product.date}

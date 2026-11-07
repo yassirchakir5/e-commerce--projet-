@@ -384,12 +384,6 @@ body{
     color: white;
 }
 
-.section-fa{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    text-align: center;
-}
 
 .card-f{
     transition: 0.5s;
@@ -412,11 +406,6 @@ body{
 }
 
 .carts{
-    /* margin: 50px;
-    box-shadow: 2px 2px 8px black;
-    padding: 20px;
-    border-radius: 12px;
-    transition: .7s; */
     background: white;
     border-radius: 15px;
     padding: 25px;

@@ -1,6 +1,5 @@
 import { Component } from "react";
 import { Star } from 'lucide-react';
-import Products from '../data/product.json'
 import { Store } from "lucide-react";
 import { Heart } from "lucide-react";
 import { CartContext } from "../context/CartContext"; 

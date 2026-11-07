@@ -79,7 +79,8 @@
 }
 
 .carts-der:hover{
-  transform: scale(1.07);
+  transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
 .carts-der h3{

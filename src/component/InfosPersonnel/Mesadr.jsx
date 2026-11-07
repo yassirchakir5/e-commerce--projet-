@@ -85,18 +85,20 @@ class Mesadr extends Component {
                     </div>
                 )}
                 
-                <div className="adre">
+                <div className="carts-dern" style={{gridTemplateColumns: 'repeat(2,1fr)'}}>
                     {addres && addres.map((a, index) => {
                         if (!a) return null; 
 
                         return (
-                            <div className="cardadr" key={index}>
+                            <div className="carts-der" style={{textAlign: 'center'}} key={index}>
                                 <h3>{a.title}</h3>
                                 <p className="pad">{a.addresse}</p>
                                 <p className="pad">{a.pays}</p>
                                 <p className="pad">{a.numtel}</p>
-                                <button onClick={() => { this.togllecard(a, index) }}><FaPen /> Modifier</button>
-                                <button onClick={() => { supprimer(index) }}><FaTrash /> Supprimer</button>
+                                <div style={{display: 'flex',justifyContent: 'space-between'}}>
+                                    <button className="btn-ajout" onClick={() => { this.togllecard(a, index) }}><FaPen /> Modifier</button>
+                                    <button className="btn-detail" onClick={() => { supprimer(index) }}><FaTrash /> Supprimer</button>
+                                </div>
                             </div>
                         )
                     })}

@@ -17,6 +17,8 @@ import Favoris from '../component/InfosPersonnel/Favoris';
 import Carte from '../component/Carte';
 import Cartes from '../component/InfosPersonnel/Cartes';
 import ProductDetails from '../component/ProductDetails';
+import UserProfile from '../component/Useprofile';
+
 
 class Approutes extends Component{
     state = {
@@ -45,6 +47,7 @@ class Approutes extends Component{
                     <Route path='/Component/Carte' element={<Carte />} /> 
                     <Route path='/mescartes' element={<Cartes />} /> 
                     <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path="/profile/:username" element={<UserProfile />} />
                     <Route path='*' element={<Navigate to="/" replace />}/>
                 </Routes>
         </BrowserRouter>

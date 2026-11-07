@@ -412,15 +412,23 @@ body{
 }
 
 .carts{
-    margin: 50px;
+    /* margin: 50px;
     box-shadow: 2px 2px 8px black;
     padding: 20px;
     border-radius: 12px;
-    transition: .7s;
+    transition: .7s; */
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
 }
 
 .carts:hover{
-    transform: scale(1.2);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
 .cart img{
@@ -429,7 +437,12 @@ body{
     padding-left: 20px;
 }
 
-.cart-btn button{
+.cart-btn{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+}
+
+/* .cart-btn button{
     border: none;
     padding: 20px;
     width: 150px;
@@ -437,12 +450,12 @@ body{
     border-radius: 20px;
     cursor: pointer;
     transition: 0.3s;
-}
+} */
 
-.cart-btn button:hover{
+/* .cart-btn button:hover{
     background-color: lightblue;
     color: white;
-}
+} */
 
 .container-mespr{
     display: grid;
@@ -571,16 +584,32 @@ body{
   flex: 1; 
 }
 
-.btn-retour {
-  background-color: #e0e0e0;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px; 
-  font-size: 16px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  font-weight: bold;
+#btn-prod {
+    background-color: #e0e0e0;
+    border: none;
+    padding: 20px;
+    font-size: 20px;
+    padding-right: 30px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: bold;
+    width: 160px;
+    transition: 0.3s;
 }
+
+#btn-cart{
+    border: none;
+    padding: 20px;
+    padding-right: 30px;
+    font-size: 20px;
+    width: 160px;
+    margin: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
 .mespr {
   width: 100%;
 }
@@ -658,4 +687,53 @@ body{
   color: #1a73e8;
   text-decoration: underline;
   font-weight: 500;
+}
+
+.btn{
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 5px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+    font-size: 0.85em;
+    padding: 10px 15p;
+}
+
+.btn-modifier{
+    background: #2196F3;
+     color: white;
+}
+
+.btn-modifier:hover{
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+
+.btn-revision{
+    background: #ff9800; 
+    color: white;
+}
+
+.btn-revision:hover{
+    background: #f57c00;
+    transform: translateY(-2px);
+}
+
+.btn-supprimer{
+    background: #f44336; 
+    color: white;
+}
+
+.btn-supprimer:hover{
+    background: #d32f2f; 
+    transform: translateY(-2px);
 }

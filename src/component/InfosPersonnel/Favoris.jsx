@@ -1,5 +1,5 @@
 import { Component } from "react";
-import Favori from '../data/favorite.json';
+import Favori from '../../data/favorite.json';
 
 
 class Favoris extends Component{

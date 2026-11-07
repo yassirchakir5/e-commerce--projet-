@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
 import { Heart } from "lucide-react";
-import { CartContext } from "../context/CartContext"; 
+import { CartContext } from "../../context/CartContext"; 
 class Electronique extends Component{
     static contextType = CartContext;
      constructor(props){

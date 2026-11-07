@@ -1,5 +1,5 @@
 import { Component } from "react";
-import './Bar.css';
+import '../assets/Bar.css';
 import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
@@ -18,22 +18,23 @@ function withRouter(Component){
 
 class Bar extends Component{
     static contextType = CartContext;
-    render(props){
+    render(){
         const {connected,navigate} = this.props;
         const { cartCount,cartItems, removeFromCart } = this.context;
         const info = mesinf;
         return(
             <div className="bar">
-                <h2><a href="/" className="logo"><strong className="sb">E</strong>-commerce</a></h2>
+                <h2><Link to="/" className="logo"><strong className="sb">E</strong>-commerce</Link></h2>
                 <div className="bar-btn">
                     <Link to="/" className="bar-btn">Home</Link>
                     <div className="dropdown">
                         <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>
                         <div className="dropdown-content">
-                            <h3>Technologie</h3>
+                            <h3>Electronique</h3>
                             <Link to="/categorie/telephone">Phones</Link>
                             <Link to="/categorie/Computer">Computer</Link>
                             <Link to="/categorie/Casques">Casques</Link>
+                            <h3>Vétements</h3>
                             <Link to="/categorie/Vetements">Vétement</Link>
                         </div>
                     </div>
@@ -82,9 +83,12 @@ class Bar extends Component{
                                     <img src={info.imgpro} className="img-pro"/>
                                     <h2>{info.name} {info.prenom}</h2>
                                     <Link to="/infos">Information Personnel</Link>
-                                    <Link to="/mesproduct">Mes Products</Link>
-                                    <Link to="/mesfavoris">Mes Favoris</Link>
-                                    <Link to="/mescartes">Mes Cartes</Link>
+                                    <details style={{marginBottom: '20px',cursor: 'pointer'}}>
+                                        <summary>Products</summary>
+                                        <summary><Link to="/mesproduct" style={{marginTop: '20px'}}>Mes Products</Link></summary>
+                                        <summary><Link to="/mesfavoris">Mes Favoris</Link></summary>
+                                        <summary><Link to="/mescartes">Mes Cartes</Link></summary>
+                                    </details>
                                     <button className="btn-deco">Déconnexion</button>
                                 </div>
                             </div>

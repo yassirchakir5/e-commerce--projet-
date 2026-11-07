@@ -1,5 +1,5 @@
 import { Component } from "react";
-import './Inscrit.css';
+import '../../assets/Inscrit.css';
 
 
 class Inscrit extends Component{
@@ -66,65 +66,66 @@ class Inscrit extends Component{
             <div>
                 {this.state.step === 1 && 
                     <div className="card-I">
-                    <div className="card-Inscrit">
-                    <div className="section-title">
-                        <h1>Créer un compte</h1>
-                    </div>
-                    <form onSubmit={this.nextetap}>
-                    <div className="section-no-pre">
-                        
-                        <div className="section-nom">
-                            <div>
-                                <label htmlFor="nom">Nom</label>
+                        <div className="card-Inscrit">
+                            <div className="section-title">
+                                <h1>Créer un compte</h1>
                             </div>
-                            <div>
-                                <input type="text" placeholder="name" id="nom" name="nom" onChange={this.handlechange} required/>
+                            <form onSubmit={this.nextetap}>
+                            <div className="section-no-pre">
+                                <div className="section-nom">
+                                    <div>
+                                        <label htmlFor="nom">Nom</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="name" id="nom" name="nom" onChange={this.handlechange} required/>
+                                    </div>
+                                </div>
+                                <div className="section-prenom">
+                                    <div>
+                                        <label htmlFor="prenom">Prenom</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" placeholder="prenom" id="prenom" name="prenom" onChange={this.handlechange} required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="section-form">
+                                <div>
+                                    <label htmlFor="email">Adresse email</label>
+                                </div>
+                                <div>
+                                    <input type="email" placeholder="Adresse email" id="email" name="email" onChange={this.handlechange} required/>
+                                </div>
+                            </div>
+                            <div className="section-form">
+                                <div>
+                                    <label htmlFor="password">Mot de passe</label>
+                                </div>
+                                <div>
+                                    <input type="password" minLength={8} placeholder="Mot de passe" name="password" id="password" onChange={this.handlechange} required/>
+                                </div>
+                            </div>
+                            <div className="section-form">
+                                <div>
+                                    <label htmlFor="cpassword">Comfirmation le Mot de passe</label>
+                                </div>
+                                <div>
+                                    <input type="password" minLength={8} placeholder="Comfirmation le Mot de passe" name="cpassword" id="cpassword" onChange={this.handlechange} required/>
+                                </div>
+                            </div>
+                            <div className="form-con">
+                                <input type="submit" className="btn-connect"/>
+                            </div>
+                            </form>
+                            <div className="form-a">
+                                <a href="/login">Vous avez already account ?</a>
                             </div>
                         </div>
-                        <div className="section-prenom">
-                            <div>
-                                <label htmlFor="prenom">Prenom</label>
-                            </div>
-                            <div>
-                                <input type="text" placeholder="prenom" id="prenom" name="prenom" onChange={this.handlechange} required/>
-                            </div>
-                        </div>
                     </div>
-                    <div className="section-form">
-                        <div>
-                            <label htmlFor="email">Adresse email</label>
-                        </div>
-                        <div>
-                            <input type="email" placeholder="Adresse email" id="email" name="email" onChange={this.handlechange} required/>
-                        </div>
-                    </div>
-                    <div className="section-form">
-                        <div>
-                            <label htmlFor="password">Mot de passe</label>
-                        </div>
-                        <div>
-                            <input type="password" minLength={8} placeholder="Mot de passe" name="password" id="password" onChange={this.handlechange} required/>
-                        </div>
-                    </div>
-                    <div className="section-form">
-                        <div>
-                            <label htmlFor="cpassword">Comfirmation le Mot de passe</label>
-                        </div>
-                        <div>
-                            <input type="password" minLength={8} placeholder="Comfirmation le Mot de passe" name="cpassword" id="cpassword" onChange={this.handlechange} required/>
-                        </div>
-                    </div>
-                    <div className="form-con">
-                        <input type="submit" className="btn-connect"/>
-                    </div>
-                    </form>
-                    <div className="form-a">
-                        <a href="/login">Vous avez already account ?</a>
-                    </div>
-                </div>
-                </div>
                 }
                 {this.state.step === 2 && 
+                <div className="card-I-2">
+                <div className="card-Inscrit-2">
                     <form onSubmit={this.saveFinal}>
                         <h1 style={{textAlign: 'center'}}>Créer un compte</h1>
                         <div className="step2">
@@ -493,8 +494,9 @@ class Inscrit extends Component{
                             <button onClick={this.previset}>Precedent</button>
                             <input type="submit" className="btn-connect"/>
                         </div>
-                    </form>
+                    </form></div></div>
                 }
+                
                 </div>
         )
     }

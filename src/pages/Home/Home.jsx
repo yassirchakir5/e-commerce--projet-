@@ -1,8 +1,8 @@
 import { Component } from "react";
-import Categories from "../component/categories";
-import Derrniprodu from "../component/derniprodu";
-import Barvoirto from "../component/barvoirto";
-import Products from '../data/product.json'
+import Categories from "../../component/Categories";
+import Derrniprodu from "../../component/Derniprodu";
+import Barvoirto from "../../component/barvoirto";
+import Products from '../../data/product.json'
 import './Home.css'
 
 class Home extends Component{

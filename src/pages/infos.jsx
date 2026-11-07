@@ -1,15 +1,15 @@
 import { Component } from "react";
-import './infos.css';
-import Infospe from "../component/infospe";
-import Mesadr from "../component/mesadr";
-import Commande from "../component/command";
-import Favoris from "../component/favoris";
-import Settings from "../component/settings";
-import Cardinfos from "../component/card-info";
-import Mesproduct from "../component/mesproduct";
+import '../assets/infos.css';
+import Infospe from "../component/InfosPersonnel/Infospe";
+import Mesadr from "../component/InfosPersonnel/Mesadr";
+import Commande from "../component/InfosPersonnel/Command";
+import Favoris from "../component/InfosPersonnel/Favoris";
+import Settings from "../component/InfosPersonnel/Settings";
+import Cardinfos from "../component/Card-info";
+import Mesproduct from "../component/InfosPersonnel/MesProduct";
 import mesadr from "../data/mesadress.json";
 import mesinf from "../data/mesinfos.json"
-import Cartes from "../component/Cartes";
+import Cartes from "../component/InfosPersonnel/Cartes";
 
 
 const genererCommandes = () => {

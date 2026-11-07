@@ -1,11 +1,12 @@
 import { Component } from "react";
+import { Heart } from "lucide-react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
-import { Heart } from "lucide-react";
-import { CartContext } from "../context/CartContext";
-class Computer extends Component{
+import { CartContext } from "../../context/CartContext";
+
+class Vêtements extends Component{
     static contextType = CartContext;
-     constructor(props){
+    constructor(props){
         super(props);
         this.state = {
             search: "",
@@ -27,7 +28,7 @@ class Computer extends Component{
     render(){
         const { addToCart } = this.context;
         const product = this.props.product.filter((p) => {
-            return p.categorie === "Computer"
+            return p.categorie === "Vêtements"
         })
         const filterpro = product.filter((fil) => {
             const lowersear = this.state.search.toLowerCase();
@@ -87,4 +88,4 @@ class Computer extends Component{
     }
 }
 
-export default Computer;
+export default Vêtements;

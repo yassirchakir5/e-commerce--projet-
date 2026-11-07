@@ -262,3 +262,20 @@
     display: block;
     margin-Left: 50px;
 }
+
+.card-Inscrit-2{
+    background-color: white;
+    height: auto;
+    width: 1200px;
+    align-items: center;
+    border-radius: 30px;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.card-I-2{
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

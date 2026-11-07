@@ -1,10 +1,10 @@
 import { Component } from "react";
-import { Heart } from "lucide-react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
-import { CartContext } from "../context/CartContext";
+import { Heart } from "lucide-react";
+import { CartContext } from "../../context/CartContext";
 
-class Vêtements extends Component{
+class Telephone extends Component{
     static contextType = CartContext;
     constructor(props){
         super(props);
@@ -28,8 +28,9 @@ class Vêtements extends Component{
     render(){
         const { addToCart } = this.context;
         const product = this.props.product.filter((p) => {
-            return p.categorie === "Vêtements"
+            return p.categorie === "telephone"
         })
+
         const filterpro = product.filter((fil) => {
             const lowersear = this.state.search.toLowerCase();
             return fil.name.toLowerCase().includes(lowersear);
@@ -43,7 +44,6 @@ class Vêtements extends Component{
         }else if(sorto === "datep"){
             filterpro.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
-        
         return(
             <div>
                 <div className="input-searc">
@@ -88,4 +88,4 @@ class Vêtements extends Component{
     }
 }
 
-export default Vêtements;
+export default Telephone;

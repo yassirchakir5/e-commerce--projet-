@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Heart } from "lucide-react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
-import { CartContext } from "../context/CartContext";
+import { CartContext } from "../../context/CartContext";
 
 class Casques extends Component{
     static contextType = CartContext;

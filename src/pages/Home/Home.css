@@ -4,8 +4,10 @@
 }
 
 .categorie-h{
-    margin: 20px 60px;
-    padding: 20px 120px;
+    margin: 20px 40px;
+    padding: 40px 130px;
+    padding-right: 150px;
+    padding-left: 140px;
     display: flex;
     flex-direction: column;
     align-items: center;

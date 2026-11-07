@@ -2,11 +2,11 @@ import { Component } from "react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
 import { Heart } from "lucide-react";
-import { CartContext } from "../context/CartContext";
+import { CartContext } from "../../context/CartContext";
 
-class Telephone extends Component{
+class Computer extends Component{
     static contextType = CartContext;
-    constructor(props){
+     constructor(props){
         super(props);
         this.state = {
             search: "",
@@ -28,9 +28,8 @@ class Telephone extends Component{
     render(){
         const { addToCart } = this.context;
         const product = this.props.product.filter((p) => {
-            return p.categorie === "telephone"
+            return p.categorie === "Computer"
         })
-
         const filterpro = product.filter((fil) => {
             const lowersear = this.state.search.toLowerCase();
             return fil.name.toLowerCase().includes(lowersear);
@@ -44,6 +43,7 @@ class Telephone extends Component{
         }else if(sorto === "datep"){
             filterpro.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
+        
         return(
             <div>
                 <div className="input-searc">
@@ -88,4 +88,4 @@ class Telephone extends Component{
     }
 }
 
-export default Telephone;
+export default Computer;

@@ -1,7 +1,7 @@
 import { Component } from "react";
-import Cartese from '../data/mescartes.json'
+import Cartese from '../../data/mescartes.json'
 import { FaPen } from "react-icons/fa";
-import Formatcar from "./formaddcart";
+import Formatcar from "./Formaddcart";
 
 
 class Cartes extends Component{
@@ -22,7 +22,7 @@ class Cartes extends Component{
             <div className="mespr">
                 <h1 style={{textAlign: 'center'}}>Mes Cartes</h1>
                 <div className="cart-btn">
-                    {this.state.current === "mescarte" ? <button className="btn-retour" style={{width: "250px"}} onClick={this.setcurrent}>Ajouter une nouvelle Carte</button> : <button className="btn-retour"  onClick={this.setcurrent}> &lt; Retour</button>}
+                    {this.state.current === "mescarte" ? <button id="btn-cart" style={{width: "250px"}} onClick={this.setcurrent}>Ajouter une nouvelle Carte</button> : <button id="btn-cart"  onClick={this.setcurrent}> &lt; Retour</button>}
                 </div>
                 <div className="container-mespr" >
                     {this.state.current === "mescarte" && 
@@ -37,8 +37,8 @@ class Cartes extends Component{
                                     </div> 
                                 </div>
                                 <div className="cart-btn">
-                                    <button ><FaPen/> Editer</button>
-                                    <button > Voir le produit</button>
+                                    <button className="btn btn-modifier"><FaPen/> Editer</button>
+                                    <button className="btn btn-supprimer"> Supprimer La carte</button>
                                 </div>
                             </div>
                         )

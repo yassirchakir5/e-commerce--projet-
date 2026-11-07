@@ -1,6 +1,5 @@
 import { Component } from "react";
-import { FaPen, FaTrash } from "react-icons/fa"; 
-import mesdata from '../data/mesproduct.json';
+import mesdata from '../../data/mesproduct.json';
 import FormAddProduct from "./FormAddProduct";
 
 
@@ -46,12 +45,9 @@ class Mesproduct extends Component{
                 <h1 style={{textAlign: 'center'}}>Mes Products</h1>
                 
                 <div className="input-search" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', padding: '0 20px'}}>
-                    <button className="btn-retour" onClick={this.setcurrent}>
-                        {this.state.current === "mesprod" ? "Add product" : "< Retour"}
-                    </button>
-                    
+                    {this.state.current === "mesprod" ? <button id="btn-prod" style={{width: '250px'}} onClick={this.setcurrent}>Add product</button> : <button id="btn-prod" onClick={this.setcurrent}> Retour</button> }
                     {this.state.current === "mesprod" && 
-                        <input type="text" placeholder="Search product" style={{marginRight: '20px'}} onChange={this.setsear}/>
+                        <input type="text" placeholder="Search product" style={{marginRight: '20px',height: '20px',width: '200px'}} onChange={this.setsear}/>
                     }
                 </div>
 
@@ -72,9 +68,10 @@ class Mesproduct extends Component{
                                             </div> 
                                         </div>
                                         <div className="cart-btn">
-                                            <button><FaPen/> Editer</button>
-                                            <button> Voir le produit</button>
-                                            <button id="btn-del" onClick={() => {this.supprimerpro(index)}}><FaTrash/></button>
+                                            <button className="btn btn-modifier">modifier</button>
+                                            <button className="btn btn-revision"> Révision</button>
+                                            <button className="btn"> Vendre</button>
+                                            <button className="btn btn-supprimer" onClick={() => {this.supprimerpro(index)}}>Supprimer</button>
                                         </div>
                                     </div>
                                 )

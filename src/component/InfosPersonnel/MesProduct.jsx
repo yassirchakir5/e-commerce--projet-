@@ -9,7 +9,12 @@ class Mesproduct extends Component{
         this.state = {
             mesproduct: mesdata,
             search: "",
-            current: "mesprod"
+            current: "mesprod",
+            nomp: "",
+            prixp: "",
+            descp: "",
+            stockp: "",
+            editIndex: null
         }
     }
 
@@ -27,10 +32,44 @@ class Mesproduct extends Component{
         });
     }
 
-    setcurrent = () => {
+   
+
+    setcurrent = (index = null,nompr = "",prixpr = "",descp = "",stockpr = "") => {
         this.setState({
+            stockp: stockpr,
+            nomp: nompr,
+            prixp: prixpr,
+            descp: descp,
+            stockp: stockpr,
+            editIndex: index,
             current: this.state.current === "mesprod" ? "addpro" : "mesprod"
         })
+    }
+
+    saveProduct = (updatedpr) => {
+        const {editIndex, mesproduct} = this.state;
+        const newproduct = [...mesproduct];
+        if(editIndex != null){
+            newproduct[editIndex] = {...newproduct[editIndex], ... updatedpr};
+        }else{
+            newproduct.push(updatedpr);
+        }
+        this.setState({
+            mesproduct: newproduct,
+            editIndex: null,
+            current: "mesprod"
+        })
+    }
+
+    updatestatus = (index,newstatus) => {
+        const updateproducts = [...this.state.mesproduct];
+
+        updateproducts[index] = {...updateproducts[index],status: newstatus};
+
+        this.setState({
+            mesproduct: updateproducts
+        });
+
     }
 
     render(){
@@ -45,7 +84,7 @@ class Mesproduct extends Component{
                 <h1 style={{textAlign: 'center'}}>Mes Products</h1>
                 
                 <div className="input-search" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', padding: '0 20px'}}>
-                    {this.state.current === "mesprod" ? <button id="btn-prod" style={{width: '250px'}} onClick={this.setcurrent}>Add product</button> : <button id="btn-prod" onClick={this.setcurrent}> Retour</button> }
+                    {this.state.current === "mesprod" ? <button id="btn-prod" style={{width: '250px'}} onClick={() => {this.setcurrent()}}>Add product</button> : <button id="btn-prod" onClick={this.setcurrent}> Retour</button> }
                     {this.state.current === "mesprod" && 
                         <input type="text" placeholder="Search product" style={{marginRight: '20px',height: '20px',width: '200px'}} onChange={this.setsear}/>
                     }
@@ -62,15 +101,31 @@ class Mesproduct extends Component{
                                                 <img src={mesp.image} alt={mesp.name} /> 
                                             </div>
                                             <div>
+                                                <h3 className={`badge-statut ${mesp.status}`}>{mesp.status}</h3>
                                                 <h3>{mesp.name}</h3>
+                                                <h3>Stock : {mesp.stock}</h3>
                                                 <h4>{mesp.prix}</h4>
                                                 <p>{mesp.description}</p>  
                                             </div> 
                                         </div>
                                         <div className="cart-btn">
-                                            <button className="btn btn-modifier">modifier</button>
-                                            <button className="btn btn-revision"> Révision</button>
-                                            <button className="btn"> Vendre</button>
+                                            
+                                            {mesp.status === "disponible" && 
+                                            <>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                <button className="btn btn-revision" onClick={() => {this.updatestatus(index,"En-révision")}}> Révision</button>
+                                                <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
+                                            </>}
+                                            {mesp.status === "En-révision" &&<>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                <button className="btn btn-disponible" onClick={() => {this.updatestatus(index,"disponible")}}> Disponible</button>
+                                                <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
+                                            </>}
+                                            {mesp.status === "Vendue" && <>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                
+                                            </>}
+                                            
                                             <button className="btn btn-supprimer" onClick={() => {this.supprimerpro(index)}}>Supprimer</button>
                                         </div>
                                     </div>
@@ -83,7 +138,7 @@ class Mesproduct extends Component{
                 {this.state.current === "addpro" && (
                     <div>
                         
-                        { <FormAddProduct /> }
+                        { <FormAddProduct nomp={this.state.nomp} prixp={this.state.prixp} descp={this.state.descp} stockp={this.state.stockp} savepro={this.saveProduct} /> }
                     </div>
                 )}
             </div>

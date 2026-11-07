@@ -38,10 +38,14 @@ class FormAddProduct extends Component {
         super(props);
         this.state = {
             selectcat: null,
-            selectedFiles: []  
+            selectedFiles: [],
+            nomp: props.nomp || "",
+            prixp: props.prixp || "",
+            descp: props.descp || "",
+            stockp: props.stockp || ""
         };
     }
-
+    
     setcateg = (selectedop) => {
         this.setState({
             selectcat: selectedop          
@@ -57,24 +61,39 @@ class FormAddProduct extends Component {
             selectedFiles: fileNames
     });
 }
+    handlechange = (e) => {
+        this.setState({
+            [e.target.name] : e.target.value
+        })
+    }
+    handlesubmit = (e) => {
+        e.preventDefault();
+        this.props.savepro({
+            name: this.state.nomp,
+            prix: this.state.prixp,
+            description: this.state.descp,
+            stockp : this.state.stockp
+        })
+    }
 
     render(){
+        const {nomp,prixp,descp,stockp} = this.props;
         return(
             <div className="form-addcar">
-                <form>
+                <form onSubmit={this.handlesubmit}>
                     <div className="input-group">
                         <label htmlFor="nompr" style={{fontSize: '20px'}}>Nom du produit</label>
-                        <input type="text" id="nompr" name="nompr" placeholder="Nom du produit" />
+                        <input type="text" value={this.state.nomp} id="nompr" name="nomp" onChange={this.handlechange} placeholder="Nom du produit" />
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="prixpr" style={{fontSize: '20px'}}>Prix de produit </label>
-                        <input type="text" id="prixpr" name="prixpr" placeholder="Prix de produit" />
+                        <input type="text" value={this.state.prixp} id="prixpr" name="prixp" onChange={this.handlechange} placeholder="Prix de produit" />
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="desc" style={{fontSize: '20px'}}>Description</label>
-                        <textarea id="desc"  rows="7" placeholder="Description"/>
+                        <textarea id="desc" value={this.state.descp} name="descp"  rows="7" onChange={this.handlechange} placeholder="Description"/>
                     </div>
                     <div className="input-group">
                         <label htmlFor="cate" style={{fontSize: '20px'}}>Catégorie</label>
@@ -88,7 +107,7 @@ class FormAddProduct extends Component {
                     </div>
                     <div className="input-group">
                         <label htmlFor="stock" style={{fontSize: '20px'}}>Stock </label>
-                        <input type="number" id="stock" name="stock" placeholder="Stock" />
+                        <input type="number" onChange={this.handlechange} value={this.state.stockp} id="stock" name="stockp" placeholder="Stock" />
                     </div>
                     <div className="input-group">
                         <label style={{fontSize: '20px'}}>Image du produit</label>

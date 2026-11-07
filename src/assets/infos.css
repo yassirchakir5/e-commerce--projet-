@@ -737,3 +737,35 @@ body{
     background: #d32f2f; 
     transform: translateY(-2px);
 }
+
+.badge-statut{
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.disponible{
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.Vendue{
+    background: #fff3e0;
+    color: #ef6c00;
+}
+.En-révision{
+    color: #333;
+}
+
+.btn-disponible{
+    background: #8BC34A; 
+    color: white;
+}
+
+.btn-disponible:hover{
+    background: #689F38;
+    transform: translateY(-2px);
+}

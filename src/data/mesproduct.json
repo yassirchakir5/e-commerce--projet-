@@ -4,13 +4,26 @@
         "image": "images/product/redmi_note_15_4g.jpg",
         "name": "Redmi note 15 4g",
         "prix": "2000 DH",
+        "stock": "2",
+        "status": "En-révision",
         "description": "Storage : 128g,RAM: 6GB"
     },
     {
         "id": 2,
         "image": "images/product/redmi_note_14_4g.jpg",
         "name": "Redmi note 14 4g",
+        "stock": "8",
         "prix": "1800 DH",
+        "status": "disponible",
+        "description": "Storage : 128g,RAM: 6GB"
+    },
+    {
+        "id": 3,
+        "image": "images/product/redmi_note_14_4g.jpg",
+        "name": "Redmi note 14 4g",
+        "stock": "4",
+        "prix": "1800 DH",
+        "status": "Vendue",
         "description": "Storage : 128g,RAM: 6GB"
     }
 ]

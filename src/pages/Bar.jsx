@@ -70,9 +70,14 @@ class Bar extends Component{
                                                     </div>
                                                 ))}
                                             </div>
-                                            <button onClick={() => navigate("/Component/Carte")} className="btn-aller-panier">
+                                            <div style={{display: 'flex',justifyContent: 'space-between',gap: '10px'}}>
+                                                <button onClick={() => navigate("/Component/Carte")} className="btn-aller-panier">
                                                 Voir le panier
                                             </button>
+                                            <button  className="btn-aller-panier">
+                                                Payer
+                                            </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

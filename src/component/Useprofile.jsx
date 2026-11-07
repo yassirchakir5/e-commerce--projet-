@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import products from '../data/product.json';
 import '../assets/Useprofile.css';
 import { CartContext } from "../context/CartContext"; 
-
+import ShareProfileModal from './ShareProfile'; 
 
 const withRouter = (WrappedComponent) => {
   return (props) => {
@@ -19,7 +19,8 @@ class UserProfile extends Component {
     this.state = {
       userProducts: [],
       userInfo: null,
-      iscardcontopen: false
+      iscardcontopen: false,
+      isshareop: false 
     };
   }
 
@@ -33,9 +34,15 @@ class UserProfile extends Component {
     }
   }
 
-  togllecard = (a, index) => {
+  togllecard = () => {
     this.setState((prevState) => ({
         iscardcontopen: !prevState.iscardcontopen
+    }));
+  }
+
+  toggleShareModal = () => {
+    this.setState((prevState) => ({
+        isshareop: !prevState.isshareop
     }));
   }
 
@@ -61,7 +68,7 @@ class UserProfile extends Component {
   }
 
   render() {
-    const { userProducts, userInfo } = this.state;
+    const { userProducts, userInfo, isshareop, iscardcontopen } = this.state;
     const { addToCart } = this.context;
 
     if (!userInfo) return <div className="loading">Utilisateur non trouvé...</div>;
@@ -71,30 +78,39 @@ class UserProfile extends Component {
           <div className="breadcrumb">
             <Link to="/">Home</Link> &gt; <span>Vendeurs</span> &gt; <span>{userInfo.name}</span>
           </div>
-          {this.state.iscardcontopen && (
-                    <div className="overlay">
-                        <div className="card">
-                            <div className="carsHeader">
-                                <h2 style={{ margin: 0, fontStyle: 'italic', color: '#333' }}>✉ Contacter le vendeur</h2>
-                            </div>
 
-                            <div className="cardBody">
-                                <form>
-                                  <label htmlFor='email'>Saisir votre Email</label>
-                                  <input type="email" id='email' placeholder='Saisir votre email' />
-                                  <label htmlFor='nom'>Nom Complet</label>
-                                  <input type="text" id='nom' placeholder='Nom Complet' />
-                                  <label htmlFor='sub'>Subjectif</label>
-                                  <input type="text" id='sub' placeholder='Subjectif' />
-                                  <label htmlFor='desc'>Description</label>
-                                  <textarea name="description" id="desc"/>
-                                </form>
-                                <button className="btnmodif">Envoyer</button> 
-                                <button className="btnferm" onClick={() => {this.togllecard(null, undefined)}}>Fermer</button>
-                            </div>
-                        </div>
+          {iscardcontopen && (
+            <div className="overlay">
+                <div className="card">
+                    <div className="carsHeader">
+                        <h2 style={{ margin: 0, fontStyle: 'italic', color: '#333' }}>✉ Contacter le vendeur</h2>
                     </div>
-                )}
+
+                    <div className="cardBody">
+                        <form>
+                          <label htmlFor='email'>Saisir votre Email</label>
+                          <input type="email" id='email' placeholder='Saisir votre email' />
+                          <label htmlFor='nom'>Nom Complet</label>
+                          <input type="text" id='nom' placeholder='Nom Complet' />
+                          <label htmlFor='sub'>Subjectif</label>
+                          <input type="text" id='sub' placeholder='Subjectif' />
+                          <label htmlFor='desc'>Description</label>
+                          <textarea name="description" id="desc"/>
+                        </form>
+                        <button className="btnmodif">Envoyer</button> 
+                        <button className="btnferm" onClick={this.togllecard}>Fermer</button>
+                    </div>
+                </div>
+            </div>
+          )}
+
+          {isshareop && (
+             <ShareProfileModal 
+                onClose={this.toggleShareModal} 
+                vendorName={userInfo.name} 
+             />
+          )}
+
           <div className="profile-card">
             <div className="profile-header">
               <div className="avatar-section">
@@ -118,7 +134,7 @@ class UserProfile extends Component {
               <div className="profile-actions-right">
                 <div className="action-buttons">
                   <button className="btn-contact" onClick={this.togllecard}>✉ Contacter le vendeur</button>
-                  <button className="btn-share">Partager le profil</button>
+                  <button className="btn-share" onClick={this.toggleShareModal}>Partager le profil</button>
                 </div>
                 
                 <div className="user-stats">

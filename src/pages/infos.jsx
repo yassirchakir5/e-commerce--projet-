@@ -12,7 +12,6 @@ import mesinf from "../data/mesinfos.json"
 import Cartes from "../component/InfosPersonnel/Cartes";
 
 
-
 class Infos extends Component{
     constructor(props){
         super(props);

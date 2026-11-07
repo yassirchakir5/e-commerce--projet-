@@ -75,8 +75,8 @@ class Derrniprodu extends Component{
                                 <div style={{display: 'flex',justifyContent: 'space-between'}}>
                                     <button  className="btn-ajout" onClick={() => {addToCart(p)}}>Ajouter au panier</button>
                                     <Link to={`/product/${p.id}`} className="btn-detail">
-                                            Détails
-                                        </Link>
+                                        Détails
+                                    </Link>
                                 </div>
                                 <div className="vendu">
                                     <Store /> &nbsp;&nbsp;

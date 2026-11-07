@@ -3,6 +3,7 @@ import { Star } from 'lucide-react';
 import { Store } from "lucide-react";
 import { Heart } from "lucide-react";
 import { CartContext } from "../context/CartContext"; 
+import { Link } from "react-router-dom";
 
 class Carte extends Component{
     static contextType = CartContext;
@@ -27,11 +28,12 @@ class Carte extends Component{
     }
 
     render(){
-        const { cartItems } = this.context;
+        const { cartCount,cartItems, removeFromCart } = this.context;
         
         return(
-            <div>
-                <div className="carts-dern">
+            <div style={{textAlign: 'center'}}>
+                <div className="carts-dern" style={{textAlign: 'center'}}>
+                    <h2 className="msg-vide" style={{color: 'black'}}>Nombre produit dans le panier est : {cartCount}</h2>
                     {cartItems.map((p,index) => {
                         return(
                             <div className="carts-der" key={index}>
@@ -48,7 +50,10 @@ class Carte extends Component{
                                 </div>
                                 <h4><span className="span-pri"> {p.prix} </span> DH</h4>
                                 <div style={{display: 'flex',justifyContent: 'space-between'}}>
-                                    <button  className="btn-ajout">Détails</button>
+                                    <Link to={`/product/${p.id}`} className="btn-detail">
+                                        Détails
+                                    </Link>
+                                    <button style={{backgroundColor: 'red'}} className="btn-detail" onClick={() => {removeFromCart(index)}}>Supprimer</button>
                                 </div>
                                 <div className="vendu">
                                     <Store /> &nbsp;&nbsp;
@@ -59,6 +64,7 @@ class Carte extends Component{
                     })}
                     {cartItems.length === 0 && <h3 className="msg-vide">Aucun produit existe dans le panier </h3>}
                 </div>
+                {cartItems.length !== 0 && <button style={{width: '80%'}} className="btn-detail">Payer</button>}
             </div>
         )
     }

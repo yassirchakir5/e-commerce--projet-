@@ -3,6 +3,7 @@ import { Store } from "lucide-react";
 import { Star } from "lucide-react";
 import { Heart } from "lucide-react";
 import { CartContext } from "../../context/CartContext";
+import { Link } from "react-router-dom";
 
 class Computer extends Component{
     static contextType = CartContext;
@@ -64,6 +65,7 @@ class Computer extends Component{
                                             <Heart className="heart"/>
                                         </button>
                                     </div>
+                                    <h2 className={`badge-statut ${p.status}`} style={{textAlign: 'center'}}>{p.status}</h2>
                                     <h3>{p.name}</h3>
                                     <div className="stars">
                                         <Star className="st" />
@@ -72,7 +74,9 @@ class Computer extends Component{
                                     <h4><span className="span-pri"> {p.prix} </span> DH</h4>
                                     <div style={{display: 'flex',justifyContent: 'space-between'}}>
                                         <button  className="btn-ajout" onClick={() => {addToCart(p)}}>Ajouter au panier</button>
-                                        <button  className="btn-ajout">Détails</button>
+                                        <Link to={`/product/${p.id}`} className="btn-detail">
+                                            Détails
+                                        </Link>
                                     </div>
                                     <div className="vendu">
                                         <Store /> &nbsp;&nbsp;

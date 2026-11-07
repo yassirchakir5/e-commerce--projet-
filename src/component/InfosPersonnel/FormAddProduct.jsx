@@ -36,13 +36,14 @@ const customStyles = {
 class FormAddProduct extends Component {
     constructor(props){
         super(props);
+        const defaultCategory = options.find(opt => opt.value === props.categorie) || null;
         this.state = {
-            selectcat: null,
+            selectcat: defaultCategory,
             selectedFiles: [],
             nomp: props.nomp || "",
             prixp: props.prixp || "",
             descp: props.descp || "",
-            stockp: props.stockp || ""
+            stock: props.stock || ""
         };
     }
     
@@ -66,18 +67,20 @@ class FormAddProduct extends Component {
             [e.target.name] : e.target.value
         })
     }
+
     handlesubmit = (e) => {
         e.preventDefault();
         this.props.savepro({
             name: this.state.nomp,
             prix: this.state.prixp,
             description: this.state.descp,
-            stockp : this.state.stockp
+            stock : this.state.stock,
+            categorie: this.state.selectcat ? this.state.selectcat.value : null, 
+            images: this.state.selectedFiles 
         })
     }
 
     render(){
-        const {nomp,prixp,descp,stockp} = this.props;
         return(
             <div className="form-addcar">
                 <form onSubmit={this.handlesubmit}>
@@ -107,7 +110,7 @@ class FormAddProduct extends Component {
                     </div>
                     <div className="input-group">
                         <label htmlFor="stock" style={{fontSize: '20px'}}>Stock </label>
-                        <input type="number" onChange={this.handlechange} value={this.state.stockp} id="stock" name="stockp" placeholder="Stock" />
+                        <input type="number" onChange={this.handlechange} value={this.state.stock} id="stock" name="stock" placeholder="Stock" />
                     </div>
                     <div className="input-group">
                         <label style={{fontSize: '20px'}}>Image du produit</label>

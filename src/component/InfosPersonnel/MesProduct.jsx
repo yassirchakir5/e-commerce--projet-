@@ -14,7 +14,8 @@ class Mesproduct extends Component{
             prixp: "",
             descp: "",
             stockp: "",
-            editIndex: null
+            editIndex: null,
+            categorie: ""
         }
     }
 
@@ -34,14 +35,15 @@ class Mesproduct extends Component{
 
    
 
-    setcurrent = (index = null,nompr = "",prixpr = "",descp = "",stockpr = "") => {
+    setcurrent = (index = null,nompr = "",prixpr = "",descp = "",stockpr = "",categorie = "") => {
         this.setState({
             stockp: stockpr,
             nomp: nompr,
             prixp: prixpr,
             descp: descp,
-            stockp: stockpr,
+            stock: stockpr,
             editIndex: index,
+            categorie: categorie,
             current: this.state.current === "mesprod" ? "addpro" : "mesprod"
         })
     }
@@ -82,9 +84,9 @@ class Mesproduct extends Component{
         return(
             <div className="mespr">
                 <h1 style={{textAlign: 'center'}}>Mes Products</h1>
-                
-                <div className="input-search" style={{display: 'flex', justifyContent: 'space-between', marginBottom: '20px', padding: '0 20px'}}>
+                <div className="input-search">
                     {this.state.current === "mesprod" ? <button id="btn-prod" style={{width: '250px'}} onClick={() => {this.setcurrent()}}>Add product</button> : <button id="btn-prod" onClick={this.setcurrent}> Retour</button> }
+                    <h4>Nombre de produit : {this.state.mesproduct.length}</h4>
                     {this.state.current === "mesprod" && 
                         <input type="text" placeholder="Search product" style={{marginRight: '20px',height: '20px',width: '200px'}} onChange={this.setsear}/>
                     }
@@ -102,27 +104,32 @@ class Mesproduct extends Component{
                                             </div>
                                             <div>
                                                 <h3 className={`badge-statut ${mesp.status}`}>{mesp.status}</h3>
-                                                <h3>{mesp.name}</h3>
-                                                <h3>Stock : {mesp.stock}</h3>
-                                                <h4>{mesp.prix}</h4>
-                                                <p>{mesp.description}</p>  
+                                                <h3 className="detail">{mesp.name}</h3>
+                                                <h3 className="detail">Stock : <span style={{color: 'red',fontSize: '25px'}}>{mesp.stock}</span></h3>
+                                                <div className="detail">
+                                                    <span className="label">Prix : </span>
+                                                    <span className="valeur prix">{mesp.prix}DH </span>
+                                                </div>
+                                                <div className="detail">
+                                                    
+                                                </div>
                                             </div> 
                                         </div>
                                         <div className="cart-btn">
                                             
                                             {mesp.status === "disponible" && 
                                             <>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
                                                 <button className="btn btn-revision" onClick={() => {this.updatestatus(index,"En-révision")}}> Révision</button>
                                                 <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
                                             </>}
                                             {mesp.status === "En-révision" &&<>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
                                                 <button className="btn btn-disponible" onClick={() => {this.updatestatus(index,"disponible")}}> Disponible</button>
                                                 <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
                                             </>}
                                             {mesp.status === "Vendue" && <>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stockp)}}>modifier</button>
+                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
                                                 
                                             </>}
                                             
@@ -138,7 +145,7 @@ class Mesproduct extends Component{
                 {this.state.current === "addpro" && (
                     <div>
                         
-                        { <FormAddProduct nomp={this.state.nomp} prixp={this.state.prixp} descp={this.state.descp} stockp={this.state.stockp} savepro={this.saveProduct} /> }
+                        { <FormAddProduct nomp={this.state.nomp} prixp={this.state.prixp} categorie={this.state.categorie} descp={this.state.descp} stock={this.state.stock} savepro={this.saveProduct} /> }
                     </div>
                 )}
             </div>

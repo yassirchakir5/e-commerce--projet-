@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 import { Store } from "lucide-react";
 import { Star } from "lucide-react";
 import { CartContext } from "../../context/CartContext";
-
+import { Link } from "react-router-dom";
 class Vêtements extends Component{
     static contextType = CartContext;
     constructor(props){
@@ -28,7 +28,7 @@ class Vêtements extends Component{
     render(){
         const { addToCart } = this.context;
         const product = this.props.product.filter((p) => {
-            return p.categorie === "Vêtements"
+            return p.categorie === "Vetements"
         })
         const filterpro = product.filter((fil) => {
             const lowersear = this.state.search.toLowerCase();
@@ -64,6 +64,7 @@ class Vêtements extends Component{
                                             <Heart className="heart"/>
                                         </button>
                                     </div>
+                                    <h2 className={`badge-statut ${p.status}`} style={{textAlign: 'center'}}>{p.status}</h2>
                                     <h3>{p.name}</h3>
                                     <div className="stars">
                                         <Star className="st" />
@@ -72,7 +73,9 @@ class Vêtements extends Component{
                                     <h4><span className="span-pri"> {p.prix} </span> DH</h4>
                                     <div style={{display: 'flex',justifyContent: 'space-between'}}>
                                         <button  className="btn-ajout" onClick={() => {addToCart(p)}}>Ajouter au panier</button>
-                                        <button  className="btn-ajout">Détails</button>
+                                        <Link to={`/product/${p.id}`} className="btn-detail">
+                                            Détails
+                                        </Link>
                                     </div>
                                     <div className="vendu">
                                         <Store /> &nbsp;&nbsp;

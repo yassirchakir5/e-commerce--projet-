@@ -69,14 +69,13 @@
 }
 
 .carts-der{
-  margin: 50px;
-  height: auto;
-  width: 300px;
-  box-shadow: 2px 2px 8px black;
-  border-radius: 20px;
-  padding-right: 10px;
-  padding-left: 10px;
-  transition: 0.3s;
+  background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
 }
 
 .carts-der:hover{
@@ -164,7 +163,7 @@
 
 .carts-dern{
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(4,1fr);
 }
 
 .msg-vide {
@@ -175,16 +174,54 @@
 }
 
 .btn-ajout{
-  padding: 10px;
-  border-radius: 20px;
-  border: none;
-  background-color: lightblue;
-  cursor: pointer;
-  transition: 0.4s;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 5px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1;
+    min-width: 120px;
+    justify-content: center;
+    font-size: 0.85em;
+    background: #2196F3;  
+    color: white;
 }
 
 .btn-ajout:hover{
-  opacity: 0.5;
+   background: #1976D2;
+    transform: translateY(-2px);
+}
+
+.btn-detail{
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 5px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1;
+    min-width: 120px;
+    justify-content: center;
+    font-size: 0.85em;
+    background: #ff9800; 
+    color: white;
+    text-decoration: none;
+}
+
+.btn-detail:hover{
+   background: #ff990091;
+    transform: translateY(-2px);
 }
 
 .input-sea{

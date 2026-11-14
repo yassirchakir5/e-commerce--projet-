@@ -1,20 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import Bar from './component/Bar';
-import Infos from './component/infos';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
+import Approutes from './routes/approutes';
+import { CartProvider } from './context/CartContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+
 root.render(
-  <BrowserRouter>
-      <Bar />
-      <Routes>
-        <Route path='/infos' element={<Infos />} />
-      </Routes>
-  </BrowserRouter>
+  <React.StrictMode>
+    <CartProvider>
+      <Approutes />
+    </CartProvider>
+  </React.StrictMode>
 );
-
-
 reportWebVitals();

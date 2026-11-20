@@ -1,0 +1,100 @@
+body{
+    background-color: #F5F5F7;
+}
+
+.card-l{
+    height: 85vh;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+.card-login{
+    background-color: white;
+    width: 500px;
+    height: 500px;
+    border-radius: 30px;
+}
+
+.card-login h1{
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.label-group label{
+    font-size: 20px;
+    padding: 20px;
+    margin: 10px;
+}
+
+.input-group input{
+    margin-left: 20px;
+    margin-top: 10px;
+    width: 90%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #94A4B5;
+    font-size: 20px;
+}
+
+.input-group input:not(:placeholder-shown):valid{
+    border: 2px solid blue;
+}
+
+.input-group input:not(:placeholder-shown):invalid{
+    border: 2px solid red;
+}
+.form-l{
+    margin-top: 40px;
+}
+
+.form-con{
+    text-align: center;
+}
+
+.btn-connect{
+    margin-top: 40px;
+    width: 450px;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    background: #0C385F;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-connect:hover{
+    opacity: 0.5;
+}
+
+.form-a{
+    text-align: center;
+    margin-top: 10px;
+    
+}
+
+.form-a a{
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.form-a a:hover{
+    color: red;
+}
+
+.connexion-messge{
+    padding: 7px;
+    width: 80%;  
+    margin-left: 20px;
+    border-radius: 20px;
+}
+
+.success{
+    background-color: green;
+    color: white;
+}
+
+.failed{
+    background-color: red;
+    color: white;
+}

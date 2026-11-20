@@ -2,12 +2,11 @@ import { Component } from "react";
 import '../assets/Bar.css';
 import { FaUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
+import {  Navigate, useNavigate } from "react-router-dom";
 import { FaChevronDown } from 'react-icons/fa';
-import mesinf from "../data/mesinfos.json"
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
-
+import api from "../api/api";
 
 function withRouter(Component){
     return(props) => {
@@ -17,16 +16,50 @@ function withRouter(Component){
 }
 
 class Bar extends Component{
+    state = {
+        redirecte: false,
+        user: null
+    };
+    handlelogout = async () => {
+        try{
+            await api.post('/logout');
+        }catch(err){
+            console.log('token deja deleted');
+        }finally{
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.setItem('login','false');
+            this.props.setconnected(false);
+            this.setState({ redirecte: true});
+        }
+    };
+    loadUser = () => {
+        const user =  JSON.parse(localStorage.getItem('user'));
+        this.setState({user: user});
+        
+    }
+    componentDidMount(){
+        this.loadUser();
+    }
+    componentDidUpdate(prevProps){
+        if(prevProps.connected !== this.props.connected){
+            this.loadUser();
+        }
+    }
     static contextType = CartContext;
     render(){
+        if(this.state.redirecte){
+            <Navigate to="/login"/>
+        }
         const {connected,navigate} = this.props;
         const { cartCount,cartItems, removeFromCart } = this.context;
-        const info = mesinf;
+        const info = this.state.user;
         return(
             <div className="bar">
                 <h2><Link to="/" className="logo"><strong className="sb">E</strong>-commerce</Link></h2>
                 <div className="bar-btn">
                     <Link to="/" className="bar-btn">Home</Link>
+                    <Link to="/shop" className="bar-btn">Boutique</Link>
                     <div className="dropdown">
                         <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>
                         <div className="dropdown-content">
@@ -85,28 +118,21 @@ class Bar extends Component{
                             <div className="profile">
                                 <a className="Usericon"><FaUser /></a>
                                 <div className="profile-down">
-                                    <img src={info.imgpro} className="img-pro"/>
-                                    <h2>{info.name} {info.prenom}</h2>
+                                    <img src={this.state.user?.path_img_profile ? encodeURI(`http://127.0.0.1:8000/storage/${this.state.user.path_img_profile}`) : 'http://127.0.0.1:8000/storage/profiles/default.png'} className="img-pro"/>
+                                    <h2>{info?.name} {info?.prenom}</h2>
                                     <Link to="/infos">Information Personnel</Link>
-                                    <details style={{marginBottom: '20px',cursor: 'pointer'}}>
-                                        <summary>Products</summary>
-                                        <summary><Link to="/mesproduct" style={{marginTop: '20px'}}>Mes Products</Link></summary>
-                                        <summary><Link to="/mesfavoris">Mes Favoris</Link></summary>
-                                        <summary><Link to="/mescartes">Mes Cartes</Link></summary>
-                                    </details>
-                                    <button className="btn-deco">Déconnexion</button>
+                                    <Link to="/dashboard">Dashboard</Link>
+                                    <Link to={`/boutiques`}>Mes Boutiques</Link>
+                                    <button onClick={this.handlelogout} className="btn-deco">Déconnexion</button>
                                 </div>
                             </div>
                         </div>
                     }
                     {connected === false &&
-                    
                         <div className="in">
-                            <a className="Shopicon"><CiShoppingCart /></a>
                             <button onClick={() => navigate("/login")} className="btn-inscrire">
                                 Connect/inscrire
                             </button>
-                            
                         </div>
                     }
                     

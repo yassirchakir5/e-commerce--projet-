@@ -279,3 +279,10 @@
     justify-content: center;
     align-items: center;
 }
+
+.input-i input:not(:placeholder-shown):valid{
+    border: 2px solid blue;
+}
+.input-i input:not(:placeholder-shown):invalid{
+    border: 2px solid red;
+}

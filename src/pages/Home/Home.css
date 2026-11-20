@@ -187,7 +187,7 @@
     align-items: center;
     gap: 5px;
     flex: 1 1;
-    min-width: 120px;
+    min-width: 150px;
     justify-content: center;
     font-size: 0.85em;
     background: #2196F3;  
@@ -212,7 +212,7 @@
     align-items: center;
     gap: 5px;
     flex: 1 1;
-    min-width: 120px;
+    min-width: 80px;
     justify-content: center;
     font-size: 0.85em;
     background: #ff9800; 
@@ -258,4 +258,34 @@
   border: none;
   background: transparent;
   outline: none;
+}
+.shop-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.cat-pill {
+  padding: 8px 18px;
+  border-radius: 25px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cat-pill:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.cat-pill.active {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
 }

@@ -1,12 +1,17 @@
 import React, { Component } from "react";
 import Select from 'react-select';
-
+import boutiqu from '../../data/Boutiques.json';
 const options = [
   { value: 'Phones', label: 'Phones' },
   { value: 'Computer', label: 'Computer' },
   { value: 'Casques', label: 'Casques' },
   { value: 'Vétement', label: 'Vétement' }
 ];
+
+const optionsb = boutiqu.map(b => ({
+  value: b.id,
+  label: b.nom
+}));
 
 const customStyles = {
   control: (provided) => ({
@@ -43,13 +48,20 @@ class FormAddProduct extends Component {
             nomp: props.nomp || "",
             prixp: props.prixp || "",
             descp: props.descp || "",
-            stock: props.stock || ""
+            stock: props.stock || "",
+            selectbout: null
         };
     }
     
     setcateg = (selectedop) => {
         this.setState({
             selectcat: selectedop          
+        });
+    }
+
+    setboutique = (selectedop) => {
+        this.setState({
+            selectbout: selectedop          
         });
     }
 
@@ -75,6 +87,7 @@ class FormAddProduct extends Component {
             prix: this.state.prixp,
             description: this.state.descp,
             stock : this.state.stock,
+            boutiques: this.state.selectbout ? this.state.selectbout.value : null,
             categorie: this.state.selectcat ? this.state.selectcat.value : null, 
             images: this.state.selectedFiles 
         })
@@ -106,6 +119,16 @@ class FormAddProduct extends Component {
                             placeholder="Choisissez une catégorie"
                             value={this.state.selectcat}
                             onChange={this.setcateg}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="cate" style={{fontSize: '20px'}}>Boutiques : </label>
+                        <Select 
+                            options={optionsb} 
+                            styles={customStyles}
+                            placeholder="Choisissez une Boutique"
+                            value={this.state.selectbout}
+                            onChange={this.setboutique}
                         />
                     </div>
                     <div className="input-group">

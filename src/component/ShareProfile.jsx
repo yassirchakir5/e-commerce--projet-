@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import '../assets/ShareProfile.css';
 
 class ShareProfileModal extends Component {

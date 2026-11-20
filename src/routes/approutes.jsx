@@ -18,21 +18,27 @@ import Carte from '../component/Carte';
 import Cartes from '../component/InfosPersonnel/Cartes';
 import ProductDetails from '../component/ProductDetails';
 import UserProfile from '../component/Useprofile';
-
+import Shop from '../pages/Shop/Shop';
+import Boutiquedetail from '../component/Boutiquesdetai';
+import VendorDashboard from '../component/VendorDashboard';
+import MaBoutique from '../pages/profil/MaBoutique';
+import MesProducts from '../component/InfosPersonnel/MesProduct';
 
 class Approutes extends Component{
     state = {
-        connected : true
+        connected : localStorage.getItem('login') === 'true' || false
     }
     setconnected = (status) => {
         this.setState({connected: status});
+        localStorage.setItem('login' ,status ? 'true' : 'false');
     };
     render(){
         return(
             <BrowserRouter>
-                <Bar connected={this.state.connected}/>
+                <Bar connected={this.state.connected} setconnected={this.setconnected}  />
                 <Routes>
                     <Route path='/' element={<Home />}/>
+                    <Route path="/shop" element={<Shop />} />
                     <Route path='/infos' element={<Infos />} />
                     <Route path='/login' element={<Login connected={this.state.connected} setconnected={this.setconnected}/>}/>
                     <Route path='/inscrit' element={<Inscrit />} />
@@ -46,8 +52,12 @@ class Approutes extends Component{
                     <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
                     <Route path='/Component/Carte' element={<Carte />} /> 
                     <Route path='/mescartes' element={<Cartes />} /> 
+                    <Route path='/mesproducts' element={<MesProducts />} /> 
                     <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path='/Boutique/:id' element={<Boutiquedetail />} />
+                    <Route path='/Boutiques' element={<MaBoutique />} />
                     <Route path="/profile/:username" element={<UserProfile />} />
+                    <Route path="/dashboard" element={<VendorDashboard />} />
                     <Route path='*' element={<Navigate to="/" replace />}/>
                 </Routes>
         </BrowserRouter>

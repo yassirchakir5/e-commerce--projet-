@@ -1,18 +1,23 @@
 import { Component } from "react";
-import Cartese from '../../data/mescartes.json'
 import { FaPen } from "react-icons/fa";
 import Formatcar from "./Formaddcart";
-
+import api from '../../api/api';
+import Swal from "sweetalert2";
 
 class Cartes extends Component{
     constructor(props){
         super(props);
         this.state = {
-            mescart: Cartese,
+            mescart: [],
             current: "mescarte",
             iscardoopen: false,
             editIndex: undefined,
-            a: null
+            a: null,
+            nom: "",
+            numC: "",
+            dateEx: "",
+            CVV: "",
+            erreurs: {}
         }
     }
 
@@ -29,7 +34,9 @@ class Cartes extends Component{
             editIndex: index !== undefined ? index : null
         }));
     };
-
+    componentDidMount(){
+        this.handleafficherca();
+    }
     modifier = (e, field) => {
         const modif = e.target.value;
         this.setState((prevState) => ({
@@ -51,20 +58,79 @@ class Cartes extends Component{
         });
     } 
 
-    handleModifier = () => {
-        if (this.state.a && this.state.editIndex !== null) {
-            this.saveChange(this.state.a, this.state.editIndex); 
-            this.setState({ iscardoopen: false, a: null, editIndex: null }); 
+    handleadd = (e) =>{
+        this.setState({ [e.target.name]: e.target.value });
+    }
+
+    handlesubmit = async (e) => {
+        e.preventDefault();
+        this.setState({ erreurs: {} });
+       try{
+            const formdata = new FormData();
+            formdata.append('nom', this.state.nom);
+            formdata.append('numC', this.state.numC);
+            formdata.append('dateEx', this.state.dateEx);
+            formdata.append('CVV', this.state.CVV);
+            const res = await api.post('/carte/add',formdata);
+            Swal.fire("Succès!", "La cartes a été ajouter avec succés.", "success");
+            this.handleafficherca();
+            this.setState({ current:  "mescarte"});
+       }catch(err){
+            if(err.response && err.response.status === 422){
+                this.setState({ erreurs: err.response.data.errors });
+            }else{
+                console.log(err);
+                
+            }
+       }
+    }
+
+    handleModifier = async (e) => {
+        e.preventDefault();
+        try{
+            const res = api.put(`/carte/modifier/${this.state.a.id}`,this.state.a);
+            this.handleafficherca();
+            Swal.fire("Succès!", "La cartes a été modifier avec succés.", "success");
+            this.setState({ iscardoopen: !this.state.iscardoopen });
+        }catch(err){
+            console.log(err);
         }
     };
 
-    deletecar = (index) => {
-        this.setState((prevState) => {
-            const updatea = [...prevState.mescart];
-            updatea.splice(index,1);
-            return {mescart: updatea};
-        })
+    handleafficherca = async () => {
+        try{
+            const res = await api.get('/carte');
+            this.setState({ mescart: res.data.cartes });
+        }catch(err){
+            console.log(err);
+        }
     }
+
+    deletecar = async (id) => {
+        const result = await Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Voulez-vous vraiment supprimer cette carte ? Cette action est irréversible.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Oui, supprimer la carte",
+            cancelButtonText: "Annuler",
+        });
+
+        if(result.isConfirmed){
+             try{
+                const res = await api.delete(`/carte/delete/${id}`);
+                this.handleafficherca();
+                Swal.fire("Succès!", "La cartes a été supprimer avec succés.", "success");
+            }catch(err){
+                console.log(err);
+            }
+        }
+       
+    }
+
+
 
     render(){
         return(
@@ -81,10 +147,10 @@ class Cartes extends Component{
                             </div>
 
                             <div className="cardBody">
-                                <input type="text" value={this.state.a?.nomC || ''} placeholder="nomC" className="input" onChange={(e) => { this.modifier(e, "nomC") }} />
-                                <input type="text" value={this.state.a?.numC || ''} placeholder="numC" className="input" onChange={(e) => { this.modifier(e, "numC") }} />
-                                <input type="text" value={this.state.a?.DateE || ''} placeholder="DateE" className="input" onChange={(e) => { this.modifier(e, "DateE") }} />
-                                <input type="text" value={this.state.a?.CVV || ''} placeholder="CVV" className="input" onChange={(e) => { this.modifier(e, "CVV") }} />
+                                <input type="text" value={this.state.a.nom || ''} placeholder="nomC" className="input" onChange={(e) => { this.modifier(e, "nom") }} />
+                                <input type="text" value={this.state.a.numC || ''} placeholder="numC" className="input" onChange={(e) => { this.modifier(e, "numC") }} />
+                                <input type="text" value={this.state.a.dateEx || ''} placeholder="DateE" className="input" onChange={(e) => { this.modifier(e, "dateEx") }} />
+                                <input type="text" value={this.state.a.CVV || ''} placeholder="CVV" className="input" onChange={(e) => { this.modifier(e, "CVV") }} />
                                 <button className="btnmodif" onClick={this.handleModifier}>Modifier</button> 
                                 <button className="btnferm" onClick={() => {this.togllecard(null, undefined)}}>Fermer</button>
                             </div>
@@ -92,20 +158,20 @@ class Cartes extends Component{
                     </div>
                 )}
                 <div className="container-mespr" >
-                    {this.state.current === "mescarte" && 
+                    {this.state.current === "mescarte" && this.state.mescart &&
                     this.state.mescart.map((mesp,index) => {
                         return(
                             <div className="carts"  key={index}>
                                 <div className="cart">
                                     <div style={{textAlign: 'center',alignItems: 'center',width: '100%'}}>
-                                    <h3 >{mesp.nomC}</h3>
+                                    <h3 >{mesp.nom}</h3>
                                         <h4 >{mesp.numC}</h4>
-                                        <p >{mesp.DateE}</p>  
+                                        <p >{mesp.dateEx}</p>  
                                     </div> 
                                 </div>
                                 <div className="cart-btn">
                                     <button className="btn btn-modifier" onClick={() => {this.togllecard(mesp,index)}}><FaPen/> Editer</button>
-                                    <button className="btn btn-supprimer" onClick={() => {this.deletecar(index)}}> Supprimer La carte</button>
+                                    <button className="btn btn-supprimer" onClick={() => {this.deletecar(mesp.id)}}> Supprimer La carte</button>
                                 </div>
                             </div>
                         )
@@ -115,7 +181,7 @@ class Cartes extends Component{
                 </div>
                 {this.state.mescart.length === 0 && <h2 style={{textAlign: 'center'}}>Aucun Cartes existes</h2>}
                 {this.state.current === "addc" && 
-                    <Formatcar />
+                    <Formatcar handlechange={this.handleadd} handlesubmit={this.handlesubmit} erreurs={this.state.erreurs}/>
                 }
             </div>
         )

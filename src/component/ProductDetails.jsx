@@ -67,7 +67,7 @@ class ProductDetails extends Component {
               {'⭐'.repeat(product.stars)}{'☆'.repeat(5 - product.stars)} 
               <span className="reviews-count"> {product.stars} ({product.countst})</span>
             </div>
-
+          
             <div className="product-price">{product.prix} DH</div>
             
             <div className="availability-badge inline">{product.status.toUpperCase()}</div>

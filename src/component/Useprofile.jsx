@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import products from '../data/product.json';
+import products from '../data/Boutiques.json';
 import '../assets/Useprofile.css';
 import { CartContext } from "../context/CartContext"; 
 import ShareProfileModal from './ShareProfile'; 
+import { Package } from 'lucide-react';
+import { MapPin, Phone, Clock, CheckCircle, X } from 'lucide-react';
 
 const withRouter = (WrappedComponent) => {
   return (props) => {
@@ -20,7 +22,8 @@ class UserProfile extends Component {
       userProducts: [],
       userInfo: null,
       iscardcontopen: false,
-      isshareop: false 
+      isshareop: false ,
+      selectedBoutique: null
     };
   }
 
@@ -49,7 +52,7 @@ class UserProfile extends Component {
   fetchUserData = () => {
     const { username } = this.props.params; 
     
-    const filtered = products.filter(p => p.vendupa.toLowerCase() === username.toLowerCase());
+    const filtered = products.filter(p => p.vendeur.toLowerCase() === username.toLowerCase());
 
     if (filtered.length > 0) {
       this.setState({
@@ -66,10 +69,14 @@ class UserProfile extends Component {
       });
     }
   }
-
+  openDetails = (boutique) => {
+    this.setState({ selectedBoutique: boutique });
+  };
+  closeDetails = () => {
+    this.setState({ selectedBoutique: null });
+  };
   render() {
-    const { userProducts, userInfo, isshareop, iscardcontopen } = this.state;
-    const { addToCart } = this.context;
+    const { userProducts, selectedBoutique, userInfo, isshareop, iscardcontopen } = this.state;
 
     if (!userInfo) return <div className="loading">Utilisateur non trouvé...</div>;
 
@@ -140,7 +147,7 @@ class UserProfile extends Component {
                 <div className="user-stats">
                   <div className="stat-box">
                     <span className="stat-number">{userProducts.length}</span>
-                    <span className="stat-label">Produits en vente</span>
+                    <span className="stat-label">Boutiques</span>
                   </div>
                   <div className="stat-box">
                     <span className="stat-number">{userInfo.responseRate}</span>
@@ -156,36 +163,130 @@ class UserProfile extends Component {
           </div>
 
           <div className="user-products-section">
-            <h3>Ses Produits en vente ({userProducts.length})</h3>
+            <h3>Ses Boutiques({userProducts.length})</h3>
             
-            <div className="products-grid">
-              {userProducts.map((product) => (
-                <div className="product-card" key={product.id}>
-                  <div className="card-image-container">
-                    <span className={`badge ${product.status.toLowerCase() === 'disponible' ? 'badge-green' : 'badge-gray'}`}>
-                      {product.status.toUpperCase()}
-                    </span>
-                    <img src={product.image} alt={product.name} />
-                  </div>
-                  
-                  <div className="card-info">
-                    <h4>{product.name}</h4>
-                    <div className="stars">
-                      {'⭐'.repeat(Math.min(product.stars, 5))}
-                    </div>
-                    <div className="price">{product.prix} DH</div>
-                  </div>
+            <div className="boutiques-grid">
+          {userProducts.map((b) => (
+            <div className="boutique-card" key={b.id}>
+              <div className="boutique-cover-wrapper">
+                <img
+                  src={b.cover}
+                  alt={b.nom}
+                  className="boutique-cover-img"
+                />
+              </div>
 
-                  <div className="card-actions">
-                    <Link to={`/product/${product.id}`} className="btn-details">
-                      Détails
-                    </Link>
-                    <button className="btn-add" onClick={() => {addToCart(product)}}>Ajouter</button>
-                  </div>
+              <div className="boutique-body">
+                {b.certifie ? (
+                  <span className="boutique-badge badge-certifie">
+                    Vendeur Certifié
+                  </span>
+                ) : ''}
+                  <span
+                    className={`boutique-badge ${
+                      b.status === "Ouverte" ? "badge-ouverte" : "badge-fermee"
+                    }`}
+                  >
+                    {b.status}
+                  </span>
+                <h3 className="boutique-title">{b.nom}</h3>
+
+                <div className="boutique-rating">
+                  <span className="stars">
+                    {"★".repeat(b.stars)}
+                    {"☆".repeat(5 - b.stars)}
+                  </span>
+                  <span className="avis-count">({b.avis})</span>
                 </div>
-              ))}
+
+                <p className="boutique-desc">{b.description}</p>
+
+                <div className="boutique-products-count">
+                  <Package size={16} color="#b45309" />
+                  <span>{b.products.length} Produits</span>
+                </div>
+
+                <div className="boutique-actions">
+                  <Link to={`/boutique/${b.id}`} className="btn-visiter">
+                    Visiter la boutique
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn-details-boutique"
+                    onClick={() => this.openDetails(b)}
+                  >
+                    Détails
+                  </button>
+                </div>
+              </div>
+
+              <div className="boutique-footer">
+                Géré par : <strong>{b.vendeur}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
+          </div>
+          {selectedBoutique && (
+          <div className="boutique-modal-overlay" onClick={this.closeDetails}>
+            <div
+              className="boutique-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={this.closeDetails}
+              >
+                <X size={20} />
+              </button>
+
+              <div className="modal-header-info">
+                <div className="modal-logo">{selectedBoutique.logoText}</div>
+                <div>
+                  <h2>{selectedBoutique.nom}</h2>
+                  <span className="modal-sub">
+                    Géré par {selectedBoutique.vendeur}
+                  </span>
+                </div>
+              </div>
+
+              <p className="modal-desc">{selectedBoutique.description}</p>
+
+              <ul className="modal-info-list">
+                <li>
+                  <MapPin size={18} color="#2563eb" />
+                  <span>Ville : {selectedBoutique.ville}</span>
+                </li>
+                <li>
+                  <Phone size={18} color="#16a34a" />
+                  <span>Téléphone : {selectedBoutique.telephone}</span>
+                </li>
+                <li>
+                  <Clock size={18} color="#d97706" />
+                  <span>Horaires : {selectedBoutique.horaires}</span>
+                </li>
+                <li>
+                  <CheckCircle size={18} color="#0284c7" />
+                  <span>
+                    Catalogue : {selectedBoutique.produitsCount} produits
+                    disponibles
+                  </span>
+                </li>
+              </ul>
+
+              <div className="modal-footer-actions">
+                <Link
+                  to="/shop"
+                  className="btn-visiter"
+                  onClick={this.closeDetails}
+                >
+                  Voir tous les produits
+                </Link>
+              </div>
             </div>
           </div>
+        )}
       </div>
     );
   }

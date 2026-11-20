@@ -9,7 +9,7 @@ body{
     padding: 10px;
     width: 300px;
     display: flex;
-    height: 400px;
+    height: 500px;
     flex-direction: column;
     gap: 5px; 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -310,21 +310,50 @@ body{
     gap: 8px;
 }
 
-.btnmod{
-    position: relative;
-    padding: 18px;
-    border-radius: 30px;
+.btnmod-suppri{
+    background-Color: #dc2626;
+    color: white;
+    padding: 10px 18px;
     border: none;
-    margin: 10px;
+    border-Radius: 8px;
     cursor: pointer;
-    color: black;
-    transition: 0.4s;
+    font-Weight: bold;
+    margin: 10px;
+    transition: 0.5s;
+}
+.btnmod-deco{
+    background-Color: #5d26dc;
+    color: white;
+    padding: 15px 18px;
+    border: none;
+    border-Radius: 8px;
+    cursor: pointer;
+    font-Weight: bold;
+    transition: 0.5s;
+    margin: 10px;
 }
 
+.btnmod{
+    background-Color: #0dbaf4;
+    color: white;
+    padding: 15px 18px;
+    border: none;
+    border-Radius: 8px;
+    cursor: pointer;
+    font-Weight: bold;
+    transition: 0.5s;
+    margin: 10px;
+}
 
 .btnmod:hover{
-    background-color: lightblue;
-    color: white;
+    opacity: 0.4;
+}
+
+.btnmod-suppri:hover{
+    opacity: 0.5;
+}
+.btnmod-deco:hover{
+    opacity: 0.5;
 }
 
 .div-inpt input{

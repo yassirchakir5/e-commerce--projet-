@@ -7,23 +7,46 @@ import Favoris from "../component/InfosPersonnel/Favoris";
 import Settings from "../component/InfosPersonnel/Settings";
 import Cardinfos from "../component/Card-info";
 import Mesproduct from "../component/InfosPersonnel/MesProduct";
-import mesadr from "../data/mesadress.json";
-import mesinf from "../data/mesinfos.json"
 import Cartes from "../component/InfosPersonnel/Cartes";
+import MaBoutique from "../pages/profil/MaBoutique";
+import VendorDashboard from "../component/VendorDashboard";
+import { Navigate } from "react-router-dom";
 
+
+const genererCommandes = () => {
+    const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
+    let faussesCommandes = [];
+
+    for (let i = 1; i <= 50; i++) {
+        const statutAleatoire = statuts[Math.floor(Math.random() * statuts.length)];
+        
+        const totalAleatoire = (Math.random() * (1500 - 50) + 50).toFixed(2);
+        
+        const jour = Math.floor(Math.random() * 28) + 1;
+        const mois = Math.floor(Math.random() * 12) + 1;
+        const dateAleatoire = `${jour < 10 ? '0'+jour : jour}/${mois < 10 ? '0'+mois : mois}/2024`;
+
+        faussesCommandes.push({
+            numero: `#10025${300 + i}`,
+            date: dateAleatoire,
+            statut: statutAleatoire,
+            total: `${totalAleatoire} MAD`,
+            articlesQuantite: Math.floor(Math.random() * 4) + 1 
+        });
+    }
+    return faussesCommandes;
+};
 
 class Infos extends Component{
     constructor(props){
         super(props);
-        const commandes = [];
+        const commandes = genererCommandes();
         const itemerge = 10;
         const currentPage = 1;
         const startindex = (currentPage - 1) * itemerge; 
         const endIndex = startindex + itemerge;
         this.state = {
-            actuelle: "infos",
-            addres: mesadr,
-            mesinfos: mesinf,
+            actuelle: "dashboard",
             iscardaction: false,
             commande : commandes,
             currentPage: currentPage,
@@ -36,50 +59,11 @@ class Infos extends Component{
             b: null
         };
     }
-    // supprimer les addresses
-    supp = (indexs) => {
-        const nova = this.state.addres.filter((_,index) => index !== indexs);
 
-        this.setState({
-            addres : nova
-        });
-    }
     change = (a) => {
         this.setState({
             actuelle: a
         });
-    }
-
-    modifierpro = (e,field) => {
-        const valuep = e.target.value;
-        this.setState((prevState) => ({
-            mesinfos:{
-                ...prevState.mesinfos,
-                [field]: valuep
-            }
-        }));
-    }
-
-    savechangepro = (field) => {
-        alert(`Change avec succes ${this.state.mesinfos[field]}`)
-    }
-    
-    saveChange = (adresseModifiee, index) => {
-        this.setState((prevState) => {
-            const updatea = [...prevState.addres];
-            if (index !== null) {
-                updatea[index] = adresseModifiee;
-            }
-            return {
-                addres: updatea
-            };
-        });
-    }   
-
-    saveajou = (nouvelleAdresse) => {
-        this.setState((prevState) => ({
-            addres: [...prevState.addres, nouvelleAdresse]
-        }));
     }
 
     suiv = () => {
@@ -121,45 +105,34 @@ class Infos extends Component{
         }))
     }
 
-    
     render(){
         return(
             <div>
+                {!localStorage.getItem('user') && 
+                    <Navigate to="/login" />
+                }
                 <div className="info">
-                    {<Cardinfos
-                        change = {this.change}
-                    />}
+                    {<Cardinfos change = {this.change} /> }
                     <div className="second-card">
+                        {this.state.actuelle === "dashboard" && (
+                            <VendorDashboard />
+                        )}
                         {this.state.actuelle === "infos" && (
-                            <Infospe mesi ={this.state.mesinfos}/>
+                            <Infospe />
                         )}
                         {this.state.actuelle === "adre" && (
-                            <Mesadr addres={this.state.addres} 
-                                supprimer={this.supp} 
-                                ajouter={this.saveajou}
-                                modifier={this.saveChange}
-                            />
+                            <Mesadr />
                         )}
                         {this.state.actuelle === "commad" && (
-                            <Commande totalpage = {this.state.totalpage}
-                                currentPage = {this.state.currentPage}
-                                pagin = {this.state.pagin}
-                                togleaction = {this.togleaction}
-                                iscardaction = {this.state.iscardaction}
-                                b = {this.state.b}
-                                prec = {this.prec}
-                                suiv = {this.suiv}
-                            />
+                            <Commande totalpage = {this.state.totalpage} currentPage = {this.state.currentPage} pagin = {this.state.pagin}
+                                togleaction = {this.togleaction} iscardaction = {this.state.iscardaction} b = {this.state.b}prec = {this.prec} suiv = {this.suiv} />
                         )}
+                        {this.state.actuelle === "boutique" && <MaBoutique />}
                         {this.state.actuelle === "favo" && (
                             <Favoris  />
                         )}
                         {this.state.actuelle === "set" && (
-                            <Settings 
-                                mesinfos = {this.state.mesinfos}
-                                savechangepro = {this.savechangepro}
-                                modifierpro = {this.modifierpro}
-                            />
+                            <Settings />
                         )}
                         {this.state.actuelle === "product" && (
                             <Mesproduct />

@@ -81,3 +81,20 @@ body{
 .form-a a:hover{
     color: red;
 }
+
+.connexion-messge{
+    padding: 7px;
+    width: 80%;  
+    margin-left: 20px;
+    border-radius: 20px;
+}
+
+.success{
+    background-color: green;
+    color: white;
+}
+
+.failed{
+    background-color: red;
+    color: white;
+}

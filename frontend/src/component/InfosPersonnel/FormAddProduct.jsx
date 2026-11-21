@@ -1,17 +1,22 @@
 import React, { Component } from "react";
 import Select from 'react-select';
-import boutiqu from '../../data/Boutiques.json';
-const options = [
-  { value: 'Phones', label: 'Phones' },
-  { value: 'Computer', label: 'Computer' },
-  { value: 'Casques', label: 'Casques' },
-  { value: 'Vétement', label: 'Vétement' }
-];
+import api from '../../api/api';
+import Swal from "sweetalert2";
 
-const optionsb = boutiqu.map(b => ({
-  value: b.id,
-  label: b.nom
-}));
+const optionsta = [
+    {
+        value: "Disponible",
+        label: "Disponible"
+    },
+    {
+        value: "En-révision",
+        label: "En-révision"
+    },
+    {
+        value: "Vendue",
+        label: "Vendue"
+    },
+];
 
 const customStyles = {
   control: (provided) => ({
@@ -41,18 +46,48 @@ const customStyles = {
 class FormAddProduct extends Component {
     constructor(props){
         super(props);
-        const defaultCategory = options.find(opt => opt.value === props.categorie) || null;
         this.state = {
-            selectcat: defaultCategory,
+            selectcat: null,
+            selectstatus: null,
             selectedFiles: [],
-            nomp: props.nomp || "",
-            prixp: props.prixp || "",
-            descp: props.descp || "",
+            nom: props.nomp || "",
+            prix: props.prixp || "",
+            desc: props.descp || "",
             stock: props.stock || "",
-            selectbout: null
+            selectbout: null,
+            boutiques: [],
+            categorie: []
         };
     }
+    componentDidMount(){
+        this.getboutiques();
+        this.getcategorie();
+    }
     
+    getboutiques = async () => {
+        try{
+            const res = await api.get('/boutique');
+            this.setState({ boutiques: res.data.boutiques });
+        }catch(err){
+            console.log(err);
+            
+        }
+    }
+
+    getcategorie = async () => {
+        try{
+            const res = await api.get('/categorie');
+            this.setState({ categorie: res.data.categorie });
+        }catch(err){
+            console.log(err);
+        }
+    }
+    setstatus = (selectstat) => {
+        this.setState({
+            selectstatus: selectstat
+        });
+    }
+
     setcateg = (selectedop) => {
         this.setState({
             selectcat: selectedop          
@@ -67,11 +102,9 @@ class FormAddProduct extends Component {
 
     handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        
-        const fileNames = files.map(file => file.name);
-        
+
         this.setState({
-            selectedFiles: fileNames
+            selectedFiles: files
     });
 }
     handlechange = (e) => {
@@ -80,36 +113,66 @@ class FormAddProduct extends Component {
         })
     }
 
-    handlesubmit = (e) => {
+
+    handlesubmit = async (e) => {
         e.preventDefault();
-        this.props.savepro({
-            name: this.state.nomp,
-            prix: this.state.prixp,
-            description: this.state.descp,
-            stock : this.state.stock,
-            boutiques: this.state.selectbout ? this.state.selectbout.value : null,
-            categorie: this.state.selectcat ? this.state.selectcat.value : null, 
-            images: this.state.selectedFiles 
-        })
+        const formdata = new FormData();
+        formdata.append('nom',this.state.nom);
+        formdata.append('prix',this.state.prix);
+        formdata.append('stock',this.state.stock);
+        formdata.append('desc',this.state.desc);
+        formdata.append('status',this.state.selectstatus.value);
+        formdata.append('id_categorie',this.state.selectcat.value);
+        formdata.append('id_boutique',this.state.selectbout.value);
+        this.state.selectedFiles.forEach((file) => {
+            formdata.append('images[]', file);
+        });
+
+        try{
+            const res = await api.post('/produit/add',formdata);
+            Swal.fire("Succès!", "Le Produit a été ajouter avec succés.", "success");
+            this.setState({
+                nom: "",
+                prix: "",
+                stock: "",
+                desc: "",
+                selectcat: null,
+                selectbout: null,
+                selectstatus: null,
+                selectedFiles: []
+            });
+            this.props.setcourant();
+        }catch(err){
+            console.log(err);            
+        }
     }
 
     render(){
+        const options = this.state.categorie.map(b => ({
+            value: b.id,
+            label: b.nom
+        }));
+
+        const optionsb = this.state.boutiques.map(b => ({
+            value: b.id,
+            label: b.nom
+        }));
         return(
             <div className="form-addcar">
                 <form onSubmit={this.handlesubmit}>
                     <div className="input-group">
-                        <label htmlFor="nompr" style={{fontSize: '20px'}}>Nom du produit</label>
-                        <input type="text" value={this.state.nomp} id="nompr" name="nomp" onChange={this.handlechange} placeholder="Nom du produit" />
+                        <label htmlFor="nom" style={{fontSize: '20px'}}>Nom du produit</label>
+                        <input type="text" value={this.state.nom} id="nom" name="nom" onChange={this.handlechange} placeholder="Nom du produit" />
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="prixpr" style={{fontSize: '20px'}}>Prix de produit </label>
-                        <input type="text" value={this.state.prixp} id="prixpr" name="prixp" onChange={this.handlechange} placeholder="Prix de produit" />
+                        <input type="text" value={this.state.prix} id="prixpr" name="prix" onChange={this.handlechange} placeholder="Prix de produit" />
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="desc" style={{fontSize: '20px'}}>Description</label>
-                        <textarea id="desc" value={this.state.descp} name="descp"  rows="7" onChange={this.handlechange} placeholder="Description"/>
+                        <textarea id="desc" value={this.state.desc} name="desc"  rows="7" onChange={this.handlechange} placeholder="Description"/>
                     </div>
                     <div className="input-group">
                         <label htmlFor="cate" style={{fontSize: '20px'}}>Catégorie</label>
@@ -119,6 +182,16 @@ class FormAddProduct extends Component {
                             placeholder="Choisissez une catégorie"
                             value={this.state.selectcat}
                             onChange={this.setcateg}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="cate" style={{fontSize: '20px'}}>Status</label>
+                        <Select 
+                            options={optionsta} 
+                            styles={customStyles}
+                            placeholder="Choisissez Status du produit"
+                            value={this.state.selectstatus}
+                            onChange={this.setstatus}
                         />
                     </div>
                     <div className="input-group">
@@ -152,7 +225,7 @@ class FormAddProduct extends Component {
                                 <div className="upload-content" style={{ pointerEvents: 'auto', zIndex: 20 }}>
                                     <p style={{ color: '#1a73e8', fontWeight: 'bold' }}>Images sélectionnées :</p>
                                     <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-                                        {this.state.selectedFiles.map((name, index) => (
+                                        {this.state.selectedFiles.map((file, index) => (
                                             <li key={index} style={{ fontSize: '14px', margin: '5px 0' }}>✅ {name}</li>
                                         ))}
                                     </ul>
@@ -168,7 +241,7 @@ class FormAddProduct extends Component {
                         </div>
                     </div>
                     <div>
-                        <input type="submit" className="sub" value="Ajouter"/>
+                        <button disabled={!this.state.selectbout || !this.state.selectcat} type="submit" className="sub">Ajouter</button>
                     </div>
                 </form>
             </div>  

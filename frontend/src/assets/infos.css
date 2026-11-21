@@ -430,18 +430,20 @@ body{
     font-size: 30px;
 }
 
-.cart{
-    /* display: flex; */
-}
 
 .carts{
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: #fff;
     border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-align: center;
+    transition: 0.5s;
 }
 
 .carts:hover{
@@ -450,20 +452,32 @@ body{
 }
 
 .cart img{
-    height: 200px;
-    padding-right: 40px;
-    padding-left: 20px;
+    width: 100%;
+    height: 180px;
+    object-fit: contain; 
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: block;
 }
 
 .cart-btn{
     display: grid;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 15px;
 }
-
+.cart-btn .btn{
+    width: 100%;
+    margin: 0;
+    padding: 14px 10px;
+}
 .container-mespr{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    text-align: center;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #btn-del{
@@ -800,4 +814,9 @@ body{
 .valeur {
     color: #333;
     font-weight: 500;
+}
+
+.sub:disabled { 
+    opacity: 0.5;
+    cursor: not-allowed; 
 }

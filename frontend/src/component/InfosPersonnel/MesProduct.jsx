@@ -1,13 +1,12 @@
 import { Component } from "react";
-import mesdata from '../../data/mesproduct.json';
 import FormAddProduct from "./FormAddProduct";
+import api from "../../api/api";
 
-
-class Mesproduct extends Component{
-    constructor(props){
+class Mesproduct extends Component {
+    constructor(props) {
         super(props);
         this.state = {
-            mesproduct: mesdata,
+            mesproduct: [], 
             search: "",
             current: "mesprod",
             nomp: "",
@@ -16,140 +15,153 @@ class Mesproduct extends Component{
             stockp: "",
             editIndex: null,
             categorie: ""
+        };
+    }
+
+    componentDidMount() {
+        this.handleafficher();
+    }
+
+    handleafficher = async () => {
+        try {
+            const res = await api.get('/produit/afficher');
+            if (res.data.produits) {
+                this.setState({ mesproduct: res.data.produits });
+            }
+        } catch (err) {
+            console.log(err);
         }
     }
 
     supprimerpro = (index) => {
         const nouva = this.state.mesproduct.filter((_, indexs) => index !== indexs);
-
-        this.setState({
-            mesproduct: nouva
-        });
+        this.setState({ mesproduct: nouva });
     }
 
     setsear = (e) => {
-        this.setState({
-            search: e.target.value
-        });
+        this.setState({ search: e.target.value });
     }
 
-   
-
-    setcurrent = (index = null,nompr = "",prixpr = "",descp = "",stockpr = "",categorie = "") => {
+    setcurrent = (index = null, nompr = "", prixpr = "", descp = "", stockpr = "", categorie = "") => {
         this.setState({
             stockp: stockpr,
             nomp: nompr,
             prixp: prixpr,
             descp: descp,
-            stock: stockpr,
             editIndex: index,
             categorie: categorie,
             current: this.state.current === "mesprod" ? "addpro" : "mesprod"
-        })
+        });
     }
 
-    saveProduct = (updatedpr) => {
-        const {editIndex, mesproduct} = this.state;
-        const newproduct = [...mesproduct];
-        if(editIndex != null){
-            newproduct[editIndex] = {...newproduct[editIndex], ... updatedpr};
-        }else{
-            newproduct.push(updatedpr);
-        }
-        this.setState({
-            mesproduct: newproduct,
-            editIndex: null,
-            current: "mesprod"
-        })
-    }
-
-    updatestatus = (index,newstatus) => {
+    updatestatus = (index, newstatus) => {
         const updateproducts = [...this.state.mesproduct];
-
-        updateproducts[index] = {...updateproducts[index],status: newstatus};
-
-        this.setState({
-            mesproduct: updateproducts
-        });
-
+        updateproducts[index] = { ...updateproducts[index], status: newstatus };
+        this.setState({ mesproduct: updateproducts });
     }
 
-    render(){
-        const filtrerproduc = this.state.mesproduct.filter((mespr) => {
+    setcourant = () => {
+        this.setState({ current: "mesprod" });
+        this.handleafficher();
+    }
+
+    getProductImage = (mesp) => {
+        if (mesp.images && mesp.images.length > 0) {
+            const mainImg = mesp.images.find(img => img.is_main === 1 || img.is_main === true) || mesp.images[0];
+            return `http://127.0.0.1:8000/storage/${mainImg.path}`;
+        } 
+    }
+
+    render() {
+        const filtrerproduc = (this.state.mesproduct || []).filter((mespr) => {
             const lowersearch = this.state.search.toLowerCase();
-            const findpro = mespr.name.toLowerCase().includes(lowersearch);
-            return findpro;
+            const productName = (mespr.nom || "").toLowerCase();
+            return productName.includes(lowersearch);
         });
 
-        return(
+        return (
             <div className="mespr">
-                <h1 style={{textAlign: 'center'}}>Mes Products</h1>
+                <h1 style={{ textAlign: 'center' }}>Mes Products</h1>
                 <div className="input-search">
-                    {this.state.current === "mesprod" ? <button id="btn-prod" style={{width: '250px'}} onClick={() => {this.setcurrent()}}>Add product</button> : <button id="btn-prod" onClick={this.setcurrent}> Retour</button> }
+                    {this.state.current === "mesprod" ? (
+                        <button id="btn-prod" style={{ width: '250px' }} onClick={() => this.setcurrent()}>
+                            Add product
+                        </button>
+                    ) : (
+                        <button id="btn-prod" onClick={() => this.setcurrent()}>
+                            Retour
+                        </button>
+                    )}
                     <h4>Nombre de produit : {this.state.mesproduct.length}</h4>
-                    {this.state.current === "mesprod" && 
-                        <input type="text" placeholder="Search product" style={{marginRight: '20px',height: '20px',width: '200px'}} onChange={this.setsear}/>
-                    }
+                    {this.state.current === "mesprod" && (
+                        <input
+                            type="text"
+                            placeholder="Search product"
+                            style={{ marginRight: '20px', height: '20px', width: '200px' }}
+                            onChange={this.setsear}
+                        />
+                    )}
                 </div>
 
                 {this.state.current === "mesprod" && (
                     <>
                         <div className="container-mespr">
                             {filtrerproduc.map((mesp, index) => {
-                                return(
-                                    <div className="carts" key={index}> 
+                                const status = (mesp.status || "disponible").toLowerCase();
+
+                                return (
+                                    <div className="carts" key={mesp.id || index}>
                                         <div className="cart">
                                             <div>
-                                                <img src={mesp.image} alt={mesp.name} /> 
+                                                <img src={this.getProductImage(mesp)} alt={mesp.nom} />
                                             </div>
                                             <div>
-                                                <h3 className={`badge-statut ${mesp.status}`}>{mesp.status}</h3>
-                                                <h3 className="detail">{mesp.name}</h3>
-                                                <h3 className="detail">Stock : <span style={{color: 'red',fontSize: '25px'}}>{mesp.stock}</span></h3>
+                                                <h3 className={`badge-statut ${status}`}>{status}</h3>
+                                                <h3 className="detail">{mesp.nom}</h3>
+                                                <h3 className="detail">
+                                                    Stock : <span style={{ color: 'red', fontSize: '25px' }}>{mesp.stock}</span>
+                                                </h3>
                                                 <div className="detail">
                                                     <span className="label">Prix : </span>
-                                                    <span className="valeur prix">{mesp.prix}DH </span>
+                                                    <span className="valeur prix">{mesp.prix} DH</span>
                                                 </div>
-                                                <div className="detail">
-                                                    
-                                                </div>
-                                            </div> 
+                                            </div>
                                         </div>
                                         <div className="cart-btn">
-                                            
-                                            {mesp.status === "disponible" && 
-                                            <>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
-                                                <button className="btn btn-revision" onClick={() => {this.updatestatus(index,"En-révision")}}> Révision</button>
-                                                <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
-                                            </>}
-                                            {mesp.status === "En-révision" &&<>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
-                                                <button className="btn btn-disponible" onClick={() => {this.updatestatus(index,"disponible")}}> Disponible</button>
-                                                <button className="btn" onClick={() => {this.updatestatus(index,"Vendue")}}> Vendre</button>
-                                            </>}
-                                            {mesp.status === "Vendue" && <>
-                                                <button className="btn btn-modifier" onClick={() => {this.setcurrent(index,mesp.name,mesp.prix,mesp.description,mesp.stock,mesp.categorie)}}>modifier</button>
-                                                
-                                            </>}
-                                            
-                                            <button className="btn btn-supprimer" onClick={() => {this.supprimerpro(index)}}>Supprimer</button>
+                                            {status === "disponible" && (
+                                                <>
+                                                    <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
+                                                    <button className="btn btn-revision" onClick={() => this.updatestatus(index, "En-révision")}>Révision</button>
+                                                    <button className="btn" onClick={() => this.updatestatus(index, "Vendue")}>Vendre</button>
+                                                </>
+                                            )}
+                                            {status === "en-révision" && (
+                                                <>
+                                                    <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
+                                                    <button className="btn btn-disponible" onClick={() => this.updatestatus(index, "disponible")}>Disponible</button>
+                                                    <button className="btn" onClick={() => this.updatestatus(index, "Vendue")}>Vendre</button>
+                                                </>
+                                            )}
+                                            {status === "vendue" && (
+                                                <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
+                                            )}
+                                            <button className="btn btn-supprimer" onClick={() => this.supprimerpro(index)}>Supprimer</button>
                                         </div>
                                     </div>
-                                )
+                                );
                             })}
                         </div>
                         {filtrerproduc.length === 0 && <h4 className="aucunp">Aucun produit publié</h4>}
                     </>
                 )}
+
                 {this.state.current === "addpro" && (
                     <div>
-                        
-                        { <FormAddProduct nomp={this.state.nomp} prixp={this.state.prixp} categorie={this.state.categorie} descp={this.state.descp} stock={this.state.stock} savepro={this.saveProduct} /> }
+                        <FormAddProduct setcourant={this.setcourant} />
                     </div>
                 )}
             </div>
-        )
+        );
     }
 }
 

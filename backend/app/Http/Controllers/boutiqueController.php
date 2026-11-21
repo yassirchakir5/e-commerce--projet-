@@ -44,7 +44,7 @@ class boutiqueController extends Controller
         $logo_boutique = null;
         if($request->hasFile('logo_boutique')){
             $ext = $request->file('logo_boutique')->extension();
-            $logo_boutique = $request->file('logo_boutique')->storeAs("profiles/{$user->name}-{$user->prenom}/Boutiques/{$data['nom']}","{$data['nom']}." . $ext , 'public');
+            $logo_boutique = $request->file('logo_boutique')->storeAs("profiles/{$user->name}-{$user->prenom}/Boutiques/{$data['nom']}/logo/","{$data['nom']}." . $ext , 'public');
         }
 
         $boutique = boutique::create([

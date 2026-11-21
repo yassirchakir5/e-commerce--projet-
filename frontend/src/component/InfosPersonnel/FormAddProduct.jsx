@@ -121,7 +121,7 @@ class FormAddProduct extends Component {
         formdata.append('prix',this.state.prix);
         formdata.append('stock',this.state.stock);
         formdata.append('desc',this.state.desc);
-        formdata.append('status',this.state.selectstatus.value);
+        formdata.append('status', this.state.selectstatus ? this.state.selectstatus.value : 'Disponible');
         formdata.append('id_categorie',this.state.selectcat.value);
         formdata.append('id_boutique',this.state.selectbout.value);
         this.state.selectedFiles.forEach((file) => {
@@ -226,7 +226,7 @@ class FormAddProduct extends Component {
                                     <p style={{ color: '#1a73e8', fontWeight: 'bold' }}>Images sélectionnées :</p>
                                     <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
                                         {this.state.selectedFiles.map((file, index) => (
-                                            <li key={index} style={{ fontSize: '14px', margin: '5px 0' }}>✅ {name}</li>
+                                            <li key={index} style={{ fontSize: '14px', margin: '5px 0' }}>✅ {file.name}</li>
                                         ))}
                                     </ul>
                                     <span className="upload-link" style={{ marginTop: '15px', display: 'inline-block' }}>Changer les images</span>

@@ -59,4 +59,62 @@ class produitController extends Controller
             'produits' => $produits
         ], 200);
     }
+    public function modifier(Request $request,$id){
+        $user = $request->user();
+        $produit = Produit::findOrFail($id);
+        $boutique = boutique::findOrFail($request->id_boutique);
+
+        $request->validate([
+            'nom' => 'required|string',
+            'prix' => 'required|numeric',
+            'stock' => 'required|integer',
+            'desc' => 'required|max:255',
+            'id_categorie' => 'required|exists:categorie,id',
+            'id_boutique' => 'required|exists:boutique,id',
+            "status" => 'required|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,jpg,webp,png|max:2048'
+        ]);
+        $produit->nom = $request->nom;
+        $produit->prix = $request->prix;
+        $produit->stock = $request->stock;
+        $produit->desc = $request->desc;
+        $produit->id_categorie = $request->id_categorie;
+        $produit->id_boutique = $request->id_boutique;
+        $produit->status = $request->status;
+        if($request->hasFile('images')){
+            $hasExistingImages = $produit->images()->exists();
+            foreach($request->file('images') as $index => $image){
+                $extension = $image->extension();
+
+                $filename = time() . "_" . uniqid() . "." . $extension;
+
+                $path = $image->storeAs("profiles/{$user->name}-{$user->prenom}/Boutiques/{$boutique->nom}/products/{$request->nom}/",$filename,'public');
+
+                $produit->images()->create([
+                    'path' => $path,
+                    'is_main' => !$hasExistingImages && $index === 0
+                ]);
+            }
+        }
+        $produit->save();
+        return response()->json(['message' => 'Le produit a été modifier avec success']);
+    }
+    public function supprimer($id){
+        $produit = Produit::findOrFail($id);
+        
+        $produit->delete();
+        response()->json([
+            'message' => "le produit a été supprimer avec succes "
+        ],200);
+    }
+    public function modifierstatus(Request $request,$id){
+        $produit = Produit::findOrFail($id);
+        
+        $produit->status = $request->status;
+        $produit->save();
+        return response()->json([
+            'message' => "le status a été modifier avec succes "
+        ],200);
+    }
 }

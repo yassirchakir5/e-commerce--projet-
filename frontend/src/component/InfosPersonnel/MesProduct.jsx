@@ -1,6 +1,8 @@
 import { Component } from "react";
 import FormAddProduct from "./FormAddProduct";
 import api from "../../api/api";
+import FormModifierProduct from "./FormModifierProduct";
+import Swal from "sweetalert2";
 
 class Mesproduct extends Component {
     constructor(props) {
@@ -14,7 +16,9 @@ class Mesproduct extends Component {
             descp: "",
             stockp: "",
             editIndex: null,
-            categorie: ""
+            categorie: "",
+            status: "",
+            selectedproduit: null
         };
     }
 
@@ -33,31 +37,50 @@ class Mesproduct extends Component {
         }
     }
 
-    supprimerpro = (index) => {
-        const nouva = this.state.mesproduct.filter((_, indexs) => index !== indexs);
-        this.setState({ mesproduct: nouva });
+    supprimerpro = async (index) => {
+        const result = await Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Cette action est irréversible ! Votre compte et toutes vos données seront définitivement supprimés.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",   
+            cancelButtonColor: "#3085d6",  
+            confirmButtonText: "Oui, supprimer mon compte",
+            cancelButtonText: "Annuler",
+        });
+        if(result.isConfirmed){
+            try{
+                const res = await api.delete(`/produit/delete/${index}`);
+                await Swal.fire("Succès!", "Le produit a été supprimer avec succès", "success");
+                this.handleafficher();
+            }catch(err){
+                console.log(err);
+            }
+        }
+
     }
 
     setsear = (e) => {
         this.setState({ search: e.target.value });
     }
 
-    setcurrent = (index = null, nompr = "", prixpr = "", descp = "", stockpr = "", categorie = "") => {
+    setselectprod = (mespr) => {
         this.setState({
-            stockp: stockpr,
-            nomp: nompr,
-            prixp: prixpr,
-            descp: descp,
-            editIndex: index,
-            categorie: categorie,
-            current: this.state.current === "mesprod" ? "addpro" : "mesprod"
+            selectedproduit: mespr,
+            current: "modifpro"
         });
     }
 
-    updatestatus = (index, newstatus) => {
-        const updateproducts = [...this.state.mesproduct];
-        updateproducts[index] = { ...updateproducts[index], status: newstatus };
-        this.setState({ mesproduct: updateproducts });
+    updatestatus = async (index, newstatus) => {
+        try{
+            const res = await api.put(`/produit/modifierstatus/${index}`,{
+                'status': newstatus
+            });
+            await Swal.fire("Succès!", `Le produit est maintenant ${newstatus}`, "success");
+            this.handleafficher();
+        }catch(err){
+            console.log(err);            
+        }
     }
 
     setcourant = () => {
@@ -84,11 +107,11 @@ class Mesproduct extends Component {
                 <h1 style={{ textAlign: 'center' }}>Mes Products</h1>
                 <div className="input-search">
                     {this.state.current === "mesprod" ? (
-                        <button id="btn-prod" style={{ width: '250px' }} onClick={() => this.setcurrent()}>
+                        <button id="btn-prod" style={{ width: '250px' }} onClick={() => {this.setState({ current: "addpro" })}}>
                             Add product
                         </button>
                     ) : (
-                        <button id="btn-prod" onClick={() => this.setcurrent()}>
+                        <button id="btn-prod" onClick={() => this.setState({ current: "mesprod" })}>
                             Retour
                         </button>
                     )}
@@ -130,22 +153,22 @@ class Mesproduct extends Component {
                                         <div className="cart-btn">
                                             {status === "disponible" && (
                                                 <>
-                                                    <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
-                                                    <button className="btn btn-revision" onClick={() => this.updatestatus(index, "En-révision")}>Révision</button>
-                                                    <button className="btn" onClick={() => this.updatestatus(index, "Vendue")}>Vendre</button>
+                                                    <button className="btn btn-modifier" onClick={() => {this.setselectprod(mesp)}}>modifier</button>
+                                                    <button className="btn btn-revision" onClick={() => this.updatestatus(mesp.id, "En-révision")}>Révision</button>
+                                                    <button className="btn" onClick={() => this.updatestatus(mesp.id, "Vendue")}>Vendre</button>
                                                 </>
                                             )}
                                             {status === "en-révision" && (
                                                 <>
-                                                    <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
-                                                    <button className="btn btn-disponible" onClick={() => this.updatestatus(index, "disponible")}>Disponible</button>
-                                                    <button className="btn" onClick={() => this.updatestatus(index, "Vendue")}>Vendre</button>
+                                                    <button className="btn btn-modifier" onClick={() => {this.setselectprod(mesp)}}>modifier</button>
+                                                    <button className="btn btn-disponible" onClick={() => this.updatestatus(mesp.id, "disponible")}>Disponible</button>
+                                                    <button className="btn" onClick={() => this.updatestatus(mesp.id, "Vendue")}>Vendre</button>
                                                 </>
                                             )}
                                             {status === "vendue" && (
-                                                <button className="btn btn-modifier" onClick={() => this.setcurrent(index, mesp.nom, mesp.prix, mesp.desc, mesp.stock, mesp.id_categorie)}>modifier</button>
+                                                <button className="btn btn-modifier" onClick={() => {this.setselectprod(mesp)}}>modifier</button>
                                             )}
-                                            <button className="btn btn-supprimer" onClick={() => this.supprimerpro(index)}>Supprimer</button>
+                                            <button className="btn btn-supprimer" onClick={() => this.supprimerpro(mesp.id)}>Supprimer</button>
                                         </div>
                                     </div>
                                 );
@@ -157,7 +180,12 @@ class Mesproduct extends Component {
 
                 {this.state.current === "addpro" && (
                     <div>
-                        <FormAddProduct setcourant={this.setcourant} />
+                        <FormAddProduct setcourant={this.setcourant}/>
+                    </div>
+                )}
+                {this.state.current === "modifpro" && (
+                    <div>
+                        <FormModifierProduct setcourant={this.setcourant} produit={this.state.selectedproduit} />
                     </div>
                 )}
             </div>

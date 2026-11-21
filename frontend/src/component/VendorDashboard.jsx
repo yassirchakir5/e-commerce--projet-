@@ -1,146 +1,265 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Wallet, Package, ShoppingBag, Star, Plus, Settings,  Check, ArrowUpRight, Trash2, } from "lucide-react";
-import boutiquesData from "../data/Boutiques.json";
+import { Wallet, Package, ShoppingBag, Star, Plus, Settings, Check, ArrowUpRight, Trash2, Store,  LayoutDashboard, ArrowLeft, } from "lucide-react";
+import api from "../api/api";
 import "./VendorDashboard.css";
 
-const DEFAULT_ORDERS = [
-  {
-    id: "CMD-2389",
-    client: "yassirchakir5@gmail.com",
-    date: "14/11/2026 10:30",
-    montant: 9500,
-    statut: "Livrée",
-  },
-  {
-    id: "CMD-2390",
-    client: "amine.bennani@gmail.com",
-    date: "14/11/2026 14:15",
-    montant: 2000,
-    statut: "En attente",
-  },
-  {
-    id: "CMD-2391",
-    client: "sara.elidrissi@gmail.com",
-    date: "13/11/2026 18:45",
-    montant: 1800,
-    statut: "Livrée",
-  },
-  {
-    id: "CMD-2392",
-    client: "karim.tazi@gmail.com",
-    date: "12/11/2026 11:20",
-    montant: 500,
-    statut: "En attente",
-  },
-  {
-    id: "CMD-2393",
-    client: "nadia.mansouri@gmail.com",
-    date: "10/11/2026 16:05",
-    montant: 1620,
-    statut: "Livrée",
-  },
-];
-
-const MONTHLY_REVENUES = [
-  { month: "Jan", value: 1800 },
-  { month: "Fév", value: 3200 },
-  { month: "Mar", value: 4100 },
-  { month: "Avr", value: 3900 },
-  { month: "Mai", value: 5600 },
-  { month: "Juin", value: 7800 },
-  { month: "Juil", value: 7400 },
-  { month: "Août", value: 10200 },
-  { month: "Sept", value: 11800 },
-  { month: "Oct", value: 13100 },
-  { month: "Nov", value: 15420 },
-];
+const MOIS_NOMS = [ "Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc" ];
 
 class VendorDashboard extends Component {
   constructor(props) {
     super(props);
-
-    const sessionBoutiques =
-      JSON.parse(sessionStorage.getItem("mes_boutiques")) || [];
-    const boutiquesMap = new Map();
-
-    boutiquesData.forEach((b) => boutiquesMap.set(String(b.id), b));
-    if (Array.isArray(sessionBoutiques)) {
-      sessionBoutiques.forEach((b) => {
-        const existing = boutiquesMap.get(String(b.id)) || {};
-        boutiquesMap.set(String(b.id), { ...existing, ...b });
-      });
-    }
-
-    const allBoutiques = Array.from(boutiquesMap.values());
-    const boutiqueId = props.boutiqueId || 1;
-    const currentBoutique =
-      allBoutiques.find((b) => String(b.id) === String(boutiqueId)) ||
-      allBoutiques[0] ||
-      {};
-
-    const savedOrders = JSON.parse(sessionStorage.getItem("vendor_orders"));
-    const orders =
-      Array.isArray(savedOrders) && savedOrders.length > 0
-        ? savedOrders
-        : DEFAULT_ORDERS;
-
-    if (!savedOrders) {
-      sessionStorage.setItem("vendor_orders", JSON.stringify(orders));
-    }
-
     this.state = {
-      boutique: currentBoutique,
-      orders,
+      boutiques: [],
+      allProducts: [],
+      allOrders: [],
+      selectedBoutique: null,
       hoveredMonth: null,
+      loading: true,
     };
   }
 
-  markAsDelivered = (orderId) => {
-    this.setState((prevState) => {
-      const updatedOrders = prevState.orders.map((order) =>
-        order.id === orderId ? { ...order, statut: "Livrée" } : order
-      );
-      sessionStorage.setItem("vendor_orders", JSON.stringify(updatedOrders));
-      return { orders: updatedOrders };
-    });
+  componentDidMount() {
+    this.fetchDataFromDatabase();
+  }
+
+  fetchDataFromDatabase = async () => {
+    try {
+      const [boutiquesRes, produitsRes, commandesRes] = await Promise.allSettled([
+        api.get("/boutique"),
+        api.get("/produit/afficher"),
+        api.get("/vendeur/commandes"),
+      ]);
+
+      this.setState({
+        boutiques:
+          boutiquesRes.status === "fulfilled"
+            ? boutiquesRes.value.data.boutiques || []
+            : [],
+        allProducts:
+          produitsRes.status === "fulfilled"
+            ? produitsRes.value.data.produits || []
+            : [],
+        allOrders:
+          commandesRes.status === "fulfilled"
+            ? commandesRes.value.data.commandes || []
+            : [],
+        loading: false,
+      });
+    } catch (err) {
+      console.error("Erreur de chargement :", err);
+      this.setState({ loading: false });
+    }
   };
 
-  deleteOrder = (orderId) => {
-    this.setState((prevState) => {
-      const updatedOrders = prevState.orders.filter((o) => o.id !== orderId);
-      sessionStorage.setItem("vendor_orders", JSON.stringify(updatedOrders));
-      return { orders: updatedOrders };
-    });
+  openBoutiqueDashboard = (boutique) => {
+    this.setState({ selectedBoutique: boutique });
+  };
+
+  backToBoutiquesList = () => {
+    this.setState({ selectedBoutique: null });
+  };
+
+  markAsDelivered = async (orderId) => {
+    try {
+      await api.put(`/commande/${orderId}/livrer`);
+      this.setState((prevState) => ({
+        allOrders: prevState.allOrders.map((order) =>
+          order.id === orderId ? { ...order, statut: "Livrée" } : order
+        ),
+      }));
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour du statut :", err);
+    }
+  };
+
+  deleteOrder = async (orderId) => {
+    try {
+      await api.delete(`/commande/${orderId}`);
+      this.setState((prevState) => ({
+        allOrders: prevState.allOrders.filter((o) => o.id !== orderId),
+      }));
+    } catch (err) {
+      console.error("Erreur lors de la suppression :", err);
+    }
   };
 
   render() {
-    const { boutique, orders, hoveredMonth } = this.state;
+    const {
+      boutiques,
+      allProducts,
+      allOrders,
+      selectedBoutique,
+      hoveredMonth,
+      loading,
+    } = this.state;
 
-    const products = Array.isArray(boutique.products) ? boutique.products : [];
-    const totalProduits = products.length;
-    const disponiblesCount = products.filter(
-      (p) => p.status === "disponible"
+    if (loading) {
+      return (
+        <div className="vd-container">
+          <h3>Chargement des boutiques...</h3>
+        </div>
+      );
+    }
+
+    if (!selectedBoutique) {
+      return (
+        <div className="vd-container">
+          <div className="vd-breadcrumb">
+            <Link to="/">Home</Link> &gt; <span>Mes Boutiques</span>
+          </div>
+
+          <div className="vd-top-bar">
+            <div className="vd-title-group">
+              <span className="vd-vertical-bar"></span>
+              <h2>Mes Boutiques ({boutiques.length})</h2>
+            </div>
+
+            <Link to="/boutiques" className="vd-shortcut-btn primary">
+              <Plus size={18} />
+              <span>Nouvelle Boutique</span>
+            </Link>
+          </div>
+
+          {boutiques.length === 0 ? (
+            <div className="vd-card" style={{ textAlign: "center", padding: "40px" }}>
+              <h3>Aucune boutique trouvée.</h3>
+              <p style={{ color: "#64748b", marginTop: "8px" }}>
+                Créez votre première boutique pour accéder à son tableau de bord.
+              </p>
+            </div>
+          ) : (
+            <div className="vd-kpi-grid">
+              {boutiques.map((boutique) => {
+                const boutiqueProducts = allProducts.filter(
+                  (p) => String(p.id_boutique) === String(boutique.id)
+                );
+                const dispoCount = boutiqueProducts.filter(
+                  (p) => (p.status || "").toLowerCase() === "disponible"
+                ).length;
+
+                return (
+                  <div
+                    key={boutique.id}
+                    className="vd-card"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      gap: "16px",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div className="vd-kpi-icon blue">
+                          <Store size={24} />
+                        </div>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: "18px" }}>{boutique.nom}</h3>
+                          <span style={{ fontSize: "13px", color: "#64748b" }}>
+                            {boutique.adresse || boutique.ville || "Boutique vérifiée"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`vd-store-status ${
+                          (boutique.status || "Ouverte") === "Ouverte" ? "open" : "closed"
+                        }`}
+                      >
+                        {boutique.status || "Ouverte"}
+                      </span>
+                    </div>
+
+                    {boutique.description && (
+                      <p style={{ fontSize: "14px", color: "#475569", margin: 0 }}>
+                        {boutique.description}
+                      </p>
+                    )}
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        background: "#f8fafc",
+                        padding: "10px 14px",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                      }}
+                    >
+                      <span>
+                        Produits : <strong>{boutiqueProducts.length}</strong>
+                      </span>
+                      <span>
+                        Disponibles :{" "}
+                        <strong style={{ color: "#16a34a" }}>{dispoCount}</strong>
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => this.openBoutiqueDashboard(boutique)}
+                      className="vd-shortcut-btn primary"
+                      style={{ width: "100%", justifyContent: "center", border: "none", cursor: "pointer" }}
+                    >
+                      <LayoutDashboard size={18} />
+                      <span>Voir Dashboard</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const currentBoutique = selectedBoutique;
+
+    const boutiqueProducts = allProducts.filter(
+      (p) => String(p.id_boutique) === String(currentBoutique.id)
+    );
+    const orders = allOrders.filter(
+      (o) => String(o.id_boutique) === String(currentBoutique.id)
+    );
+
+    const totalProduits = boutiqueProducts.length;
+    const disponiblesCount = boutiqueProducts.filter(
+      (p) => (p.status || "").toLowerCase() === "disponible"
     ).length;
-    const revisionCount = totalProduits - disponiblesCount;
+    const revisionCount = boutiqueProducts.filter(
+      (p) => (p.status || "").toLowerCase() === "en-révision"
+    ).length;
 
     const ventesTotales = orders
-      .filter((o) => o.statut === "Livrée")
+      .filter((o) => (o.statut || "").toLowerCase() === "livrée")
       .reduce((sum, o) => sum + Number(o.montant || 0), 0);
 
     const commandesAttente = orders.filter(
-      (o) => o.statut === "En attente"
+      (o) => (o.statut || "").toLowerCase().includes("attente")
     ).length;
 
-    const stars = Number(boutique.stars) || 5;
-    const avisCount = Number(boutique.avis) || 0;
+    const monthlyRevenues = MOIS_NOMS.map((monthName, idx) => {
+      const monthNumber = idx + 1;
+      const totalMois = orders
+        .filter(
+          (o) =>
+            o.mois === monthNumber &&
+            (o.statut || "").toLowerCase() === "livrée"
+        )
+        .reduce((sum, o) => sum + Number(o.montant || 0), 0);
+      return { month: monthName, value: totalMois };
+    });
+
+    const stars = Number(currentBoutique.stars) || 5;
+    const avisCount = Number(currentBoutique.avis) || 0;
     const avisPositifsPercent = Math.min(100, Math.round((stars / 5) * 100));
 
     const chartWidth = 640;
     const chartHeight = 200;
-    const maxVal = 18000;
-    const points = MONTHLY_REVENUES.map((item, idx) => {
-      const x = 30 + (idx * (chartWidth - 60)) / (MONTHLY_REVENUES.length - 1);
+    const maxVal = Math.max(...monthlyRevenues.map((m) => m.value), 1000);
+    const points = monthlyRevenues.map((item, idx) => {
+      const x = 30 + (idx * (chartWidth - 60)) / (monthlyRevenues.length - 1);
       const y = chartHeight - 25 - (item.value / maxVal) * (chartHeight - 50);
       return { ...item, x, y };
     });
@@ -156,25 +275,40 @@ class VendorDashboard extends Component {
     return (
       <div className="vd-container">
         <div className="vd-breadcrumb">
-          <Link to="/">Home</Link> &gt; <span>Dashboard</span>
+          <Link to="/">Home</Link> &gt;{" "}
+          <span
+            onClick={this.backToBoutiquesList}
+            style={{ cursor: "pointer", color: "#0284c7" }}
+          >
+            Mes Boutiques
+          </span>{" "}
+          &gt; <span>Dashboard ({currentBoutique.nom})</span>
         </div>
 
         <div className="vd-top-bar">
           <div className="vd-title-group">
+            <button
+              type="button"
+              onClick={this.backToBoutiquesList}
+              className="vd-shortcut-btn secondary"
+              style={{ padding: "8px 14px", marginRight: "12px", cursor: "pointer" }}
+            >
+              <ArrowLeft size={16} />
+              <span>Retour</span>
+            </button>
+
             <span className="vd-vertical-bar"></span>
-            <h2>Tableau de bord (Dashboard)</h2>
+            <h2>Dashboard : {currentBoutique.nom}</h2>
           </div>
 
           <div className="vd-store-pill">
-            <span className="vd-store-title">
-              {boutique.nom || "Yassir Store"}
-            </span>
+            <span className="vd-store-title">{currentBoutique.nom}</span>
             <span
               className={`vd-store-status ${
-                boutique.status === "Ouverte" ? "open" : "closed"
+                (currentBoutique.status || "Ouverte") === "Ouverte" ? "open" : "closed"
               }`}
             >
-              {boutique.status || "Ouverte"}
+              {currentBoutique.status || "Ouverte"}
             </span>
           </div>
         </div>
@@ -190,7 +324,7 @@ class VendorDashboard extends Component {
                 {ventesTotales.toLocaleString("fr-FR")} DH
               </strong>
               <span className="vd-kpi-sub positive">
-                <ArrowUpRight size={14} /> +12.4% vs mois dernier
+                <ArrowUpRight size={14} /> Synchronisé avec la BDD
               </span>
             </div>
           </div>
@@ -236,7 +370,7 @@ class VendorDashboard extends Component {
         <div className="vd-middle-grid">
           <div className="vd-card vd-chart-card">
             <div className="vd-card-header">
-              <h3>Aperçu des Revenus (2026)</h3>
+              <h3>Aperçu des Revenus - {currentBoutique.nom} (2026)</h3>
               {hoveredMonth && (
                 <span className="vd-chart-tooltip">
                   {hoveredMonth.month} :{" "}
@@ -246,10 +380,7 @@ class VendorDashboard extends Component {
             </div>
 
             <div className="vd-svg-wrapper">
-              <svg
-                viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                className="vd-svg-chart"
-              >
+              <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="vd-svg-chart">
                 <defs>
                   <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#0284c7" stopOpacity="0.32" />
@@ -320,9 +451,12 @@ class VendorDashboard extends Component {
                 <span>Ajouter un Produit</span>
               </Link>
 
-              <Link to="/boutique/1" className="vd-shortcut-btn secondary">
+              <Link
+                to={`/boutique/${currentBoutique.id}`}
+                className="vd-shortcut-btn secondary"
+              >
                 <Settings size={18} />
-                <span>Configurer ma Boutique</span>
+                <span>Configurer {currentBoutique.nom}</span>
               </Link>
             </div>
 
@@ -350,7 +484,7 @@ class VendorDashboard extends Component {
                 ></div>
               </div>
               <span className="vd-perf-note">
-                Les données sont synchronisées avec votre session actuelle.
+                Données synchronisées pour {currentBoutique.nom}.
               </span>
             </div>
           </div>
@@ -374,49 +508,59 @@ class VendorDashboard extends Component {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <strong>{order.id}</strong>
-                    </td>
-                    <td>{order.client}</td>
-                    <td>{order.date}</td>
-                    <td className="vd-amount">
-                      {Number(order.montant).toLocaleString("fr-FR")} DH
-                    </td>
-                    <td>
-                      <span
-                        className={`vd-badge ${
-                          order.statut === "Livrée" ? "delivered" : "pending"
-                        }`}
-                      >
-                        {order.statut}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="vd-row-actions">
-                        {order.statut !== "Livrée" && (
-                          <button
-                            type="button"
-                            className="vd-action-btn confirm"
-                            title="Marquer comme livrée"
-                            onClick={() => this.markAsDelivered(order.id)}
-                          >
-                            <Check size={15} />
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className="vd-action-btn delete"
-                          title="Supprimer"
-                          onClick={() => this.deleteOrder(order.id)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                      Aucune commande trouvée pour cette boutique.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  orders.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        <strong>{order.numero}</strong>
+                      </td>
+                      <td>{order.client}</td>
+                      <td>{order.date}</td>
+                      <td className="vd-amount">
+                        {Number(order.montant).toLocaleString("fr-FR")} DH
+                      </td>
+                      <td>
+                        <span
+                          className={`vd-badge ${
+                            (order.statut || "").toLowerCase() === "livrée"
+                              ? "delivered"
+                              : "pending"
+                          }`}
+                        >
+                          {order.statut}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="vd-row-actions">
+                          {(order.statut || "").toLowerCase() !== "livrée" && (
+                            <button
+                              type="button"
+                              className="vd-action-btn confirm"
+                              title="Marquer comme livrée"
+                              onClick={() => this.markAsDelivered(order.id)}
+                            >
+                              <Check size={15} />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className="vd-action-btn delete"
+                            title="Supprimer"
+                            onClick={() => this.deleteOrder(order.id)}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

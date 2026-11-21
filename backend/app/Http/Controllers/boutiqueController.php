@@ -104,4 +104,14 @@ class boutiqueController extends Controller
             'message' => 'La boutique a été supprimer avec succes'
         ],200);
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'id_client');
+    }
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(utilisateur::class, 'utilisateur_id');
+    }
 }

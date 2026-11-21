@@ -11,36 +11,11 @@ import Cartes from "../component/InfosPersonnel/Cartes";
 import MaBoutique from "../pages/profil/MaBoutique";
 import VendorDashboard from "../component/VendorDashboard";
 import { Navigate } from "react-router-dom";
-
-
-const genererCommandes = () => {
-    const statuts = ['Livrée', 'En cours', 'Expédiée', 'Annulée'];
-    let faussesCommandes = [];
-
-    for (let i = 1; i <= 50; i++) {
-        const statutAleatoire = statuts[Math.floor(Math.random() * statuts.length)];
-        
-        const totalAleatoire = (Math.random() * (1500 - 50) + 50).toFixed(2);
-        
-        const jour = Math.floor(Math.random() * 28) + 1;
-        const mois = Math.floor(Math.random() * 12) + 1;
-        const dateAleatoire = `${jour < 10 ? '0'+jour : jour}/${mois < 10 ? '0'+mois : mois}/2024`;
-
-        faussesCommandes.push({
-            numero: `#10025${300 + i}`,
-            date: dateAleatoire,
-            statut: statutAleatoire,
-            total: `${totalAleatoire} MAD`,
-            articlesQuantite: Math.floor(Math.random() * 4) + 1 
-        });
-    }
-    return faussesCommandes;
-};
+import axios from "axios";
 
 class Infos extends Component{
     constructor(props){
         super(props);
-        const commandes = genererCommandes();
         const itemerge = 10;
         const currentPage = 1;
         const startindex = (currentPage - 1) * itemerge; 
@@ -48,16 +23,39 @@ class Infos extends Component{
         this.state = {
             actuelle: "dashboard",
             iscardaction: false,
-            commande : commandes,
+            commande : [],
             currentPage: currentPage,
             startindex: startindex,
             endIndex: endIndex,
             itemerge: itemerge,
-            totalpage: Math.ceil(commandes.length/itemerge),
-            pagin: commandes.slice(startindex,endIndex),
+            totalpage: 0,
+            pagin: [],
             indexac: null,
             b: null
         };
+    }
+    componentDidMount() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem('token');
+
+        if (user && token) {
+            axios.get(`http://127.0.0.1:8000/api/client/${user.id}/commandes`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                const commandesList = Array.isArray(res.data) ? res.data : [];
+                const { itemerge } = this.state;
+                this.setState({
+                    commande: commandesList,
+                    totalpage: Math.ceil(commandesList.length / itemerge),
+                    pagin: commandesList.slice(0, itemerge)
+                });
+            })
+            .catch(err => console.error(err));
+        }
     }
 
     change = (a) => {

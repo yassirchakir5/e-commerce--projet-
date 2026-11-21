@@ -9,6 +9,7 @@ use App\Http\Controllers\boutiqueController;
 use App\Http\Controllers\demandeVendeurController;
 use App\Http\Controllers\categorieController;
 use App\Http\Controllers\cartescontroller;
+use App\Http\Controllers\commadesController;
 
 Route::post('/login', [apiAuthController::class, 'login']);
 Route::post('/inscrit', [apiAuthController::class, 'inscrit']);
@@ -23,6 +24,7 @@ Route::delete('/boutique/delete/{id}', [boutiqueController::class, 'delete']);
 Route::get('/categorie', [categorieController::class, 'afficher']);
 Route::delete('/produit/delete/{id}', [produitController::class, 'supprimer']);
 Route::put('/produit/modifierstatus/{id}', [produitController::class, 'modifierstatus']);
+Route::get('/client/{id}/commandes', [commadesController::class, 'afficher']);
 
 
 Route::middleware('auth:sanctum')->group(function() {
@@ -39,4 +41,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/produit/add', [produitController::class, 'store']);
     Route::get('/produit/afficher', [produitController::class, 'afficher']);
     Route::post('/produit/modifier/{id}', [produitController::class, 'modifier']);
+    Route::get('/vendeur/commandes', [commadesController::class, 'commandesVendeur']);
+    Route::put('/commande/{id}/livrer', [commadesController::class, 'livrer']);
+    Route::delete('/commande/{id}', [commadesController::class, 'supprimer']);
 });

@@ -45,7 +45,7 @@ class Carte extends Component {
                 </h2>
 
                 {cartItems.length === 0 ? (
-                    <div style={{ background: '#ffffff', padding: '40px',  borderRadius: '14px',  textAlign: 'center',  border: '1px solid #e2e8f0', color: '#64748b',  animation: 'cardFadeUp 0.4s ease-out both',  }} >
+                    <div style={{ background: '#ffffff', padding: '40px', borderRadius: '14px', textAlign: 'center', border: '1px solid #e2e8f0', color: '#64748b', animation: 'cardFadeUp 0.4s ease-out both' }}>
                         <h3>Aucun produit existe dans le panier</h3>
                     </div>
                 ) : (
@@ -59,12 +59,12 @@ class Carte extends Component {
                                 const isLiked = likedIds.includes(p.id);
 
                                 return (
-                                    <div key={p.id || index} className={`carte-card ${removingIndex === index ? 'removing' : ''}`}  style={{ animationDelay: `${index * 0.08}s` }}  >
+                                    <div key={p.id || index} className={`carte-card ${removingIndex === index ? 'removing' : ''}`} style={{ animationDelay: `${index * 0.08}s` }}>
                                         <div>
                                             <div className="carte-img-box">
                                                 <img src={p.image} alt={p.name || p.nom} />
-                                                <button type="button"  className="carte-heart-btn" onClick={() => toggleLike(p.id)} >
-                                                    <Heart size={16} color={isLiked ? '#ef4444' : '#64748b'} fill={isLiked ? '#ef4444' : 'none'}  />
+                                                <button type="button" className="carte-heart-btn" onClick={() => this.toggleLike(p.id)}>
+                                                    <Heart size={16} color={isLiked ? '#ef4444' : '#64748b'} fill={isLiked ? '#ef4444' : 'none'} />
                                                 </button>
                                             </div>
 
@@ -72,7 +72,7 @@ class Carte extends Component {
                                                 {p.name || p.nom}
                                             </h3>
 
-                                            <div  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',  gap: '4px',  color: '#64748b', fontSize: '13px', marginBottom: '8px', }} >
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', color: '#64748b', fontSize: '13px', marginBottom: '8px' }}>
                                                 <Star size={15} fill="#facc15" color="#facc15" />
                                                 <span>{p.stars || 0} ({p.countst || 0})</span>
                                             </div>
@@ -81,14 +81,14 @@ class Carte extends Component {
                                                 {unitPrice.toFixed(2)} DH
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center',  justifyContent: 'center', gap: '10px', margin: '10px 0', }} >
-                                                <button type="button" className="carte-qty-btn" onClick={() => updateQuantity(index, qty - 1)} disabled={qty <= 1} >
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '10px 0' }}>
+                                                <button type="button" className="carte-qty-btn" onClick={() => updateQuantity(index, qty - 1)} disabled={qty <= 1}>
                                                     -
                                                 </button>
                                                 <span key={qty} className="carte-pop" style={{ fontWeight: '700', fontSize: '14px', color: '#0f172a' }}>
                                                     Quantité : {qty}
                                                 </span>
-                                                <button  type="button" className="carte-qty-btn" onClick={() => updateQuantity(index, qty + 1)} disabled={p.stock !== undefined && qty >= Number(p.stock)} >
+                                                <button type="button" className="carte-qty-btn" onClick={() => updateQuantity(index, qty + 1)} disabled={p.stock !== undefined && qty >= Number(p.stock)}>
                                                     +
                                                 </button>
                                             </div>
@@ -103,15 +103,15 @@ class Carte extends Component {
 
                                         <div>
                                             <div style={{ display: 'flex', gap: '8px' }}>
-                                                <Link  to={`/product/${p.id}`} className="carte-action-btn" style={{ background: '#f59e0b' }} >
+                                                <Link to={`/product/${p.id}`} className="carte-action-btn" style={{ background: '#f59e0b' }}>
                                                     <Eye size={15} /> Détails
                                                 </Link>
-                                                <button type="button" className="carte-action-btn" style={{ background: '#ef4444' }} onClick={() => this.handleRemoveAnimated(index)} >
+                                                <button type="button" className="carte-action-btn" style={{ background: '#ef4444' }} onClick={() => this.handleRemoveAnimated(index)}>
                                                     <Trash2 size={15} /> Supprimer
                                                 </button>
                                             </div>
 
-                                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: '#64748b', }}  >
+                                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px', color: '#64748b' }}>
                                                 <Store size={15} color="#0284c7" />
                                                 <span>
                                                     Vendu par : <strong style={{ color: '#0f172a' }}>{boutiqueName}</strong>
@@ -130,9 +130,9 @@ class Carte extends Component {
                                     {cartTotal.toFixed(2)} DH
                                 </span>
                             </h2>
-                            <button type="button" className="carte-pay-btn">
+                            <Link to="/checkout" className="btn-payer" style={{ textDecoration: "none", display: "inline-block", textAlign: "center" }}>
                                 Payer ({cartTotal.toFixed(2)} DH)
-                            </button>
+                            </Link>
                         </div>
                     </>
                 )}

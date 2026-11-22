@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\utilisateur;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 
 class apiAuthController extends Controller
 {
@@ -42,7 +43,6 @@ class apiAuthController extends Controller
             $path_CNIfv = $request->file('path_CNIfv')->storeAs("profiles/{$data['name']}-{$data['prenom']}/img-CNI/", 'img_CNIfv.' . $ext , 'public');
         }
 
-
         $user = utilisateur::create([
             'name' => $data['name'],
             'prenom' => $data['prenom'],
@@ -60,11 +60,11 @@ class apiAuthController extends Controller
             'role' => "user"
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $user->sendEmailVerificationNotification();
 
         return response()->json([
-            'user' => $user,
-            'token' => $token
+            'message' => 'Inscription réussie ! Veuillez vérifier votre boîte email pour activer votre compte.',
+            'user' => $user
         ], 201);
     }
 
@@ -81,6 +81,13 @@ class apiAuthController extends Controller
             return response()->json(['message' => 'Email ou password incorrect'], 401);
         }
 
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Veuillez vérifier votre adresse email avant de vous connecter.',
+                'not_verified' => true
+            ], 403);
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -89,6 +96,7 @@ class apiAuthController extends Controller
             'token' => $token
         ], 200);
     }
+
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
 
@@ -96,6 +104,7 @@ class apiAuthController extends Controller
             'message' => 'Deconnexion avec succes'
         ]);
     }
+
     public function delete(Request $request){
         $user = auth()->user();
         
@@ -109,6 +118,7 @@ class apiAuthController extends Controller
         $utilisat->delete();
         return response()->json(['message' => "Le compte a été supprimer"],200);
     }
+
     public function modifier(Request $request){
         $user = auth()->user();
 
@@ -160,6 +170,7 @@ class apiAuthController extends Controller
             'user' => $utilisateur
         ],201);
     }
+
     public function afficherid($id)
     {
         $utilisateur = utilisateur::with(['vendeur.boutiques.produits'])->findOrFail($id);

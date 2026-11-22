@@ -204,6 +204,11 @@ class Derrniprodu extends Component {
             const boutiqueName = p.boutique?.nom || p.vendupa || "Boutique";
             const isFavori = favorisIds.includes(p.id);
 
+            const statusClean = String(p.status || "").trim().toLowerCase();
+            const isDispo = statusClean === "disponible";
+            const hasStock = p.stock === undefined || Number(p.stock) > 0;
+            const canBuy = isDispo && hasStock;
+
             return (
               <div className="carts-der" key={p.id || index}>
                 <div className="image-container">
@@ -233,7 +238,7 @@ class Derrniprodu extends Component {
                 <div className="stars">
                   <Star className="st" />
                   <p>
-                    {p.stars || 0} ({p.countst || 0})
+                    {p.stars || 0} ({p.count_avis ?? p.countst ?? 0})
                   </p>
                 </div>
 
@@ -243,8 +248,24 @@ class Derrniprodu extends Component {
 
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <button
+                    type="button"
                     className="btn-ajout"
-                    onClick={() => addToCart({ ...p, name: prodName, image: prodImg })}
+                    disabled={!canBuy}
+                    onClick={() => {
+                      if (canBuy) {
+                        addToCart({ ...p, name: prodName, image: prodImg });
+                      }
+                    }}
+                    style={{
+                      opacity: canBuy ? 1 : 0.5,
+                      backgroundColor: canBuy ? undefined : "#94a3b8",
+                      cursor: canBuy ? "pointer" : "not-allowed",
+                    }}
+                    title={
+                      !canBuy
+                        ? `Produit ${p.status} - Indisponible à l'achat`
+                        : "Ajouter au panier"
+                    }
                   >
                     Ajouter au panier
                   </button>

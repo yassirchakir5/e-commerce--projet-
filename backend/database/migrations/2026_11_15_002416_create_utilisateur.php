@@ -26,6 +26,7 @@ return new class extends Migration
             $table->date('date_naissance');
             $table->string('pays');
             $table->string('role');
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('path_img_profile');
             $table->timestamps();
         });

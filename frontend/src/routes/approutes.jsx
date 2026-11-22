@@ -19,6 +19,7 @@ import VendorDashboard from '../component/VendorDashboard';
 import MaBoutique from '../pages/profil/MaBoutique';
 import MesProducts from '../component/InfosPersonnel/MesProduct';
 import CategoriePage from '../component/categories/CategoriePage';
+import Checkout from "../component/Checkout";
 
 class Approutes extends Component{
     state = {
@@ -39,6 +40,7 @@ class Approutes extends Component{
                     <Route path='/login' element={<Login connected={this.state.connected} setconnected={this.setconnected}/>}/>
                     <Route path='/inscrit' element={<Inscrit />} />
                     <Route path='/mesproduct' element={<Mesproduct />} />
+                    <Route path="/checkout" element={<Checkout />} />
                     <Route path='/dernierprodu' element={<Derrniprodu filterpro={Products}/>} />
                     <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
                     <Route path='/Component/Carte' element={<Carte />} /> 

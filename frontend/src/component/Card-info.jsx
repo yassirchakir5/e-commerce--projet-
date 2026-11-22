@@ -9,7 +9,6 @@ import { CiBank } from "react-icons/ci";
 import { Store } from "lucide-react";
 import { TbDashboardFilled } from "react-icons/tb";
 
-// Card-info.jsx
 class Cardinfos extends Component {
     render() {
         const { actuelle, change } = this.props;
@@ -36,6 +35,9 @@ class Cardinfos extends Component {
                 <button className={`menu-icon ${actuelle === "boutique" ? "active" : ""}`} onClick={() => change("boutique")}>
                     <Store className="settings" />Ma Boutique
                 </button>
+                <button type="button" className={this.props.actuelle === "vendeur_commandes" ? "active" : ""}  onClick={() => this.props.change("vendeur_commandes")} >
+                    Commandes clients
+                    </button>
                 <button className={`menu-icon ${actuelle === "Cartes" ? "active" : ""}`} onClick={() => change("Cartes")}>
                     <CiBank className="settings" />Mes Cartes
                 </button>

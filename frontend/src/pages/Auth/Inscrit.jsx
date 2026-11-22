@@ -58,21 +58,20 @@ class Inscrit extends Component{
         if (this.state.path_CNIfv) {
             formdata.append('path_CNIfv', this.state.path_CNIfv);
         }
-
         if (this.state.path_CNIfr) {
             formdata.append('path_CNIfr', this.state.path_CNIfr);
         }
 
         try {
             const res = await api.post('/inscrit', formdata);
-            this.setState({ message: 'Inscription réussi' });
-            localStorage.setItem('token', res.data.token);
+            this.setState({ 
+                message: res.data.message || 'Inscription réussie ! Vérifiez votre email.' 
+            });
             setTimeout(() => {
-                this.setState({ redirect: true});
-            }, 3000);
+                this.setState({ redirect: true });
+            }, 3500);
         } catch (err) {
             console.error("Erreur complète:", err);
-            console.log(err.response?.data);
             this.setState({ 
                 message: err.response?.data?.message || "Erreur de connexion au serveur" 
             });

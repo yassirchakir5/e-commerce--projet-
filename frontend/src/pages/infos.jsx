@@ -11,6 +11,7 @@ import Cartes from "../component/InfosPersonnel/Cartes";
 import MaBoutique from "../pages/profil/MaBoutique";
 import VendorDashboard from "../component/VendorDashboard";
 import { Navigate } from "react-router-dom";
+import VendeurCommandes from "../component/InfosPersonnel/VendeurCommandes";
 import axios from "axios";
 
 class Infos extends Component{
@@ -127,6 +128,7 @@ class Infos extends Component{
                             />
                         )}
                         {this.state.actuelle === "boutique" && <MaBoutique />}
+                        {this.state.actuelle === "vendeur_commandes" && <VendeurCommandes />}
                         {this.state.actuelle === "favo" && <Favoris />}
                         {this.state.actuelle === "set" && <Settings />}
                         {this.state.actuelle === "product" && <Mesproduct />}

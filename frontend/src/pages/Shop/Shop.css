@@ -1,3 +1,42 @@
+
+@keyframes shopBannerDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shopSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .boutiques-page {
   max-width: 1320px;
   margin: 0 auto;
@@ -13,6 +52,7 @@
   text-align: center;
   margin-bottom: 26px;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+  animation: shopBannerDown 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .boutiques-banner h1 {
@@ -38,6 +78,7 @@
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 28px;
+  animation: shopSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
 
 .boutiques-select {
@@ -52,6 +93,7 @@
   cursor: pointer;
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
 .boutiques-search-box {
@@ -66,6 +108,7 @@
   position: absolute;
   left: 13px;
   color: #94a3b8;
+  transition: color 0.25s ease;
 }
 
 .boutiques-search-box input {
@@ -77,11 +120,18 @@
   font-size: 14px;
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
 .boutiques-search-box input:focus,
 .boutiques-select:focus {
   border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  transform: translateY(-1px);
+}
+
+.boutiques-search-box:focus-within .search-icon {
+  color: #2563eb;
 }
 
 .boutiques-grid {
@@ -99,12 +149,16 @@
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  animation: shopSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
 }
 
 .boutique-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-7px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+  border-color: #cbd5e1;
 }
 
 .boutique-cover-wrapper {
@@ -118,6 +172,11 @@
   object-fit: cover;
   border-radius: 10px;
   display: block;
+  transition: transform 0.38s ease;
+}
+
+.boutique-card:hover .boutique-cover-img {
+  transform: scale(1.04);
 }
 
 .boutique-avatar {
@@ -136,6 +195,12 @@
   font-weight: 800;
   font-size: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
+}
+
+.boutique-card:hover .boutique-avatar {
+  transform: scale(1.08) rotate(-4deg);
+  background: #2563eb;
 }
 
 .boutique-body {
@@ -173,6 +238,11 @@
   font-weight: 700;
   color: #0f172a;
   margin: 2px 0 0 0;
+  transition: color 0.2s ease;
+}
+
+.boutique-card:hover .boutique-title {
+  color: #2563eb;
 }
 
 .boutique-rating {
@@ -227,11 +297,17 @@
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
 }
 
 .btn-visiter:hover {
   background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+}
+
+.btn-visiter:active {
+  transform: scale(0.95);
 }
 
 .btn-details-boutique {
@@ -243,11 +319,17 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
 }
 
 .btn-details-boutique:hover {
   background-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.28);
+}
+
+.btn-details-boutique:active {
+  transform: scale(0.95);
 }
 
 .boutique-footer {
@@ -267,17 +349,20 @@
   text-align: center;
   color: #64748b;
   padding: 40px 0;
+  animation: shopSlideUp 0.4s ease-out both;
 }
 
 .boutique-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 16px;
+  animation: modalOverlayFade 0.25s ease-out both;
 }
 
 .boutique-modal {
@@ -288,6 +373,7 @@
   width: 100%;
   padding: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalPopIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .modal-close-btn {
@@ -304,6 +390,13 @@
   justify-content: center;
   cursor: pointer;
   color: #334155;
+  transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  transform: rotate(90deg);
 }
 
 .modal-header-info {

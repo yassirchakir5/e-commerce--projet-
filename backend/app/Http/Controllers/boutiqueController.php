@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\boutique;
 use App\Models\Vendeur;
 use Illuminate\Http\Request;
@@ -122,10 +123,49 @@ class boutiqueController extends Controller
         return $this->belongsTo(utilisateur::class, 'utilisateur_id');
     }
 
-    public function afficherboutique($id){
-        $boutique = boutique::withCount('produits')->findOrFail($id);
+    public function afficherboutique($id)
+    {
+        $boutique = boutique::with(['vendeur.utilisateur'])->findOrFail($id);
+
         return response()->json([
             'boutique' => $boutique
-        ],200);
+        ], 200);
+    }
+
+    public function noterBoutique(Request $request, $id)
+    {
+        $request->validate([
+            'note' => 'required|integer|min:1|max:5',
+        ]);
+
+        $user = $request->user();
+        $boutique = boutique::findOrFail($id);
+
+        DB::table('avis_boutiques')->updateOrInsert(
+            [
+                'id_utilisateur' => $user->id,
+                'id_boutique'    => $boutique->id,
+            ],
+            [
+                'note'       => $request->note,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        $stats = DB::table('avis_boutiques')
+            ->where('id_boutique', $boutique->id)
+            ->selectRaw('AVG(note) as moyenne, COUNT(*) as total')
+            ->first();
+
+        $boutique->stars = round($stats->moyenne, 1);
+        $boutique->count_avis = $stats->total;
+        $boutique->save();
+
+        return response()->json([
+            'message'    => 'Merci pour votre évaluation !',
+            'stars'      => $boutique->stars,
+            'count_avis' => $boutique->count_avis,
+        ], 200);
     }
 }

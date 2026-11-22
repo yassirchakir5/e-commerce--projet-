@@ -1,5 +1,5 @@
 import { Component } from "react";
-import '../assets/infos.css';
+import "../assets/infos.css";
 import Infospe from "../component/InfosPersonnel/Infospe";
 import Mesadr from "../component/InfosPersonnel/Mesadr";
 import Commande from "../component/InfosPersonnel/Command";
@@ -103,46 +103,40 @@ class Infos extends Component{
         }))
     }
 
-    render(){
-        return(
-            <div>
-                {!localStorage.getItem('user') && 
-                    <Navigate to="/login" />
-                }
-                <div className="info">
-                    {<Cardinfos change = {this.change} /> }
-                    <div className="second-card">
-                        {this.state.actuelle === "dashboard" && (
-                            <VendorDashboard />
-                        )}
-                        {this.state.actuelle === "infos" && (
-                            <Infospe />
-                        )}
-                        {this.state.actuelle === "adre" && (
-                            <Mesadr />
-                        )}
+    render() {
+    return (
+        <div>
+            {!localStorage.getItem('user') && <Navigate to="/login" />}
+            <div className="info">
+                <Cardinfos change={this.change} actuelle={this.state.actuelle} />
+                <div className="second-card">
+                    <div key={this.state.actuelle} className="info-tab-content">
+                        {this.state.actuelle === "dashboard" && <VendorDashboard />}
+                        {this.state.actuelle === "infos" && <Infospe />}
+                        {this.state.actuelle === "adre" && <Mesadr />}
                         {this.state.actuelle === "commad" && (
-                            <Commande totalpage = {this.state.totalpage} currentPage = {this.state.currentPage} pagin = {this.state.pagin}
-                                togleaction = {this.togleaction} iscardaction = {this.state.iscardaction} b = {this.state.b}prec = {this.prec} suiv = {this.suiv} />
+                            <Commande
+                                totalpage={this.state.totalpage}
+                                currentPage={this.state.currentPage}
+                                pagin={this.state.pagin}
+                                togleaction={this.togleaction}
+                                iscardaction={this.state.iscardaction}
+                                b={this.state.b}
+                                prec={this.prec}
+                                suiv={this.suiv}
+                            />
                         )}
                         {this.state.actuelle === "boutique" && <MaBoutique />}
-                        {this.state.actuelle === "favo" && (
-                            <Favoris  />
-                        )}
-                        {this.state.actuelle === "set" && (
-                            <Settings />
-                        )}
-                        {this.state.actuelle === "product" && (
-                            <Mesproduct />
-                        )}
-                        {this.state.actuelle === "Cartes" && (
-                            <Cartes />
-                        )}
+                        {this.state.actuelle === "favo" && <Favoris />}
+                        {this.state.actuelle === "set" && <Settings />}
+                        {this.state.actuelle === "product" && <Mesproduct />}
+                        {this.state.actuelle === "Cartes" && <Cartes />}
                     </div>
                 </div>
             </div>
-        )
-    }
+        </div>
+    );
+}
 }
 
 export default Infos;

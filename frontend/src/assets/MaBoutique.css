@@ -1,0 +1,56 @@
+@keyframes mbFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.maboutique-container {
+  animation: mbFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stat-box {
+  animation: mbFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.boutique-stats .stat-box:nth-child(1) { animation-delay: 0.05s; }
+.boutique-stats .stat-box:nth-child(2) { animation-delay: 0.12s; }
+.boutique-stats .stat-box:nth-child(3) { animation-delay: 0.19s; }
+
+.stat-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.btn-save-boutique,
+.btn-voir-shop,
+.btn-toggle-status {
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-save-boutique:hover,
+.btn-voir-shop:hover,
+.btn-toggle-status:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.btn-save-boutique:active,
+.btn-voir-shop:active,
+.btn-toggle-status:active {
+  transform: scale(0.95);
+}
+
+.boutique-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.boutique-table tbody tr:hover {
+  background-color: #f8fafc;
+}

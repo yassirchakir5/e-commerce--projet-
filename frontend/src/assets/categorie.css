@@ -1,0 +1,198 @@
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes badgeFloatUp {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-banner-wrapper {
+    max-width: 1260px;
+    margin: 24px auto 10px;
+    padding: 0 20px;
+}
+
+.hero-banner-box {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0284c7 100%);
+    border-radius: 20px;
+    padding: 42px 36px;
+    color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.14);
+    position: relative;
+    overflow: hidden;
+    animation: heroFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-left-content {
+    flex: 1 1 480px;
+    z-index: 2;
+    animation: slideInLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.hero-right-card {
+    flex: 0 1 300px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 2;
+    animation: slideInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-right-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
+.hero-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: #0284c7;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.hero-btn-primary:hover {
+    background: #0369a1;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(2, 132, 199, 0.5);
+}
+
+.hero-btn-primary:active {
+    transform: scale(0.96);
+}
+
+.hero-btn-primary .arrow-icon {
+    transition: transform 0.25s ease;
+}
+
+.hero-btn-primary:hover .arrow-icon {
+    transform: translateX(5px);
+}
+
+.hero-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.25s ease,
+                border-color 0.25s ease;
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
+    transform: translateY(-3px);
+}
+
+.hero-btn-secondary:active {
+    transform: scale(0.96);
+}
+
+.trust-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.trust-badge-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    animation: badgeFloatUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.trust-badge-card:nth-child(1) { animation-delay: 0.25s; }
+.trust-badge-card:nth-child(2) { animation-delay: 0.35s; }
+.trust-badge-card:nth-child(3) { animation-delay: 0.45s; }
+
+.trust-badge-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    border-color: #cbd5e1;
+}
+
+.trust-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.trust-badge-card:hover .trust-icon-box {
+    transform: scale(1.1) rotate(-4deg);
+}

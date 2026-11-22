@@ -6,13 +6,17 @@ class FilteredBoutiques extends Component{
     render(){
         return (
         <div  style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))",  gap: "20px", marginBottom: "30px", }} >
-          {this.props.filteredBoutiques.map((b) => {
+         {this.props.filteredBoutiques.map((b, index) => {
             const statusText = b.status_boutique || "ouverte";
             const isCertifie = b.certifiée === true || b.certifiée === "true";
             const vendeurName = typeof b.vendeur === "string" ? b.vendeur : b.vendeur?.name || "Vendeur";
 
-            return(
-              <div className="boutique-card" key={b.id}>
+            return (
+              <div
+                className="boutique-card"
+                key={b.id}
+                style={{ animationDelay: `${index * 0.07}s` }}
+              >
                 <div className="boutique-cover-wrapper">
                   <img
                     src={

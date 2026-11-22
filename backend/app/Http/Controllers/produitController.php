@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Vendeur;
 use App\Models\Produit;
 use App\Models\boutique;
@@ -142,6 +143,49 @@ class produitController extends Controller
         $produit = Produit::with(['images', 'boutique', 'categorie'])->findOrFail($id);
         return response()->json([
             'produit' => $produit
+        ], 200);
+    }
+    public function afficherall(){
+        $produit = Produit::with(['images', 'boutique','categorie'])->get();
+        return response()->json([
+            'produit' => $produit
+        ],200);
+    }
+
+    public function noterProduit(Request $request, $id)
+    {
+        $request->validate([
+            'note' => 'required|integer|min:1|max:5',
+        ]);
+
+        $user = $request->user();
+        $produit = Produit::findOrFail($id);
+
+        DB::table('avis_produits')->updateOrInsert(
+            [
+                'id_utilisateur' => $user->id,
+                'id_produit'     => $produit->id,
+            ],
+            [
+                'note'       => $request->note,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        $stats = DB::table('avis_produits')
+            ->where('id_produit', $produit->id)
+            ->selectRaw('AVG(note) as moyenne, COUNT(*) as total')
+            ->first();
+
+        $produit->stars = round($stats->moyenne, 1);
+        $produit->count_avis = $stats->total;
+        $produit->save();
+
+        return response()->json([
+            'message'    => 'Merci pour votre évaluation !',
+            'stars'      => $produit->stars,
+            'count_avis' => $produit->count_avis,
         ], 200);
     }
 }

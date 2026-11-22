@@ -25,6 +25,11 @@ class boutique extends Model
         'count_avis'
     ];
 
+    public function vendeur()
+    {
+        return $this->belongsTo(Vendeur::class, 'vendeur_id');
+    }
+
     public function produits(){
         return $this->hasMany(Produit::class, 'id_boutique');
     }

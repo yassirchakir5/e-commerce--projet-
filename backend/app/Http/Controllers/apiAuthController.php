@@ -160,4 +160,25 @@ class apiAuthController extends Controller
             'user' => $utilisateur
         ],201);
     }
+    public function afficherid($id)
+    {
+        $utilisateur = utilisateur::with(['vendeur.boutiques.produits'])->findOrFail($id);
+
+        $boutiques = $utilisateur->vendeur ? $utilisateur->vendeur->boutiques : collect([]);
+
+        $rating = $boutiques->count() > 0 ? round($boutiques->avg('stars') ?? 0, 1) : 0;
+        $reviewsCount = $boutiques->sum('count_avis') ?? 0;
+
+        $tauxReponse = $utilisateur->vendeur->taux_reponse ?? 100;
+
+        return response()->json([
+            'utilisateur' => $utilisateur,
+            'stats' => [
+                'boutiques_count' => $boutiques->count(),
+                'taux_reponse'    => $tauxReponse . '%',
+                'rating'          => $rating,
+                'reviews_count'   => $reviewsCount,
+            ]
+        ], 200);
+    }
 }

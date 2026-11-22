@@ -153,8 +153,12 @@ class Boutiques extends Component {
           </div>
         ) : (
           <div className="boutiques-grid">
-            {filteredBoutiques.map((b) => (
-              <div className="boutique-card" key={b.id}>
+            {filteredBoutiques.map((b, index) => (
+              <div
+                className="boutique-card"
+                key={b.id}
+                style={{ animationDelay: `${index * 0.07}s` }}
+              >
                 <div className="boutique-cover-wrapper">
                   <img
                     src={b.cover}

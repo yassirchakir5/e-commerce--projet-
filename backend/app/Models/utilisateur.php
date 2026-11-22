@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Produit;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -29,6 +30,13 @@ class utilisateur extends Authenticatable
         'role'
     ];
 
+    public function favoris(){
+        return $this->belongsToMany(Produit::class, 'favoris','id_utilisateur','id_produit')->withTimestamps();
+    }
+    public function vendeur()
+    {
+        return $this->hasOne(Vendeur::class, 'utilisateur_id');
+    }
 
     protected $hidden = [
         'password',

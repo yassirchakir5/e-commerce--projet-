@@ -23,18 +23,98 @@ class ProductDetails extends Component {
       currentImageIndex: 0,
       quantity: 1,
       loading: true,
+      addedFeedback: false,
+      liked: false,
+      hoverRating: 0,   
+      ratingMessage: '', 
+      submittingRating: false,
     };
   }
 
   componentDidMount() {
     this.handleafficher();
+    this.checkIfFavori();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.params.id !== this.props.params.id) {
       this.handleafficher();
+      this.checkIfFavori();
     }
   }
+
+  checkIfFavori = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await api.get('/favoris', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const favList = res.data.favoris || [];
+      const isFav = favList.some((item) => String(item.id) === String(this.props.params.id));
+      this.setState({ liked: isFav });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  handleToggleFavori = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Veuillez vous connecter pour ajouter aux favoris.');
+      return;
+    }
+    try {
+      const res = await api.post(
+        `/favoris/toggle/${this.props.params.id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      this.setState({ liked: res.data.is_favori });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  handleRateProduct = async (note) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Veuillez vous connecter pour évaluer ce produit.');
+      return;
+    }
+
+    if (this.state.submittingRating) return;
+    this.setState({ submittingRating: true });
+
+    try {
+      const res = await api.post(
+        `/produit/${this.props.params.id}/noter`,
+        { note },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }
+      );
+
+      this.setState((prevState) => ({
+        product: {
+          ...prevState.product,
+          stars: res.data.stars,
+          count_avis: res.data.count_avis,
+        },
+        ratingMessage: res.data.message || 'Merci pour votre évaluation !',
+        submittingRating: false,
+      }));
+
+      setTimeout(() => this.setState({ ratingMessage: '' }), 3000);
+    } catch (err) {
+      console.error("Erreur lors de l'évaluation :", err);
+      alert("Erreur lors de l'enregistrement de votre évaluation.");
+      this.setState({ submittingRating: false });
+    }
+  };
 
   handleafficher = async () => {
     this.setState({ loading: true });
@@ -115,9 +195,28 @@ class ProductDetails extends Component {
     }
   };
 
+  handleAddClick = (prodObj, qty) => {
+    if (this.context?.addToCart) {
+      this.context.addToCart(prodObj, qty);
+      this.setState({ addedFeedback: true });
+      setTimeout(() => {
+        this.setState({ addedFeedback: false });
+      }, 1200);
+    }
+  };
+
   render() {
-    const { product, imagesList, currentImageIndex, quantity, loading } = this.state;
-    const { addToCart } = this.context || {};
+    const {
+      product,
+      imagesList,
+      currentImageIndex,
+      quantity,
+      loading,
+      addedFeedback,
+      liked,
+      hoverRating,
+      ratingMessage,
+    } = this.state;
 
     if (loading) return <div className="loading">Chargement...</div>;
     if (!product) return <div className="loading">Produit introuvable.</div>;
@@ -128,8 +227,9 @@ class ProductDetails extends Component {
     const maxStock = Number(product.stock) || 0;
     const canBuy = isDispo && maxStock > 0;
 
-    const validStars = Math.min(5, Math.max(0, Number(product.stars) || 0));
-    const reviewsCount = product.countst ?? product.count_avis ?? 0;
+    const stars = Number(product.stars ?? 0);
+    const validStars = Math.min(5, Math.max(0, Math.round(stars)));
+    const reviewsCount = product.count_avis ?? product.countst ?? 0;
 
     const categorieName =
       typeof product.categorie === 'object' && product.categorie !== null
@@ -161,7 +261,6 @@ class ProductDetails extends Component {
       cursor: 'pointer',
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
       zIndex: 3,
-      transition: '0.2s',
     };
 
     return (
@@ -199,6 +298,7 @@ class ProductDetails extends Component {
                 <>
                   <button
                     type="button"
+                    className="pd-nav-btn"
                     onClick={this.handlePrevImage}
                     title="Image précédente"
                     style={{ ...navBtnStyle, left: '12px' }}
@@ -208,6 +308,7 @@ class ProductDetails extends Component {
 
                   <button
                     type="button"
+                    className="pd-nav-btn"
                     onClick={this.handleNextImage}
                     title="Image suivante"
                     style={{ ...navBtnStyle, right: '12px' }}
@@ -235,9 +336,10 @@ class ProductDetails extends Component {
               )}
 
               <img
+                key={mainImageSrc}
                 src={mainImageSrc}
                 alt={prodName}
-                className="main-image"
+                className="main-image pd-animated-img"
                 style={{
                   maxWidth: '100%',
                   maxHeight: '100%',
@@ -263,6 +365,7 @@ class ProductDetails extends Component {
                     <button
                       key={idx}
                       type="button"
+                      className="pd-thumb-btn"
                       onClick={() => this.setState({ currentImageIndex: idx })}
                       style={{
                         flexShrink: 0,
@@ -275,7 +378,6 @@ class ProductDetails extends Component {
                         boxShadow: isSelected ? '0 0 0 2px rgba(2, 132, 199, 0.2)' : 'none',
                         cursor: 'pointer',
                         opacity: isSelected ? 1 : 0.72,
-                        transition: '0.2s',
                         overflow: 'hidden',
                       }}
                     >
@@ -299,13 +401,42 @@ class ProductDetails extends Component {
           <div className="product-info">
             <h1 className="product-title">{prodName}</h1>
 
-            <div className="product-rating">
-              {'⭐'.repeat(validStars)}
-              {'☆'.repeat(5 - validStars)}
-              <span className="reviews-count">
-                {' '}
-                {validStars} ({reviewsCount})
-              </span>
+            <div style={{ margin: '8px 0' }}>
+              <div
+                className="product-rating"
+                style={{ display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer' }}
+                onMouseLeave={() => this.setState({ hoverRating: 0 })}
+                title="Cliquez sur une étoile pour évaluer ce produit"
+              >
+                {[1, 2, 3, 4, 5].map((starValue) => {
+                  const isFilled = hoverRating ? starValue <= hoverRating : starValue <= validStars;
+                  return (
+                    <span
+                      key={starValue}
+                      onMouseEnter={() => this.setState({ hoverRating: starValue })}
+                      onClick={() => this.handleRateProduct(starValue)}
+                      style={{
+                        fontSize: '22px',
+                        color: isFilled ? '#f59e0b' : '#cbd5e1',
+                        transition: 'transform 0.15s ease, color 0.15s ease',
+                        transform: hoverRating === starValue ? 'scale(1.22)' : 'scale(1)',
+                        userSelect: 'none',
+                      }}
+                    >
+                      ★
+                    </span>
+                  );
+                })}
+                <span className="reviews-count" style={{ marginLeft: '8px' }}>
+                  {stars} ({reviewsCount} avis)
+                </span>
+              </div>
+
+              {ratingMessage && (
+                <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '600', marginTop: '4px' }}>
+                  ✓ {ratingMessage}
+                </div>
+              )}
             </div>
 
             <div className="product-price">{product.prix} DH</div>
@@ -320,9 +451,36 @@ class ProductDetails extends Component {
               </p>
             )}
 
-            <div style={{ display: 'flex',  alignItems: 'center',  justifyContent: 'space-between',  gap: '12px',   padding: '12px 16px',  margin: '14px 0',  background: '#f8fafc',  border: '1px solid #e2e8f0',  borderRadius: '12px',  }}  >
+            <div
+              className="pd-store-card"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                padding: '12px 16px',
+                margin: '14px 0',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div  style={{  width: '42px', height: '42px',   borderRadius: '10px',  background: '#0f172a',   color: '#ffffff',  display: 'flex',  alignItems: 'center', justifyContent: 'center', fontWeight: '700',  fontSize: '15px', flexShrink: 0,  }} >
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '10px',
+                    background: '#0f172a',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: '700',
+                    fontSize: '15px',
+                    flexShrink: 0,
+                  }}
+                >
                   {boutiqueName.slice(0, 2).toUpperCase()}
                 </div>
 
@@ -332,7 +490,15 @@ class ProductDetails extends Component {
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     {boutiqueId ? (
-                      <Link  to={`/Boutique/${boutiqueId}`} style={{  fontSize: '15px',  fontWeight: '700',  color: '#0284c7',  textDecoration: 'none',  }}  >
+                      <Link
+                        to={`/Boutique/${boutiqueId}`}
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: '700',
+                          color: '#0284c7',
+                          textDecoration: 'none',
+                        }}
+                      >
                         {boutiqueName}
                       </Link>
                     ) : (
@@ -344,11 +510,35 @@ class ProductDetails extends Component {
                     {product.boutique && (
                       String(product.boutique.certifiée).toLowerCase() === 'true' ||
                       product.boutique.certifiée === true ? (
-                        <span style={{  display: 'inline-flex', alignItems: 'center',  gap: '4px',  fontSize: '11px',  fontWeight: '600',  color: '#15803d', background: '#dcfce7',  padding: '2px 8px',  borderRadius: '999px',  }} >
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            color: '#15803d',
+                            background: '#dcfce7',
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                          }}
+                        >
                           <Check size={12} strokeWidth={3} /> Certifié
                         </span>
                       ) : (
-                        <span style={{  display: 'inline-flex',   alignItems: 'center',  gap: '4px',  fontSize: '11px', fontWeight: '600',  color: '#64748b',   background: '#e2e8f0',  padding: '2px 8px',  borderRadius: '999px',  }}  >
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            color: '#64748b',
+                            background: '#e2e8f0',
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                          }}
+                        >
                           <X size={12} strokeWidth={3} /> Non certifié
                         </span>
                       )
@@ -358,7 +548,24 @@ class ProductDetails extends Component {
               </div>
 
               {boutiqueId && (
-                <Link  to={`/Boutique/${boutiqueId}`} style={{  display: 'inline-flex', alignItems: 'center',  gap: '6px',  padding: '7px 12px',  borderRadius: '8px',  background: '#ffffff',  border: '1px solid #cbd5e1',  color: '#0f172a',  fontSize: '13px', fontWeight: '600', textDecoration: 'none',  whiteSpace: 'nowrap',  }}  >
+                <Link
+                  to={`/Boutique/${boutiqueId}`}
+                  className="pd-visit-btn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '7px 12px',
+                    borderRadius: '8px',
+                    background: '#ffffff',
+                    border: '1px solid #cbd5e1',
+                    color: '#0f172a',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   <Store size={15} color="#0284c7" />
                   Visiter
                 </Link>
@@ -375,32 +582,109 @@ class ProductDetails extends Component {
               Stock disponible : <strong>{maxStock}</strong>
             </div>
 
-            <div  style={{  display: 'flex', alignItems: 'center', gap: '14px',  margin: '18px 0',   }} >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '18px 0' }}>
               <span style={{ fontWeight: '600', color: '#0f172a' }}>Quantité :</span>
-              <div  style={{ display: 'inline-flex', alignItems: 'center',  border: '1px solid #cbd5e1',  borderRadius: '10px',  overflow: 'hidden',  background: '#ffffff', }}  >
-                <button type="button"  onClick={() => this.handleQuantityChange('dec')} disabled={!canBuy || quantity <= 1}
-                  style={{  width: '36px',  height: '36px',   border: 'none',  background: '#f8fafc', cursor: !canBuy || quantity <= 1 ? 'not-allowed' : 'pointer', display: 'flex',  alignItems: 'center', justifyContent: 'center', color: '#0f172a',  }}  >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  background: '#ffffff',
+                }}
+              >
+                <button
+                  type="button"
+                  className="pd-qty-btn"
+                  onClick={() => this.handleQuantityChange('dec')}
+                  disabled={!canBuy || quantity <= 1}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    border: 'none',
+                    background: '#f8fafc',
+                    cursor: !canBuy || quantity <= 1 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#0f172a',
+                  }}
+                >
                   <Minus size={16} />
                 </button>
 
-                <input type="number" min={1}  max={maxStock} value={quantity} disabled={!canBuy}
-                  onChange={this.handleQuantityInput} style={{  width: '52px',   height: '36px', border: 'none', borderLeft: '1px solid #e2e8f0',  borderRight: '1px solid #e2e8f0', textAlign: 'center',  fontWeight: '700', fontSize: '15px', outline: 'none',   }}  />
+                <input
+                  key={quantity}
+                  type="number"
+                  min={1}
+                  max={maxStock}
+                  value={quantity}
+                  disabled={!canBuy}
+                  onChange={this.handleQuantityInput}
+                  className="pd-qty-pop"
+                  style={{
+                    width: '52px',
+                    height: '36px',
+                    border: 'none',
+                    borderLeft: '1px solid #e2e8f0',
+                    borderRight: '1px solid #e2e8f0',
+                    textAlign: 'center',
+                    fontWeight: '700',
+                    fontSize: '15px',
+                    outline: 'none',
+                  }}
+                />
 
-                <button type="button"  onClick={() => this.handleQuantityChange('inc')} disabled={!canBuy || quantity >= maxStock}
-                  style={{  width: '36px', height: '36px',  border: 'none', background: '#f8fafc', cursor: !canBuy || quantity >= maxStock ? 'not-allowed' : 'pointer',  display: 'flex',  alignItems: 'center', justifyContent: 'center', color: '#0f172a',  }} >
+                <button
+                  type="button"
+                  className="pd-qty-btn"
+                  onClick={() => this.handleQuantityChange('inc')}
+                  disabled={!canBuy || quantity >= maxStock}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    border: 'none',
+                    background: '#f8fafc',
+                    cursor: !canBuy || quantity >= maxStock ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#0f172a',
+                  }}
+                >
                   <Plus size={16} />
                 </button>
               </div>
             </div>
 
             <div className="product-actions">
-              <button className="btn-add-cart"  disabled={!canBuy}
-               style={{ opacity: canBuy ? 1 : 0.55, cursor: canBuy ? 'pointer' : 'not-allowed', }} 
-               onClick={() => addToCart && addToCart( { ...product, name: prodName, image: mainImageSrc }, quantity  )  } >
-                Ajouter au panier 🛒
+              <button
+                className="btn-add-cart"
+                disabled={!canBuy}
+                style={{
+                  opacity: canBuy ? 1 : 0.55,
+                  cursor: canBuy ? 'pointer' : 'not-allowed',
+                  backgroundColor: addedFeedback ? '#16a34a' : undefined,
+                }}
+                onClick={() =>
+                  this.handleAddClick(
+                    { ...product, name: prodName, image: mainImageSrc },
+                    quantity
+                  )
+                }
+              >
+                {addedFeedback ? 'Ajouté au panier ✓' : 'Ajouter au panier 🛒'}
               </button>
 
-              <button type="button" className="btn-wishlist"> ♡ </button>
+              <button
+                type="button"
+                className="btn-wishlist"
+                onClick={this.handleToggleFavori}
+                style={{ color: liked ? '#ef4444' : undefined }}
+              >
+                {liked ? '♥' : '♡'}
+              </button>
 
               <Link to="/" className="btn-return">
                 Retour aux produits

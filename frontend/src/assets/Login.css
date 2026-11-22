@@ -108,3 +108,100 @@ body{
     background-color: red;
     color: white;
 }
+
+
+@keyframes authCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes authFieldSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes authMsgPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(-8px);
+    }
+    60% {
+        transform: scale(1.02) translateY(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.card-login {
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    animation: authCardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.connex h1 {
+    animation: authFieldSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.form-l:nth-of-type(1) {
+    animation: authFieldSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.form-l:nth-of-type(2) {
+    animation: authFieldSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both;
+}
+
+.input-group input {
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #0C385F;
+    box-shadow: 0 0 0 4px rgba(12, 56, 95, 0.14);
+    transform: translateY(-2px);
+}
+
+.btn-connect {
+    font-size: 17px;
+    font-weight: 600;
+    animation: authFieldSlide 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.34s both;
+    transition: transform 0.2s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-connect:hover {
+    opacity: 1;
+    background-color: #164e82;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(12, 56, 95, 0.28);
+}
+
+.btn-connect:active {
+    transform: scale(0.96);
+}
+
+.connexion-messge {
+    text-align: center;
+    animation: authMsgPop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.form-a a {
+    display: inline-block;
+    transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.form-a a:hover {
+    transform: translateX(3px);
+}

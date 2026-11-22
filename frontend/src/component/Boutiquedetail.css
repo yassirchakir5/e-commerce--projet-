@@ -1,3 +1,58 @@
+@keyframes pbFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pbBannerZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pbAvatarPop {
+  from {
+    opacity: 0;
+    transform: scale(0.75) translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pbSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pbSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .pb-container {
   width: 100%;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -9,6 +64,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 16px;
+  animation: pbFadeDown 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .pb-vertical-bar {
@@ -34,6 +90,12 @@
   overflow: hidden;
   position: relative;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  animation: pbBannerZoomIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.pb-banner:hover {
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
 }
 
 .pb-banner-overlay {
@@ -56,6 +118,7 @@
   font-weight: 800;
   margin: 0;
   letter-spacing: -0.5px;
+  animation: pbSlideLeft 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
 }
 
 .pb-bottom-section {
@@ -71,6 +134,7 @@
   flex-direction: column;
   align-items: flex-start;
   min-width: 220px;
+  animation: pbSlideLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
 }
 
 .pb-avatar {
@@ -89,6 +153,13 @@
   position: relative;
   z-index: 2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  animation: pbAvatarPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+  transition: transform 0.28s ease, background-color 0.28s ease;
+}
+
+.pb-avatar:hover {
+  transform: scale(1.07) rotate(-4deg);
+  background-color: #0284c7;
 }
 
 .pb-title-row {
@@ -133,6 +204,11 @@
   font-size: 12px;
   font-weight: 600;
   margin-top: 6px;
+  transition: transform 0.2s ease;
+}
+
+.pb-certified-badge:hover {
+  transform: scale(1.04);
 }
 
 .pb-certified-icon {
@@ -163,21 +239,43 @@
   align-items: center;
   gap: 14px;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  box-sizing: border-box;
+  animation: pbSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.pb-stats-grid .pb-stat-card:nth-child(1) { animation-delay: 0.22s; }
+.pb-stats-grid .pb-stat-card:nth-child(2) { animation-delay: 0.32s; }
+.pb-stats-grid .pb-stat-card:nth-child(3) { animation-delay: 0.42s; }
+
+.pb-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
 }
 
 .pb-icon-blue {
   color: #2563eb;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
 }
 
 .pb-icon-green {
   color: #16a34a;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
 }
 
 .pb-icon-gold {
   color: #d97706;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.pb-stat-card:hover .pb-icon-blue,
+.pb-stat-card:hover .pb-icon-green,
+.pb-stat-card:hover .pb-icon-gold {
+  transform: scale(1.15);
 }
 
 .pb-stat-info {
@@ -199,6 +297,57 @@
   margin-top: 2px;
 }
 
+.pb-product-card {
+  animation: pbSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+}
+
+.pb-product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.1) !important;
+  border-color: #cbd5e1 !important;
+}
+
+.pb-product-card img {
+  transition: transform 0.35s ease;
+}
+
+.pb-product-card:hover img {
+  transform: scale(1.06);
+}
+
+.pb-fav-btn {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.pb-fav-btn:hover {
+  transform: scale(1.14);
+  background-color: #fff1f2 !important;
+}
+
+.pb-fav-btn:active {
+  transform: scale(0.92);
+}
+
+.pb-product-card .btn-visiter,
+.pb-product-card .btn-details-boutique {
+  transition: transform 0.18s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pb-product-card .btn-visiter:hover:not(:disabled),
+.pb-product-card .btn-details-boutique:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.07);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14);
+}
+
+.pb-product-card .btn-visiter:active:not(:disabled),
+.pb-product-card .btn-details-boutique:active {
+  transform: scale(0.95);
+}
+
 @media (max-width: 900px) {
   .pb-bottom-section {
     flex-direction: column;
@@ -217,7 +366,4 @@
   .pb-banner-overlay {
     padding-left: 24px;
   }
-}
-.pb-stat-card {
-  box-sizing: border-box;
 }

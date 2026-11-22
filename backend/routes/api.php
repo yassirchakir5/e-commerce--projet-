@@ -10,6 +10,7 @@ use App\Http\Controllers\demandeVendeurController;
 use App\Http\Controllers\categorieController;
 use App\Http\Controllers\cartescontroller;
 use App\Http\Controllers\commadesController;
+use App\Http\Controllers\FavorisController;
 
 Route::post('/login', [apiAuthController::class, 'login']);
 Route::post('/inscrit', [apiAuthController::class, 'inscrit']);
@@ -27,9 +28,12 @@ Route::put('/produit/modifierstatus/{id}', [produitController::class, 'modifiers
 Route::get('/client/{id}/commandes', [commadesController::class, 'afficher']);
 Route::get('/categorie/{nom}/produits', [produitController::class, 'parCategorie']);
 Route::get('/boutique/produit/{id}', [produitController::class, 'produitparboutique']);
-Route::get('/produit/{id}', [produitController::class, 'afficherparid']);
+Route::get('/produit/all', [produitController::class, 'afficherall']);
+Route::get('/produit/{id}', [produitController::class, 'afficherparid'])->whereNumber('id');
 Route::get('/boutique/all', [boutiqueController::class, 'toutesBoutiques']);
 Route::get('/boutique/{id}', [boutiqueController::class, 'afficherboutique']);
+Route::get('/profile/{id}', [apiAuthController::class, 'afficherid']);
+
 
 
 Route::middleware('auth:sanctum')->group(function() {
@@ -49,4 +53,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/vendeur/commandes', [commadesController::class, 'commandesVendeur']);
     Route::put('/commande/{id}/livrer', [commadesController::class, 'livrer']);
     Route::delete('/commande/{id}', [commadesController::class, 'supprimer']);
+    Route::get('/favoris', [FavorisController::class, 'afficher']);
+    Route::post('/favoris/toggle/{id_produit}', [FavorisController::class, 'toggle']);
+    Route::post('/boutique/{id}/noter', [boutiqueController::class, 'noterBoutique']);
+    Route::post('/produit/{id}/noter', [produitController::class, 'noterProduit']);
 });

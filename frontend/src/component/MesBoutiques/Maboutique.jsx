@@ -2,6 +2,7 @@ import { Component } from "react";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { Store, Save, ExternalLink, Package, CheckCircle, Clock, X } from "lucide-react";
+import "../../assets/MaBoutique.css";
 
 class GérerMaBoutique extends Component{
     render(){

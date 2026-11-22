@@ -25,6 +25,11 @@ Route::get('/categorie', [categorieController::class, 'afficher']);
 Route::delete('/produit/delete/{id}', [produitController::class, 'supprimer']);
 Route::put('/produit/modifierstatus/{id}', [produitController::class, 'modifierstatus']);
 Route::get('/client/{id}/commandes', [commadesController::class, 'afficher']);
+Route::get('/categorie/{nom}/produits', [produitController::class, 'parCategorie']);
+Route::get('/boutique/produit/{id}', [produitController::class, 'produitparboutique']);
+Route::get('/produit/{id}', [produitController::class, 'afficherparid']);
+Route::get('/boutique/all', [boutiqueController::class, 'toutesBoutiques']);
+Route::get('/boutique/{id}', [boutiqueController::class, 'afficherboutique']);
 
 
 Route::middleware('auth:sanctum')->group(function() {

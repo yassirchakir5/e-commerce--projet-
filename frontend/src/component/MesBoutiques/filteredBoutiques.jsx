@@ -5,22 +5,11 @@ import { Package } from "lucide-react";
 class FilteredBoutiques extends Component{
     render(){
         return (
-        <div
-        
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))",
-            gap: "20px",
-            marginBottom: "30px",
-          }}
-        >
+        <div  style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))",  gap: "20px", marginBottom: "30px", }} >
           {this.props.filteredBoutiques.map((b) => {
             const statusText = b.status_boutique || "ouverte";
             const isCertifie = b.certifiée === true || b.certifiée === "true";
-            const vendeurName =
-              typeof b.vendeur === "string"
-                ? b.vendeur
-                : b.vendeur?.name || "Vendeur";
+            const vendeurName = typeof b.vendeur === "string" ? b.vendeur : b.vendeur?.name || "Vendeur";
 
             return(
               <div className="boutique-card" key={b.id}>
@@ -70,11 +59,11 @@ class FilteredBoutiques extends Component{
 
                   <div className="boutique-products-count">
                     <Package size={16} color="#b45309" />
-                    <span>{b.produitsCount || 0} Produits</span>
+                    <span>{b.produitsCount } Produits</span>
                   </div>
 
                   <div className="boutique-actions">
-                    <Link to="/shop" className="btn-visiter">
+                    <Link to={`/boutique/${b.id}`} className="btn-visiter">
                       Visiter la boutique
                     </Link>
                     <button

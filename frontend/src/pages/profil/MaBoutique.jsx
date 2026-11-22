@@ -25,9 +25,13 @@ class MaBoutique extends Component {
       loading: false, vendeur: null, currentPage: "", nom: "", desc: "",
       ville: "", email: "", numtel: "", categorie: null, logo_boutique: null,
       selectedBoutiqueId: null, nomBoutique: "", description: "", telephone: "",
-      isOpen: false, savedMessage: false, message: "", myProducts: Products.slice(0, 6),
+      isOpen: false, savedMessage: false, message: "", myProducts: [],
       errors: {}, errormessage: ""
     };
+  }
+
+  handleproduitboutique = async () => {
+    
   }
 
   checkvendeur = async () => {
@@ -55,6 +59,7 @@ class MaBoutique extends Component {
   componentDidMount() {
     this.checkvendeur();
     this.handleafficher();
+    this.handleproduitboutique();
   }
 
   handleChange = (e) => {
@@ -145,7 +150,7 @@ class MaBoutique extends Component {
     }
   };
 
-  openDetails = (boutique) => {
+  openDetails = async (boutique) => {
   const currentStatus = boutique.status_boutique || "ouverte";
   this.setState({
     currentPage: "mesboutiques", selectedBoutiqueId: boutique.id,
@@ -153,6 +158,12 @@ class MaBoutique extends Component {
     telephone: boutique.numtel || boutique.telephone || "", ville: boutique.ville || "",
     isOpen: currentStatus.toLowerCase() === "ouverte", savedMessage: false,
   });
+  try{
+      const res = await api.get('/boutique/produit/' + boutique.id);
+      this.setState({ myProducts: res.data.produit });
+    }catch(err){
+      console.log(err);
+    }
 };
 
   handleSave = async (e) => {
@@ -206,16 +217,22 @@ class MaBoutique extends Component {
     setTimeout(() => {this.handleafficher()},2500);
   }
 
-  toggleProductStatus = (id) => {
-    this.setState((prevState) => ({
-      myProducts: prevState.myProducts.map((p) =>
-        p.id === id
-          ? {
-              ...p, status: p.status === "disponible" ? "En-révision" : "disponible",
-            }
-          : p
-      ),
-    }));
+  toggleProductStatus = async (prod) => {
+    const newStatus = (prod.status || "") === "Disponible"  ? "En-révision" : "Disponible";
+
+    try {
+      await api.put(`/produit/modifierstatus/${prod.id}`, {
+        status: newStatus,
+      });
+
+      this.setState((prevState) => ({
+        myProducts: prevState.myProducts.map((p) =>
+          p.id === prod.id ? { ...p, status: newStatus } : p
+        ),
+      }));
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour du statut :", err);
+    }
   };
 
   toggleajoutcurrentpag = () => {
@@ -287,7 +304,8 @@ class MaBoutique extends Component {
           <GérerMaBoutique toggleajoutcurrentpag={this.toggleajoutcurrentpag}  myProducts={myProducts} 
           dispoCount={dispoCount} revCount={revCount} handleSave={this.handleSave} isOpen={isOpen}
           handleChange={this.handleChange} nomBoutique={nomBoutique} telephone={telephone} ville={ville} description={description} 
-          handledelete={this.handledelete} savedMessage={savedMessage} message={this.state.message}/>
+          handledelete={this.handledelete} savedMessage={savedMessage} selectedBoutiqueId={this.state.selectedBoutiqueId}
+          message={this.state.message} toggleProductStatus={this.toggleProductStatus}/>
         )}
       </div>
     );

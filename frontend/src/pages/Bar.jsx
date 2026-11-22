@@ -18,7 +18,8 @@ function withRouter(Component){
 class Bar extends Component{
     state = {
         redirecte: false,
-        user: null
+        user: null,
+        categorie: []
     };
     handlelogout = async () => {
         try{
@@ -33,13 +34,25 @@ class Bar extends Component{
             this.setState({ redirecte: true});
         }
     };
+
+    componentDidMount(){
+        this.handlegetcategorie();
+        this.loadUser();
+    }
+
+    handlegetcategorie = async () => {
+        try{
+            const res = await api.get('/categorie');
+            this.setState({ categorie: res.data.categorie });
+        }catch(err){
+            console.log(err);
+        }
+    }
+
     loadUser = () => {
         const user =  JSON.parse(localStorage.getItem('user'));
         this.setState({user: user});
         
-    }
-    componentDidMount(){
-        this.loadUser();
     }
     componentDidUpdate(prevProps){
         if(prevProps.connected !== this.props.connected){
@@ -52,7 +65,7 @@ class Bar extends Component{
             <Navigate to="/login"/>
         }
         const {connected,navigate} = this.props;
-        const { cartCount,cartItems, removeFromCart } = this.context;
+        const { cartCount, cartItems, cartTotal, removeFromCart } = this.context;
         const info = this.state.user;
         return(
             <div className="bar">
@@ -63,12 +76,11 @@ class Bar extends Component{
                     <div className="dropdown">
                         <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>
                         <div className="dropdown-content">
-                            <h3>Electronique</h3>
-                            <Link to="/categorie/telephone">Phones</Link>
-                            <Link to="/categorie/Computer">Computer</Link>
-                            <Link to="/categorie/Casques">Casques</Link>
-                            <h3>Vétements</h3>
-                            <Link to="/categorie/Vetements">Vétement</Link>
+                            {this.state.categorie.map((c,index) => {
+                                return (
+                                    <Link key={c.id || index} to={`/categorie/${c.nom}`}>{c.nom}</Link>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
@@ -80,36 +92,49 @@ class Bar extends Component{
                             <div className="cart-container cart-dropdown-wrapper">
                                 <a className="Shopicon"><CiShoppingCart /></a>
                                 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-                                <div className="cart-dropdown-content">
+                                <div className="cart-dropdown-content" style={{ minWidth: '320px', textAlign: 'left' }}>
                                     {cartItems.length === 0 ? (
-                                        <p style={{textAlign: 'center', padding: '15px', margin: 0}}>Votre panier est vide</p>
+                                        <p style={{ textAlign: 'center', padding: '15px', margin: 0 }}>Votre panier est vide</p>
                                     ) : (
                                         <div>
                                             <div className="cart-items-list">
-                                                {cartItems.map((item, index) => (
-                                                    <div key={index} className="cart-mini-item">
-                                                        <img src={item.image} alt={item.name} className="cart-mini-img"/>
-                                                        <div className="cart-mini-info">
-                                                            <h4>{item.name}</h4>
-                                                            <p>{item.prix} DH</p>
+                                                {cartItems.map((item, index) => {
+                                                    const qty = Number(item.quantity) || 1;
+                                                    const subTotal = (Number(item.prix) || 0) * qty;
+                                                    return (
+                                                        <div key={item.id || index} className="cart-mini-item">
+                                                            <img src={item.image} alt={item.name} className="cart-mini-img" style={{ width: '54px', height: '54px', objectFit: 'contain',  background: '#f8fafc',  border: '1px solid #e2e8f0', borderRadius: '8px', flexShrink: 0, }} />
+                                                            <div className="cart-mini-info" style={{ flex: 1, minWidth: 0 }}>
+                                                                <h4 style={{  margin: 0,  fontSize: '14px',  whiteSpace: 'nowrap', overflow: 'hidden',  textOverflow: 'ellipsis',  }} >
+                                                                    {item.name}
+                                                                </h4>
+                                                                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b', fontWeight: 'normal' }}>
+                                                                    {item.prix} DH × <strong style={{ color: '#0f172a' }}>{qty}</strong>
+                                                                </p>
+                                                                <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#dc2626', fontWeight: '700' }}>
+                                                                    {subTotal.toFixed(2)} DH
+                                                                </p>
+                                                            </div>
+                                                            <button className="btn-remove-item"  onClick={() => removeFromCart(index)}  title="Retirer du panier"  >
+                                                                ✖
+                                                            </button>
                                                         </div>
-                                                        <button 
-                                                            className="btn-remove-item" 
-                                                            onClick={() => removeFromCart(index)}
-                                                            title="Retirer du panier"
-                                                        >
-                                                            ✖
-                                                        </button>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
-                                            <div style={{display: 'flex',justifyContent: 'space-between',gap: '10px'}}>
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between',  alignItems: 'center', padding: '10px 4px',  marginTop: '8px',  borderTop: '1px solid #e2e8f0',  fontWeight: 'bold', fontSize: '15px',  color: '#0f172a',  }} >
+                                                <span>Total :</span>
+                                                <span style={{ color: '#dc2626' }}>{cartTotal.toFixed(2)} DH</span>
+                                            </div>
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
                                                 <button onClick={() => navigate("/Component/Carte")} className="btn-aller-panier">
-                                                Voir le panier
-                                            </button>
-                                            <button  className="btn-aller-panier">
-                                                Payer
-                                            </button>
+                                                    Voir le panier
+                                                </button>
+                                                <button className="btn-aller-panier">
+                                                    Payer
+                                                </button>
                                             </div>
                                         </div>
                                     )}
@@ -144,4 +169,3 @@ class Bar extends Component{
 }
 
 export default withRouter(Bar);
-

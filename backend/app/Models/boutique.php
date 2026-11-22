@@ -24,4 +24,8 @@ class boutique extends Model
         'stars',
         'count_avis'
     ];
+
+    public function produits(){
+        return $this->hasMany(Produit::class, 'id_boutique');
+    }
 }

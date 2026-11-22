@@ -1,97 +1,39 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import {Store,Search,Package,MapPin,Phone,Clock,X,CheckCircle} from "lucide-react";
-import boutiquesData from "../../data/Boutiques.json";
+import { Store, Search, Package, MapPin, Phone, Clock, X, CheckCircle, Check } from "lucide-react";
+import api from "../../api/api";
 import "./Shop.css";
-import { Check } from "lucide-react";
 
 class Boutiques extends Component {
   constructor(props) {
     super(props);
 
-    const userShop = JSON.parse(localStorage.getItem("ma_boutique_config"));
-
     this.state = {
       search: "",
       filterType: "all",
       selectedBoutique: null,
-      boutiques: [
-        {
-          id: 1,
-          nom: userShop?.nomBoutique || "Yassir Store",
-          logoText: "YS",
-          cover:
-            "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80",
-          status: userShop ? (userShop.isOpen ? "Ouverte" : "Fermée") : "Ouverte",
-          certifie: false,
-          stars: 4,
-          avis: 45,
-          categorie: "Informatique",
-          description:
-            userShop?.description || "Matériel informatique & Smartphones",
-          produitsCount: 15,
-          vendeur: "Yassir",
-          ville: userShop?.ville || "Ouled Teima / Agadir",
-          telephone: userShop?.telephone || "0777040217",
-          horaires: "09:00 - 20:00",
-        },
-        {
-          id: 2,
-          nom: "Electro Marrakesh",
-          logoText: "EM",
-          cover:
-            "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&q=80",
-          status: "Ouverte",
-          certifie: false,
-          stars: 4,
-          avis: 45,
-          categorie: "Informatique",
-          description: "Matériel informatique & Gaming",
-          produitsCount: 15,
-          vendeur: "Yassir",
-          ville: "Marrakech",
-          telephone: "0661234567",
-          horaires: "09:30 - 21:00",
-        },
-        {
-          id: 3,
-          nom: "Fashion Style",
-          logoText: "FS",
-          cover:
-            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80",
-          status: "Ouverte",
-          certifie: true,
-          stars: 4,
-          avis: 45,
-          categorie: "Mode",
-          description: "Vêtements et accessoires tendance",
-          produitsCount: 42,
-          vendeur: "Yassir",
-          ville: "Agadir",
-          telephone: "0662987654",
-          horaires: "10:00 - 22:00",
-        },
-        {
-          id: 4,
-          nom: "Casablanca Tech",
-          logoText: "CT",
-          cover:
-            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
-          status: "Ouverte",
-          certifie: false,
-          stars: 4,
-          avis: 20,
-          categorie: "Smartphones",
-          description: "Matériel informatique & Smartphones",
-          produitsCount: 42,
-          vendeur: "Yassir",
-          ville: "Casablanca",
-          telephone: "0663112233",
-          horaires: "09:00 - 19:30",
-        },
-      ],
+      boutiques: [],
+      loading: true,
     };
   }
+
+  componentDidMount() {
+    this.fetchBoutiques();
+  }
+
+  fetchBoutiques = async () => {
+    try {
+      const res = await api.get("/boutique/all");
+      const list = res.data.boutiques || res.data || [];
+      
+      this.setState({
+        boutiques: Array.isArray(list) ? list : [],
+        loading: false,
+      });
+    } catch (err) {
+      console.error("Erreur chargement boutiques:", err);
+    }
+  };
 
   handleSearch = (e) => {
     this.setState({ search: e.target.value });
@@ -109,22 +51,70 @@ class Boutiques extends Component {
     this.setState({ selectedBoutique: null });
   };
 
-  render() {
-    const { boutiques, search, filterType, selectedBoutique } = this.state;
+  normalizeBoutique = (b) => {
+    const nom = b.nom || "Boutique sans nom";
+    const description = b.desc || b.description || "";
+    const status = b.status_boutique || b.status || "Fermée";
+    const isOpen = String(status).toLowerCase() === "ouverte";
+    const certifie = b.certifiée === true || String(b.certifiée || b.certifie).toLowerCase() === "true";
+    const stars = Math.min(5, Math.max(0, Number(b.stars) || 0));
+    const avis = Number(b.count_avis ?? b.avis ?? 0);
+    const telephone = b.numtel || b.telephone || "Non renseigné";
+    const ville = b.ville || "Non renseignée";
+    const horaires = b.horaire || b.horaires || "09:00 - 20:00";
+    const categorie = b.categorie || "";
+    const logoText = b.logoText || nom.slice(0, 2).toUpperCase();
+    const cover = b.logo_boutique
+      ? `http://127.0.0.1:8000/storage/${b.logo_boutique}`
+      : b.cover || "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80";
+    const produitsCount = Number(
+      b.produits_count ?? (Array.isArray(b.products) ? b.products.length : b.produitsCount ?? 0)
+    );
+   
+    const vendeur =
+      typeof b.vendeur === "object" && b.vendeur !== null
+        ? b.vendeur.name || b.vendeur.nom || "Vendeur"
+        : b.vendeur || "Vendeur";
+    
+    return {
+      ...b,
+      nom,
+      description,
+      status,
+      isOpen,
+      certifie,
+      stars,
+      avis,
+      telephone,
+      ville,
+      horaires,
+      categorie,
+      logoText,
+      cover,
+      produitsCount,
+      vendeur,
+    };
+  };
 
-    const filteredBoutiques = boutiquesData.filter((b) => {
+  render() {
+    const { boutiques, search, filterType, selectedBoutique, loading } = this.state;
+
+    const normalizedList = boutiques.map(this.normalizeBoutique);
+
+    const filteredBoutiques = normalizedList.filter((b) => {
+      const term = search.trim().toLowerCase();
+      
       const matchSearch =
-        b.nom.toLowerCase().includes(search.toLowerCase()) ||
-        b.description.toLowerCase().includes(search.toLowerCase()) ||
-        b.vendeur.toLowerCase().includes(search.toLowerCase());
+        !term ||
+        b.nom.toLowerCase().includes(term) ||
+        b.description.toLowerCase().includes(term) ||
+        b.vendeur.toLowerCase().includes(term) ||
+        b.ville.toLowerCase().includes(term);
 
       if (filterType === "all") return matchSearch;
-      if (filterType === "ouverte")
-        return matchSearch && b.status.toLowerCase() === "ouverte";
+      if (filterType === "ouverte") return matchSearch && b.isOpen;
       if (filterType === "certifie") return matchSearch && b.certifie;
-      return (
-        matchSearch && b.categorie.toLowerCase() === filterType.toLowerCase()
-      );
+      return matchSearch && b.categorie.toLowerCase() === filterType.toLowerCase();
     });
 
     return (
@@ -140,17 +130,10 @@ class Boutiques extends Component {
         </div>
 
         <div className="boutiques-controls">
-          <select
-            className="boutiques-select"
-            value={filterType}
-            onChange={this.handleFilterChange}
-          >
+          <select  className="boutiques-select" value={filterType} onChange={this.handleFilterChange} >
             <option value="all">Toutes</option>
             <option value="ouverte">Ouvertes</option>
             <option value="certifie">Vendeur Certifié</option>
-            <option value="Informatique">Informatique</option>
-            <option value="Smartphones">Smartphones</option>
-            <option value="Mode">Vêtements & Mode</option>
           </select>
 
           <div className="boutiques-search-box">
@@ -164,96 +147,94 @@ class Boutiques extends Component {
           </div>
         </div>
 
-        <div className="boutiques-grid">
-          {boutiquesData.map((b) => (
-            <div className="boutique-card" key={b.id}>
-              <div className="boutique-cover-wrapper">
-                <img
-                  src={b.cover}
-                  alt={b.nom}
-                  className="boutique-cover-img"
-                />
-                <div className="boutique-avatar">
-                  <span>{b.logoText}</span>
-                </div>
-              </div>
-
-              <div className="boutique-body">
-                {b.certifie ? (
-                  <div style={{ display: "flex", justifyContent: "space-between"}}>
-                    <div className="pb-certified-badge">
-                      <span className="pb-certified-icon">
-                        <Check size={11} strokeWidth={3} />
-                      </span>
-                      <span>Vendeur Certifié</span>
-                    </div>
-                    <span
-                    className={`boutique-badge ${
-                      b.status === "Ouverte" ? "badge-ouverte" : "badge-fermee"
-                    }`}
-                  >
-                    {b.status}
-                  </span>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "40px" }}>
+            Chargement des boutiques...
+          </div>
+        ) : (
+          <div className="boutiques-grid">
+            {filteredBoutiques.map((b) => (
+              <div className="boutique-card" key={b.id}>
+                <div className="boutique-cover-wrapper">
+                  <img
+                    src={b.cover}
+                    alt={b.nom}
+                    className="boutique-cover-img"
+                  />
+                  <div className="boutique-avatar">
+                    <span>{b.logoText}</span>
                   </div>
-                ) : (
-                  <div  style={{ display: "flex", justifyContent: "space-between"}}>
-                    <div className="pb-certified-badge">
-                      <span className="pb-certified-icon">
-                        <X size={11} strokeWidth={3} />
-                      </span>
-                      <span>Vendeur Non Certifié</span>
-                    </div>
+                </div>
+
+                <div className="boutique-body">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    {b.certifie ? (
+                      <div className="pb-certified-badge">
+                        <span className="pb-certified-icon">
+                          <Check size={11} strokeWidth={3} />
+                        </span>
+                        <span>Vendeur Certifié</span>
+                      </div>
+                    ) : (
+                      <div className="pb-certified-badge">
+                        <span className="pb-certified-icon">
+                          <X size={11} strokeWidth={3} />
+                        </span>
+                        <span>Vendeur Non Certifié</span>
+                      </div>
+                    )}
+
                     <span
-                    className={`boutique-badge ${
-                      b.status === "Ouverte" ? "badge-ouverte" : "badge-fermee"
-                    }`}
-                  >
-                    {b.status}
-                  </span>
+                      className={`boutique-badge ${
+                        b.isOpen ? "badge-ouverte" : "badge-fermee"
+                      }`}
+                    >
+                      {b.status}
+                    </span>
                   </div>
-                )}
-                  
-                <h3 className="boutique-title">{b.nom}</h3>
 
-                <div className="boutique-rating">
-                  <span className="stars">
-                    {"★".repeat(b.stars)}
-                    {"☆".repeat(5 - b.stars)}
-                  </span>
-                  <span className="avis-count">({b.avis})</span>
+                  <h3 className="boutique-title">{b.nom}</h3>
+
+                  <div className="boutique-rating">
+                    <span className="stars">
+                      {"★".repeat(b.stars)}
+                      {"☆".repeat(5 - b.stars)}
+                    </span>
+                    <span className="avis-count">({b.avis})</span>
+                  </div>
+
+                  <p className="boutique-desc">{b.description}</p>
+
+                  <div className="boutique-products-count">
+                    <Package size={16} color="#b45309" />
+                    <span>{b.produitsCount} Produits</span>
+                  </div>
+
+                  <div className="boutique-actions">
+                    <Link to={`/boutique/${b.id}`} className="btn-visiter">
+                      Visiter la boutique
+                    </Link>
+                    <button
+                      type="button"
+                      className="btn-details-boutique"
+                      onClick={() => this.openDetails(b)}
+                    >
+                      Détails
+                    </button>
+                  </div>
                 </div>
 
-                <p className="boutique-desc">{b.description}</p>
-
-                <div className="boutique-products-count">
-                  <Package size={16} color="#b45309" />
-                  <span>{b.products.length} Produits</span>
-                </div>
-
-                <div className="boutique-actions">
-                  <Link to={`/boutique/${b.id}`} className="btn-visiter">
-                    Visiter la boutique
-                  </Link>
-                  <button
-                    type="button"
-                    className="btn-details-boutique"
-                    onClick={() => this.openDetails(b)}
-                  >
-                    Détails
-                  </button>
+                <div className="boutique-footer">
+                  Géré par : <strong>{b.vendeur}</strong>
                 </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              <div className="boutique-footer">
-                Géré par : <strong>{b.vendeur}</strong>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredBoutiques.length === 0 && (
+        {!loading && filteredBoutiques.length === 0 && (
           <div className="boutiques-empty">
-            <h3>Aucune boutique ne correspond à votre recherche.</h3>
+            <h3>Aucune boutique existe.</h3>
           </div>
         )}
 
@@ -307,11 +288,11 @@ class Boutiques extends Component {
 
               <div className="modal-footer-actions">
                 <Link
-                  to="/shop"
+                  to={`/boutique/${selectedBoutique.id}`}
                   className="btn-visiter"
                   onClick={this.closeDetails}
                 >
-                  Voir tous les produits
+                  Voir la boutique
                 </Link>
               </div>
             </div>

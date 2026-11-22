@@ -12,7 +12,7 @@ class GérerMaBoutique extends Component{
                 <Store size={24} /> Gestion de : {this.props.nomBoutique}
               </h2>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <Link to="/shop" className="btn-voir-shop">
+                <Link to={`/boutique/${this.props.selectedBoutiqueId}`} className="btn-voir-shop">
                   Voir la boutique <ExternalLink size={16} />
                 </Link>
                 <button
@@ -149,12 +149,12 @@ class GérerMaBoutique extends Component{
                 <tbody>
                   {this.props.myProducts.map((prod, idx) => (
                     <tr key={prod.id || idx}>
-                      <td>{prod.name}</td>
+                      <td>{prod.nom}</td>
                       <td>{prod.prix ?? prod.price} DH</td>
                       <td>
                         <span
                           className={`status-pill ${
-                            prod.status === "disponible" ? "ok" : "wait"
+                            (prod.status || "").toLowerCase() === "disponible" ? "ok" : "wait"
                           }`}
                         >
                           {prod.status}
@@ -164,7 +164,7 @@ class GérerMaBoutique extends Component{
                         <button
                           type="button"
                           className="btn-toggle-status"
-                          onClick={() => this.toggleProductStatus(prod.id)}
+                          onClick={() => this.props.toggleProductStatus(prod)} 
                         >
                           Changer statut
                         </button>

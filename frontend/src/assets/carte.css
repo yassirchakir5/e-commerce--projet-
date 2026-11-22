@@ -1,0 +1,202 @@
+@keyframes cardFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(22px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes popValue {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.18); color: #0284c7; }
+    100% { transform: scale(1); }
+}
+
+.carte-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 50px;
+}
+
+.carte-header {
+    text-align: center;
+    color: #0f172a;
+    margin-bottom: 24px;
+    animation: cardFadeUp 0.4s ease-out both;
+}
+
+.carte-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+    gap: 22px;
+}
+
+.carte-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: cardFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.28s ease,
+                opacity 0.28s ease,
+                border-color 0.28s ease;
+}
+
+.carte-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.1);
+    border-color: #cbd5e1;
+}
+
+.carte-card.removing {
+    opacity: 0;
+    transform: scale(0.88) translateY(12px);
+    pointer-events: none;
+}
+
+.carte-img-box {
+    position: relative;
+    width: 100%;
+    height: 170px;
+    background: #f8fafc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 12px;
+    border: 1px solid #f1f5f9;
+}
+
+.carte-img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.35s ease;
+}
+
+.carte-card:hover .carte-img-box img {
+    transform: scale(1.06);
+}
+
+.carte-heart-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.carte-heart-btn:hover {
+    transform: scale(1.12);
+    background: #fff1f2;
+}
+
+.carte-qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.carte-qty-btn:hover:not(:disabled) {
+    background: #e2e8f0;
+}
+
+.carte-qty-btn:active:not(:disabled) {
+    transform: scale(0.9);
+}
+
+.carte-qty-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.carte-pop {
+    display: inline-block;
+    animation: popValue 0.28s ease;
+}
+
+.carte-action-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 9px;
+    border-radius: 8px;
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carte-action-btn:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.carte-action-btn:active {
+    transform: scale(0.96);
+}
+
+.carte-summary {
+    margin-top: 28px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    animation: cardFadeUp 0.5s ease-out both;
+}
+
+.carte-pay-btn {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.18s ease, box-shadow 0.25s ease;
+}
+
+.carte-pay-btn:hover {
+    background: #0284c7;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(2, 132, 199, 0.28);
+}
+
+.carte-pay-btn:active {
+    transform: scale(0.98);
+}

@@ -68,12 +68,19 @@ class boutiqueController extends Controller
             'boutique' => $boutique
         ],201);
     }
+
+    public function toutesBoutiques(){
+        $boutiques = boutique::withCount('produits')->get();
+        return response()->json([
+            'boutiques' => $boutiques
+        ], 200);
+    }
     public function afficher(){
         $user = auth()->user();
 
         $vendeur = Vendeur::where('utilisateur_id',$user->id)->first();
 
-        $exist = boutique::where('vendeur_id',$vendeur->id)->get();
+        $exist = boutique::withCount('produits')->where('vendeur_id',$vendeur->id)->get();
 
         return response()->json([
             'boutiques' => $exist
@@ -113,5 +120,12 @@ class boutiqueController extends Controller
     public function utilisateur()
     {
         return $this->belongsTo(utilisateur::class, 'utilisateur_id');
+    }
+
+    public function afficherboutique($id){
+        $boutique = boutique::withCount('produits')->findOrFail($id);
+        return response()->json([
+            'boutique' => $boutique
+        ],200);
     }
 }

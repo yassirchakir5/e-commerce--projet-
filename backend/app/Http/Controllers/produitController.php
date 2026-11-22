@@ -104,7 +104,7 @@ class produitController extends Controller
         $produit = Produit::findOrFail($id);
         
         $produit->delete();
-        response()->json([
+        return response()->json([
             'message' => "le produit a été supprimer avec succes "
         ],200);
     }
@@ -116,5 +116,32 @@ class produitController extends Controller
         return response()->json([
             'message' => "le status a été modifier avec succes "
         ],200);
+    }
+    public function parCategorie($nom){
+        $categorie = \App\Models\categorie::where('nom', $nom)->first();
+
+        if (!$categorie) {
+            return response()->json(['produits' => []], 200);
+        }
+
+        $produits = \App\Models\Produit::where('id_categorie', $categorie->id)->get();
+
+        return response()->json([
+            'categorie' => $categorie->nom,
+            'produits'  => $produits
+        ], 200);
+    }
+    public function produitparboutique($id){
+        $produit = Produit::with('images')->where('id_boutique',$id)->get();
+
+        return response()->json([
+            'produit' => $produit
+        ],200);
+    }
+    public function afficherparid($id){
+        $produit = Produit::with(['images', 'boutique', 'categorie'])->findOrFail($id);
+        return response()->json([
+            'produit' => $produit
+        ], 200);
     }
 }

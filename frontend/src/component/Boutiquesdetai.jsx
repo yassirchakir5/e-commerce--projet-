@@ -1,22 +1,23 @@
 import { Component } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Package, CheckCircle2, Star, Check, Heart, Store } from "lucide-react";
-import boutiquesData from "../data/Boutiques.json";
+import { Package, CheckCircle2, Star, Check, Heart, Store, X } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 import "./Boutiquedetail.css";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { MdEmail } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
-import { X } from "lucide-react";
+import api from "../api/api";
 
 class Boutiquedetail extends Component {
   static contextType = CartContext;
-
   constructor(props) {
     super(props);
     this.state = {
       favorites: JSON.parse(sessionStorage.getItem("favoris_boutique")) || [],
       addedId: null,
+      boutique: null,
+      boutiqueProduits: [],
+      loading: true,
     };
   }
 
@@ -32,6 +33,39 @@ class Boutiquedetail extends Component {
     });
   };
 
+  componentDidMount() {
+    this.handleboutiquecureent();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.id !== this.props.id) {
+      this.handleboutiquecureent();
+    }
+  }
+
+  handleboutiquecureent = async () => {
+    const { id } = this.props;
+    this.setState({ loading: true });
+
+    try {
+      const [resBoutique, resProduits] = await Promise.all([
+        api.get(`/boutique/${id}`),
+        api.get(`/boutique/produit/${id}`).catch(() => ({ data: { produit: [] } })),
+      ]);
+
+      const prods = resProduits.data.produit || resProduits.data.produits || [];
+
+      this.setState({
+        boutique: resBoutique.data.boutique || null,
+        boutiqueProduits: Array.isArray(prods) ? prods : [],
+        loading: false,
+      });
+    } catch (err) {
+      console.log(err);
+      this.setState({ boutique: null, boutiqueProduits: [], loading: false });
+    }
+  };
+
   handleAddCart = (product) => {
     const { addToCart } = this.context || {};
     if (addToCart) {
@@ -42,56 +76,30 @@ class Boutiquedetail extends Component {
   };
 
   render() {
-    const { favorites, addedId } = this.state;
+    const { favorites, addedId, boutique, boutiqueProduits, loading } = this.state;
 
-    const sessionBoutiques =
-      JSON.parse(sessionStorage.getItem("mes_boutiques")) || [];
-    const boutiquesMap = new Map();
-
-    boutiquesData.forEach((b) => boutiquesMap.set(String(b.id), b));
-
-    if (Array.isArray(sessionBoutiques)) {
-      sessionBoutiques.forEach((b) => {
-        const existing = boutiquesMap.get(String(b.id)) || {};
-        boutiquesMap.set(String(b.id), { ...existing, ...b });
-      });
+    if (loading) {
+      return <div style={{ padding: "40px", textAlign: "center" }}>Chargement de la boutique...</div>;
     }
 
-    const allBoutiques = Array.from(boutiquesMap.values());
+    const b = boutique || {};
+    const nomBoutique = b.nom || "Boutique introuvable";
+    const logoText = nomBoutique.slice(0, 2).toUpperCase() || "BT";
+    const isOpen = String(b.status_boutique || b.status || "").toLowerCase() === "ouverte";
+    const certifie = b.certifiée === true || String(b.certifiée).toLowerCase() === "true";
 
-    const { id } = this.props;
-    const currentBoutique =
-      allBoutiques.find((b) => String(b.id) === String(id)) || {};
+    const rawTel = String(b.numtel || b.telephone || "").trim();
+    const formattedTel = rawTel ? (rawTel.startsWith("0") ? rawTel : `0${rawTel}`) : "";
 
-    const rawTel = String(
-      currentBoutique.telephone || currentBoutique.prix || ""
-    ).trim();
-    const formattedTel = rawTel
-      ? rawTel.startsWith("0")
-        ? rawTel
-        : `0${rawTel}`
-      : "";
-
-    const {
-      nomBoutique = currentBoutique.nom || "Boutique introuvable",
-      logoText = currentBoutique.logoText || "BT",
-      isOpen = currentBoutique.status === "Ouverte",
-      certifie = currentBoutique.certifie ?? false,
-      boutiquesDatas = currentBoutique.products || [],
-      totalProduits = Array.isArray(currentBoutique.products)
-        ? currentBoutique.products.length
-        : currentBoutique.produitsCount ?? 0,
-      stars = currentBoutique.stars ?? 0,
-      avis = currentBoutique.avis ?? 0,
-      email = currentBoutique.email,
-      ville = currentBoutique.ville,
-      ventesMois = 84,
-      avisPositifs = "98%",
-      coverImage = currentBoutique.cover ||
-        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80",
-    } = this.props;
-
+    const stars = b.stars ?? 0;
+    const avis = b.count_avis ?? b.avis ?? 0;
+    const email = b.email || "";
+    const ville = b.ville || "";
+    const categorie = b.categorie || "Non spécifiée";
+    const coverImage = b.logo_boutique ? `http://127.0.0.1:8000/storage/${b.logo_boutique}` : "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80";
     const validStars = Math.min(5, Math.max(0, Number(stars) || 0));
+    const ventesMois = 84;
+    const avisPositifs = "98%";
 
     return (
       <div className="pb-container">
@@ -100,10 +108,7 @@ class Boutiquedetail extends Component {
           <h2>Profil de la Boutique</h2>
         </div>
 
-        <div
-          className="pb-banner"
-          style={{ backgroundImage: `url(${coverImage})` }}
-        >
+        <div className="pb-banner" style={{ backgroundImage: `url(${coverImage})` }}>
           <div className="pb-banner-overlay">
             <h1 className="pb-banner-name">{nomBoutique}</h1>
           </div>
@@ -146,67 +151,27 @@ class Boutiquedetail extends Component {
             </div>
 
             {formattedTel && (
-              <div
-                className="pb-stat-card"
-                style={{ marginTop: "10px", width: "100%" }}
-              >
-                <a
-                  href={`tel:${formattedTel}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    textDecoration: "none",
-                    color: "#0f172a",
-                    fontWeight: "500",
-                  }}
-                >
+              <div className="pb-stat-card" style={{ marginTop: "10px", width: "100%" }}>
+                <a href={`tel:${formattedTel}`} style={{ display: "flex", alignItems: "center",  gap: "8px", textDecoration: "none", color: "#0f172a", fontWeight: "500" }} >
                   <BsFillTelephoneFill color="#16a34a" /> {formattedTel}
                 </a>
               </div>
             )}
 
             {email && (
-              <div
-                className="pb-stat-card"
-                style={{ marginTop: "10px", width: "100%" }}
-              >
-                <a
-                  href={`mailto:${email}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    textDecoration: "none",
-                    color: "#0f172a",
-                    fontWeight: "500",
-                    wordBreak: "break-all",
-                  }}
-                >
+              <div className="pb-stat-card" style={{ marginTop: "10px", width: "100%" }}>
+                <a href={`mailto:${email}`} style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", color: "#0f172a", fontWeight: "500", wordBreak: "break-all" }} >
                   <MdEmail color="#2563eb" size={18} /> {email}
                 </a>
               </div>
             )}
 
-            <p
-              className="pb-stat-card"
-              style={{
-                marginTop: "10px",
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              <CiLocationOn size={20} color="#dc2626" /> {ville || ""}
+            <p className="pb-stat-card" style={{ marginTop: "10px", width: "100%",  display: "flex",  alignItems: "center", gap: "8px",  }} >
+              <CiLocationOn size={20} color="#dc2626" /> {ville}
             </p>
 
-            <p
-              className="pb-stat-card"
-              style={{ marginTop: "10px", width: "100%" }}
-            >
-              Catégorie :{" "}
-              <strong>{currentBoutique.categorie || "Non spécifiée"}</strong>
+            <p className="pb-stat-card" style={{ marginTop: "10px", width: "100%" }}>
+              Catégorie : <strong>{categorie}</strong>
             </p>
           </div>
 
@@ -216,16 +181,12 @@ class Boutiquedetail extends Component {
                 <Package size={24} className="pb-icon-blue" strokeWidth={1.8} />
                 <div className="pb-stat-info">
                   <span className="pb-stat-label">Total Produits:</span>
-                  <strong className="pb-stat-value">{totalProduits}</strong>
+                  <strong className="pb-stat-value">{boutiqueProduits.length}</strong>
                 </div>
               </div>
 
               <div className="pb-stat-card">
-                <CheckCircle2
-                  size={24}
-                  className="pb-icon-green"
-                  strokeWidth={1.8}
-                />
+                <CheckCircle2 size={24} className="pb-icon-green" strokeWidth={1.8} />
                 <div className="pb-stat-info">
                   <span className="pb-stat-label">Ventes Ce Mois:</span>
                   <strong className="pb-stat-value">{ventesMois}</strong>
@@ -242,115 +203,44 @@ class Boutiquedetail extends Component {
             </div>
 
             <div style={{ marginTop: "28px" }}>
-              <h3
-                style={{
-                  marginBottom: "16px",
-                  fontSize: "19px",
-                  fontWeight: "700",
-                }}
-              >
-                Produits de la Boutique ({boutiquesDatas.length})
+              <h3 style={{ marginBottom: "16px", fontSize: "19px", fontWeight: "700" }}>
+                Produits de la Boutique ({boutiqueProduits.length})
               </h3>
 
-              {boutiquesDatas.length > 0 ? (
+              {boutiqueProduits.length > 0 ? (
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(230px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
                     gap: "18px",
                   }}
                 >
-                  {boutiquesDatas.map((p, index) => {
-                    const prodStars = Math.min(
-                      5,
-                      Math.max(0, Number(p.stars) || 0)
-                    );
+                  {boutiqueProduits.map((p, index) => {
+                    const prodName = p.nom || p.name || "Produit";
+                    const mainImg = Array.isArray(p.images) && p.images.length > 0
+                      ? `http://127.0.0.1:8000/storage/${p.images[0].path}`
+                      : p.image;
+                    const prodStars = Math.min(5, Math.max(0, Number(p.stars) || 0));
                     const isFav = favorites.includes(p.id);
-                    const canBuy = p.status === "disponible" && isOpen;
+                    const isDispo = String(p.status || "").toLowerCase() === "disponible";
+                    const canBuy = isDispo && isOpen;
 
                     return (
-                      <div
-                        className="boutique-card"
-                        key={p.id || index}
-                        style={{
-                          padding: "14px",
-                          background: "#ffffff",
-                          border: "1px solid #e2e8f0",
-                          borderRadius: "12px",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "relative",
-                            height: "165px",
-                            background: "#f8fafc",
-                            borderRadius: "10px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginBottom: "10px",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <img
-                            src={p.image}
-                            alt={p.name}
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "100%",
-                              objectFit: "contain",
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => this.toggleFavorite(p.id)}
-                            title="Ajouter aux favoris"
-                            style={{
-                              position: "absolute",
-                              top: "8px",
-                              right: "8px",
-                              background: "#fff",
-                              border: "1px solid #e2e8f0",
-                              borderRadius: "50%",
-                              width: "32px",
-                              height: "32px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <Heart
-                              size={16}
-                              color={isFav ? "#ef4444" : "#64748b"}
-                              fill={isFav ? "#ef4444" : "none"}
-                            />
+                      <div className="boutique-card" key={p.id || index} style={{ padding: "14px",  background: "#ffffff",  border: "1px solid #e2e8f0", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}  >
+                        <div style={{ position: "relative", height: "165px", background: "#f8fafc", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center",  marginBottom: "10px", overflow: "hidden" }} >
+                          <img src={mainImg} alt={prodName}  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                          <button  type="button" onClick={() => this.toggleFavorite(p.id)} title="Ajouter aux favoris" style={{  position: "absolute",  top: "8px",  right: "8px", background: "#fff", border: "1px solid #e2e8f0",  borderRadius: "50%",  width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}  >
+                            <Heart size={16} color={isFav ? "#ef4444" : "#64748b"} fill={isFav ? "#ef4444" : "none"} />
                           </button>
                         </div>
 
-                        <div
-                          className="boutique-body"
-                          style={{ padding: "4px 0" }}
-                        >
-                          <span
-                            className={`boutique-badge ${
-                              p.status === "disponible"
-                                ? "badge-ouverte"
-                                : "badge-fermee"
-                            }`}
-                          >
+                        <div className="boutique-body" style={{ padding: "4px 0" }}>
+                          <span className={`boutique-badge ${isDispo ? "badge-ouverte" : "badge-fermee"}`}>
                             {p.status}
                           </span>
 
-                          <h3
-                            className="boutique-title"
-                            style={{ fontSize: "16px", margin: "6px 0" }}
-                          >
-                            {p.name}
+                          <h3 className="boutique-title" style={{ fontSize: "16px", margin: "6px 0" }}>
+                            {prodName}
                           </h3>
 
                           <div className="boutique-rating">
@@ -358,87 +248,28 @@ class Boutiquedetail extends Component {
                               {"★".repeat(prodStars)}
                               {"☆".repeat(5 - prodStars)}
                             </span>
-                            <span className="avis-count">
-                              ({p.countst || 0})
-                            </span>
+                            <span className="avis-count">({p.countst || 0})</span>
                           </div>
 
-                          <div
-                            style={{
-                              fontSize: "18px",
-                              fontWeight: "800",
-                              color: "#dc2626",
-                              margin: "6px 0 10px",
-                            }}
-                          >
+                          <div style={{ fontSize: "18px", fontWeight: "800", color: "#dc2626", margin: "6px 0 10px",  }} >
                             {p.prix} DH
                           </div>
 
-                          <div
-                            className="boutique-actions"
-                            style={{ display: "flex", gap: "8px" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn-visiter"
-                              onClick={() => this.handleAddCart(p)}
-                              disabled={!canBuy}
-                              style={{
-                                flex: 1,
-                                border: "none",
-                                borderRadius: "8px",
-                                padding: "8px 10px",
-                                fontWeight: "600",
-                                fontSize: "13px",
-                                color: "#ffffff",
-                                background: canBuy
-                                  ? addedId === p.id
-                                    ? "#16a34a"
-                                    : "#0284c7"
-                                  : "#94a3b8",
-                                cursor: canBuy ? "pointer" : "not-allowed",
-                              }}
-                            >
-                              {addedId === p.id
-                                ? "Ajouté ✓"
-                                : "Ajouter au panier"}
+                          <div className="boutique-actions" style={{ display: "flex", gap: "8px" }}>
+                            <button type="button" className="btn-visiter" onClick={() => this.handleAddCart(p)}  disabled={!canBuy}  style={{  flex: 1, border: "none",  borderRadius: "8px",  padding: "8px 10px", fontWeight: "600", fontSize: "13px",  color: "#ffffff", background: canBuy ? addedId === p.id ? "#16a34a"  : "#0284c7" : "#94a3b8",  cursor: canBuy ? "pointer" : "not-allowed"  }}  >
+                              {addedId === p.id ? "Ajouté ✓" : "Ajouter au panier"}
                             </button>
 
-                            <Link
-                              to={`/product/${p.id}`}
-                              className="btn-details-boutique"
-                              style={{
-                                textDecoration: "none",
-                                padding: "8px 12px",
-                                borderRadius: "8px",
-                                fontSize: "13px",
-                                fontWeight: "600",
-                                display: "inline-flex",
-                                alignItems: "center",
-                              }}
-                            >
+                            <Link  to={`/product/${p.id}`} className="btn-details-boutique" style={{  textDecoration: "none",  padding: "8px 12px",  borderRadius: "8px",  fontSize: "13px",  fontWeight: "600",  display: "inline-flex",  alignItems: "center"  }} >
                               Détails
                             </Link>
                           </div>
                         </div>
 
-                        <div
-                          className="boutique-footer"
-                          style={{
-                            marginTop: "12px",
-                            paddingTop: "8px",
-                            borderTop: "1px solid #f1f5f9",
-                            fontSize: "12px",
-                            color: "#64748b",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "6px",
-                          }}
-                        >
+                        <div className="boutique-footer"  style={{  marginTop: "12px",  paddingTop: "8px",  borderTop: "1px solid #f1f5f9", fontSize: "12px", color: "#64748b",  display: "flex", alignItems: "center", justifyContent: "center",  gap: "6px"  }} >
                           <Store size={14} />
                           <span>
-                            Vendu par : <strong>{p.vendupa}</strong>
+                            Vendu par : <strong>{p.vendupa || nomBoutique}</strong>
                           </span>
                         </div>
                       </div>
@@ -446,17 +277,7 @@ class Boutiquedetail extends Component {
                   })}
                 </div>
               ) : (
-                <div
-                  className="boutiques-empty"
-                  style={{
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "12px",
-                    padding: "28px",
-                    textAlign: "center",
-                    color: "#64748b",
-                  }}
-                >
+                <div  className="boutiques-empty" style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "28px", textAlign: "center", color: "#64748b",   }}  >
                   <h3 style={{ margin: 0, fontSize: "16px" }}>
                     Aucun produit disponible dans cette boutique.
                   </h3>

@@ -8,11 +8,6 @@ import Home from '../pages/Home/Home'
 import Mesproduct from '../component/InfosPersonnel/MesProduct';
 import Derrniprodu from '../component/Derniprodu';
 import Products from '../data/product.json';
-import Telephone from '../component/categories/Telephone';
-import Vêtements from '../component/categories/Vêtements';
-import Electronique from '../component/categories/Electronique';
-import Computer from '../component/categories/Computer';
-import Casques from '../component/categories/Casque';
 import Favoris from '../component/InfosPersonnel/Favoris';
 import Carte from '../component/Carte';
 import Cartes from '../component/InfosPersonnel/Cartes';
@@ -23,6 +18,7 @@ import Boutiquedetail from '../component/Boutiquesdetai';
 import VendorDashboard from '../component/VendorDashboard';
 import MaBoutique from '../pages/profil/MaBoutique';
 import MesProducts from '../component/InfosPersonnel/MesProduct';
+import CategoriePage from '../component/categories/CategoriePage';
 
 class Approutes extends Component{
     state = {
@@ -44,11 +40,6 @@ class Approutes extends Component{
                     <Route path='/inscrit' element={<Inscrit />} />
                     <Route path='/mesproduct' element={<Mesproduct />} />
                     <Route path='/dernierprodu' element={<Derrniprodu filterpro={Products}/>} />
-                    <Route path='/categorie/telephone' element={<Telephone product={Products}/>} />
-                    <Route path='/categorie/Vetements' element={<Vêtements product={Products}/>} />
-                    <Route path='/categorie/Electronique' element={<Electronique product={Products}/>} />
-                    <Route path='/categorie/Computer' element={<Computer product={Products}/>} />
-                    <Route path='/categorie/Casques' element={<Casques product={Products}/>} />
                     <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
                     <Route path='/Component/Carte' element={<Carte />} /> 
                     <Route path='/mescartes' element={<Cartes />} /> 
@@ -58,6 +49,7 @@ class Approutes extends Component{
                     <Route path='/Boutiques' element={<MaBoutique />} />
                     <Route path="/profile/:username" element={<UserProfile />} />
                     <Route path="/dashboard" element={<VendorDashboard />} />
+                    <Route path="/categorie/:nom" element={<CategoriePage />} />
                     <Route path='*' element={<Navigate to="/" replace />}/>
                 </Routes>
         </BrowserRouter>

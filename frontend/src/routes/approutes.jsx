@@ -20,6 +20,8 @@ import MaBoutique from '../pages/profil/MaBoutique';
 import MesProducts from '../component/InfosPersonnel/MesProduct';
 import CategoriePage from '../component/categories/CategoriePage';
 import Checkout from "../component/Checkout";
+import ForgotPassword from '../pages/Auth/ForgotPassword';
+import ResetPassword from '../pages/Auth/ResetPassword';
 
 class Approutes extends Component{
     state = {
@@ -43,13 +45,15 @@ class Approutes extends Component{
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path='/dernierprodu' element={<Derrniprodu filterpro={Products}/>} />
                     <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
-                    <Route path='/Component/Carte' element={<Carte />} /> 
-                    <Route path='/mescartes' element={<Cartes />} /> 
-                    <Route path='/mesproducts' element={<MesProducts />} /> 
+                    <Route path='/Component/Carte' element={<Carte />} />
+                    <Route path='/mescartes' element={<Cartes />} />
+                    <Route path='/mesproducts' element={<MesProducts />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route path='/Boutique/:id' element={<Boutiquedetail />} />
                     <Route path='/Boutiques' element={<MaBoutique />} />
                     <Route path="/profile/:username" element={<UserProfile />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/dashboard" element={<VendorDashboard />} />
                     <Route path="/categorie/:nom" element={<CategoriePage />} />
                     <Route path='*' element={<Navigate to="/" replace />}/>

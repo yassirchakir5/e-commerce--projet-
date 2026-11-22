@@ -1,0 +1,167 @@
+.vendors-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vendor-panel-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1000px) {
+  .vendor-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.98rem;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.commission-form {
+  margin-top: 14px;
+  background: #f8fafc;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.commission-form label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.commission-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.commission-input-group input {
+  width: 110px;
+  padding: 8px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.commission-input-group input:focus {
+  border-color: #0284c7;
+}
+
+.btn-save-comm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-save-comm:hover {
+  background: #0369a1;
+}
+
+.boutiques-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.boutique-admin-card {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.boutique-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.boutique-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.boutique-title-row h5 {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.certified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.boutique-desc {
+  font-size: 0.85rem;
+  color: #475569;
+  margin: 10px 0 12px;
+  line-height: 1.4;
+}
+
+.boutique-actions-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-certify {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #0284c7;
+  background: #ffffff;
+  color: #0284c7;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-certify.active {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.empty-boutiques {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.88rem;
+}

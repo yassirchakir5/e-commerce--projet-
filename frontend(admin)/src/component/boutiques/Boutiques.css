@@ -1,0 +1,99 @@
+.boutiques-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.boutique-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.mini-product-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.mini-product-card:hover {
+  transform: translateY(-3px);
+}
+
+.mini-prod-img-box {
+  position: relative;
+  height: 150px;
+  background: #e2e8f0;
+}
+
+.mini-prod-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-prod-img {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.prod-stock-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.prod-stock-badge.in { background: #dcfce7; color: #15803d; }
+.prod-stock-badge.out { background: #fee2e2; color: #b91c1c; }
+
+.mini-gallery-strip {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+}
+
+.mini-gallery-strip img {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #cbd5e1;
+}
+
+.mini-prod-info {
+  padding: 12px;
+}
+
+.mini-prod-info h5 {
+  font-size: 0.92rem;
+  color: #0f172a;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-prod-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.mini-prod-footer strong {
+  color: #0284c7;
+}

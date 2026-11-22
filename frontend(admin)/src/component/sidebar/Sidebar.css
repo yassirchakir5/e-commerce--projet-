@@ -1,0 +1,141 @@
+.sidebar {
+  height: 100vh;
+  background-color: #1e293b;
+  color: #f8fafc;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  user-select: none;
+  z-index: 100;
+}
+
+.sidebar.open {
+  width: 250px;
+}
+
+.sidebar.closed {
+  width: 75px;
+}
+
+.sidebar-inner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-btn {
+  position: absolute;
+  top: 22px;
+  right: -15px; 
+  background-color: #38bdf8;
+  color: #0f172a;
+  border: 2px solid #f1f5f9; 
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 101;
+}
+
+.toggle-btn:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 75px;
+  border-bottom: 1px solid #334155;
+}
+
+.logo {
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+}
+
+.logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.logo span {
+  color: #38bdf8;
+}
+
+.logo.hide {
+  display: none;
+}
+
+.logo-mini {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 1px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 15px 10px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar-item:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.sidebar-item.active {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.item-label {
+  margin-left: 15px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.item-label.hide {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+}
+
+.item-label.show {
+  opacity: 1;
+  transform: translateX(0);
+}

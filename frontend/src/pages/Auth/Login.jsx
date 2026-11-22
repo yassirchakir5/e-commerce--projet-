@@ -1,5 +1,6 @@
 import { Component } from "react";
 import '../../assets/Login.css';
+import { Link } from "react-router-dom";
 import api from "../../api/api";
 import { Navigate } from "react-router-dom";
 
@@ -38,7 +39,7 @@ class Login extends Component {
                 password: this.state.password
             });
 
-            this.setState({ connect: true, message: res.data.message });
+            this.setState({ connect: true , message: res.data.message });
 
             setTimeout(() => {
                 localStorage.setItem('token', res.data.token);
@@ -153,13 +154,12 @@ class Login extends Component {
                         </div>
                     </form>
 
-                    {this.state.redirect && <Navigate to="/" />}
-
+                    {this.state.redirect && <Navigate to="/" /> }
                     <div className="form-a">
-                        <a href="#">Mot de passe oublié ?</a>
+                        <Link to="/forgot-password">Mot de passe oublié ?</Link>
                         <br />
                         <br />
-                        <a href="/inscrit">Vous n'avez pas de compte ?</a>
+                        <Link to="/inscrit">Vous n'avez pas de compte ?</Link>
                     </div>
                 </div>
             </div>

@@ -92,12 +92,18 @@ class CheckoutController extends Controller
                 $clientId = $clientRecord->id;
             }
 
+            $quantitesParProduit = [];
+            foreach ($request->items as $item) {
+                $idProd = (int) $item['id'];
+                $quantitesParProduit[$idProd] = ($quantitesParProduit[$idProd] ?? 0) + (int) $item['quantite'];
+            }
+
             $produitsParBoutique = [];
 
-            foreach ($request->items as $item) {
-                $produit = Produit::lockForUpdate()->findOrFail($item['id']);
+            foreach ($quantitesParProduit as $idProd => $totalQte) {
+                $produit = Produit::lockForUpdate()->findOrFail($idProd);
 
-                if ($produit->stock < $item['quantite']) {
+                if ($produit->stock < $totalQte) {
                     DB::rollBack();
                     return response()->json([
                         'message' => "Stock insuffisant pour '{$produit->nom}' (Disponible : {$produit->stock})."
@@ -106,7 +112,7 @@ class CheckoutController extends Controller
 
                 $produitsParBoutique[$produit->id_boutique][] = [
                     'produit'  => $produit,
-                    'quantite' => $item['quantite'],
+                    'quantite' => $totalQte,
                 ];
             }
 
@@ -168,12 +174,12 @@ class CheckoutController extends Controller
                         'updated_at'    => now(),
                     ]);
 
-                    $prod->stock -= $qte;
-                    if ($prod->stock <= 0) {
-                        $prod->stock  = 0;
-                        $prod->status = 'vendue';
-                    }
-                    $prod->save();
+                    $nouveauStock = max(0, $prod->stock - $qte);
+                    DB::table('produit')->where('id', $prod->id)->update([
+                        'stock'      => $nouveauStock,
+                        'status'     => $nouveauStock === 0 ? 'vendue' : $prod->status,
+                        'updated_at' => now(),
+                    ]);
                 }
 
                 $commandesCreees[] = $commandeId;
@@ -394,15 +400,51 @@ class CheckoutController extends Controller
             'status' => 'required|string|max:50',
         ]);
 
-        DB::table('commandes')->where('id', $id)->update([
-            'status'     => $request->status,
-            'updated_at' => now(),
-        ]);
+        DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'Statut mis à jour.',
-            'status'  => $request->status,
-        ]);
+        try {
+            $commande = DB::table('commandes')->where('id', $id)->first();
+            if (!$commande) {
+                DB::rollBack();
+                return response()->json(['message' => 'Commande introuvable.'], 404);
+            }
+
+            $ancienStatut = $commande->status;
+            $nouveauStatut = $request->status;
+
+            if ($nouveauStatut === 'Annulée' && $ancienStatut !== 'Annulée') {
+                $lignes = DB::table('ligne_commande')->where('id_commande', $id)->get();
+                foreach ($lignes as $ligne) {
+                    $prod = DB::table('produit')->where('id', $ligne->id_produit)->first();
+                    if ($prod) {
+                        $stockRestaure = $prod->stock + $ligne->quantite;
+                        DB::table('produit')->where('id', $prod->id)->update([
+                            'stock'      => $stockRestaure,
+                            'status'     => $stockRestaure > 0 ? 'disponible' : $prod->status,
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+            }
+
+            DB::table('commandes')->where('id', $id)->update([
+                'status'     => $nouveauStatut,
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Statut mis à jour.',
+                'status'  => $nouveauStatut,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function telechargerPdf(Request $request, $id)

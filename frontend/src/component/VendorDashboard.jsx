@@ -31,6 +31,37 @@ class VendorDashboard extends Component {
         api.get("/vendeur/commandes"),
       ]);
 
+      const rawOrders =
+        commandesRes.status === "fulfilled"
+          ? commandesRes.value.data.commandes || []
+          : [];
+
+      const normalizedOrders = rawOrders.map((o) => {
+        const rawDate = o.date_commande || o.created_at || o.date || "";
+        const parsedDate = rawDate ? new Date(rawDate) : null;
+        const validDate = parsedDate && !isNaN(parsedDate) ? parsedDate : null;
+
+        return {
+          ...o,
+          numero: o.numero || `CMD-${o.id}`,
+          client: o.client || o.client_nom || o.client_email || `Client #${o.id_client}`,
+          date:
+            o.date ||
+            (validDate
+              ? validDate.toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : ""),
+          mois: o.mois || (validDate ? validDate.getMonth() + 1 : null),
+          montant: Number(o.montant ?? o.total ?? 0),
+          statut: o.statut || o.status || "En attente",
+        };
+      });
+
       this.setState({
         boutiques:
           boutiquesRes.status === "fulfilled"
@@ -40,10 +71,7 @@ class VendorDashboard extends Component {
           produitsRes.status === "fulfilled"
             ? produitsRes.value.data.produits || []
             : [],
-        allOrders:
-          commandesRes.status === "fulfilled"
-            ? commandesRes.value.data.commandes || []
-            : [],
+        allOrders: normalizedOrders,
         loading: false,
       });
     } catch (err) {

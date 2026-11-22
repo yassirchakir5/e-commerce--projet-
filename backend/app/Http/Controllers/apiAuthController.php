@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactVendeurMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\utilisateur;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -190,6 +192,24 @@ class apiAuthController extends Controller
                 'rating'          => $rating,
                 'reviews_count'   => $reviewsCount,
             ]
+        ], 200);
+    }
+
+    public function contactVendeur(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'email'       => 'required|email',
+            'nom'         => 'required|string|max:255',
+            'sujet'       => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $utilisateur = utilisateur::findOrFail($id);
+
+        Mail::to($utilisateur->email)->send(new ContactVendeurMail($validated));
+
+        return response()->json([
+            'message' => 'Message envoyé avec succès au vendeur.'
         ], 200);
     }
 }

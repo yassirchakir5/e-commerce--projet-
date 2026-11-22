@@ -89,6 +89,8 @@ Route::post('/forgot-password', function (Request $request) {
     }
 });
 
+Route::post('/contact-vendeur/{id}', [apiAuthController::class, 'contactVendeur']);
+
 Route::post('/reset-password', function (Request $request) {
     $request->validate([
         'email'                 => 'required|email',

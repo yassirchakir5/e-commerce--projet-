@@ -2,14 +2,12 @@ import { Component } from "react";
 import Select from "react-select";
 
 const options = [
-  { value: "éléctronique", label: "Électronique" },
-  { value: "Computer", label: "Computer" },
-  { value: "Casques", label: "Casques" },
-  { value: "Vétement", label: "Vêtements" },
-  {
-    value: "Matériel informatique & Gaming",
-    label: "Matériel informatique & Gaming",
-  },
+  { value: "Informatique & Gaming", label: "Informatique & Gaming" },
+  { value: "Mode & Vêtements", label: "Mode & Vêtements" },
+  { value: "Maison & Décoration", label: "Maison & Décoration" },
+  { value: "Beauté & Santé", label: "Beauté & Santé" },
+  { value: "Sport & Loisirs", label: "Sport & Loisirs" },
+  { value: "Multi-catégories", label: "Autre / Multi-catégories" },
 ];
 const customStyles = {
   control: (provided) => ({

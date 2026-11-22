@@ -132,9 +132,6 @@ class Bar extends Component{
                                                 <button onClick={() => navigate("/Component/Carte")} className="btn-aller-panier">
                                                     Voir le panier
                                                 </button>
-                                                <button className="btn-aller-panier">
-                                                    Payer
-                                                </button>
                                             </div>
                                         </div>
                                     )}

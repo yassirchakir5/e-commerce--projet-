@@ -7,7 +7,6 @@ import Inscrit from '../pages/Auth/Inscrit'
 import Home from '../pages/Home/Home'
 import Mesproduct from '../component/InfosPersonnel/MesProduct';
 import Derrniprodu from '../component/Derniprodu';
-import Products from '../data/product.json';
 import Favoris from '../component/InfosPersonnel/Favoris';
 import Carte from '../component/Carte';
 import Cartes from '../component/InfosPersonnel/Cartes';
@@ -43,8 +42,8 @@ class Approutes extends Component{
                     <Route path='/inscrit' element={<Inscrit />} />
                     <Route path='/mesproduct' element={<Mesproduct />} />
                     <Route path="/checkout" element={<Checkout />} />
-                    <Route path='/dernierprodu' element={<Derrniprodu filterpro={Products}/>} />
-                    <Route path='/mesfavoris' element={<Favoris product={Products}/>} />
+                    <Route path='/dernierprodu' element={<Derrniprodu/>} />
+                    <Route path='/mesfavoris' element={<Favoris/>} />
                     <Route path='/Component/Carte' element={<Carte />} />
                     <Route path='/mescartes' element={<Cartes />} />
                     <Route path='/mesproducts' element={<MesProducts />} />

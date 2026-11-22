@@ -4,6 +4,7 @@ import '../assets/Useprofile.css';
 import { CartContext } from "../context/CartContext";
 import ShareProfileModal from './ShareProfile';
 import { Package, MapPin, Phone, Clock, CheckCircle, X } from 'lucide-react';
+import Swal from 'sweetalert2';
 import api from '../api/api';
 
 const withRouter = (WrappedComponent) => {
@@ -24,7 +25,14 @@ class UserProfile extends Component {
       loading: true,
       iscardcontopen: false,
       isshareop: false,
-      selectedBoutique: null
+      selectedBoutique: null,
+      contactForm: {
+        email: '',
+        nom: '',
+        sujet: '',
+        description: ''
+      },
+      sendingEmail: false
     };
   }
 
@@ -50,6 +58,54 @@ class UserProfile extends Component {
     this.setState((prevState) => ({
       isshareop: !prevState.isshareop
     }));
+  };
+
+  handleContactChange = (e) => {
+    const { name, value } = e.target;
+    this.setState((prevState) => ({
+      contactForm: {
+        ...prevState.contactForm,
+        [name]: value
+      }
+    }));
+  };
+
+  handleContactSubmit = async (e) => {
+    e.preventDefault();
+    const { userInfo, contactForm } = this.state;
+    if (!userInfo) return;
+
+    this.setState({ sendingEmail: true });
+
+    try {
+      await api.post(`/contact-vendeur/${userInfo.id}`, contactForm);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Message envoyé !',
+        text: `Votre message a bien été envoyé à ${userInfo.name}.`,
+        confirmButtonColor: '#2563eb'
+      });
+
+      this.setState({
+        iscardcontopen: false,
+        sendingEmail: false,
+        contactForm: {
+          email: '',
+          nom: '',
+          sujet: '',
+          description: ''
+        }
+      });
+    } catch (err) {
+      console.error("Erreur lors de l'envoi :", err);
+      this.setState({ sendingEmail: false });
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: err.response?.data?.message || "Impossible d'envoyer le message pour le moment."
+      });
+    }
   };
 
   fetchUserData = async () => {
@@ -80,6 +136,18 @@ class UserProfile extends Component {
 
         const boutiques = u.vendeur?.boutiques || [];
 
+        const vendeurStatus = String(u.vendeur?.status || '').toLowerCase().trim();
+        const hasCertifiedBoutique = boutiques.some(
+          (b) => b.certifiée === true || b.certifiée === 1 || String(b.certifiée || '').toLowerCase().trim() === 'true'
+        );
+
+        const isVendeurVerified = Boolean(
+          u.vendeur && (
+            ['accepté', 'accepte', 'validé', 'valide', 'certifié', 'certifie', 'verified', 'verifie', 'actif'].includes(vendeurStatus) ||
+            hasCertifiedBoutique
+          )
+        );
+
         this.setState({
           userBoutiques: boutiques,
           userInfo: {
@@ -92,7 +160,7 @@ class UserProfile extends Component {
             responseRate: stats.taux_reponse ?? "100%",
             rating: stats.rating ?? 0,
             reviewsCount: stats.reviews_count ?? 0,
-            isVendeur: Boolean(u.vendeur)
+            isVendeurVerified: isVendeurVerified
           },
           loading: false
         });
@@ -120,7 +188,9 @@ class UserProfile extends Component {
       userInfo,
       isshareop,
       iscardcontopen,
-      loading
+      loading,
+      contactForm,
+      sendingEmail
     } = this.state;
 
     if (loading) {
@@ -145,17 +215,55 @@ class UserProfile extends Component {
               </div>
 
               <div className="cardBody">
-                <form onSubmit={(e) => { e.preventDefault(); this.togllecard(); }}>
+                <form onSubmit={this.handleContactSubmit}>
                   <label htmlFor="email">Saisir votre Email</label>
-                  <input type="email" id="email" placeholder="Saisir votre email" required />
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={contactForm.email}
+                    onChange={this.handleContactChange}
+                    placeholder="Saisir votre email"
+                    required
+                  />
+
                   <label htmlFor="nom">Nom Complet</label>
-                  <input type="text" id="nom" placeholder="Nom Complet" required />
+                  <input
+                    type="text"
+                    id="nom"
+                    name="nom"
+                    value={contactForm.nom}
+                    onChange={this.handleContactChange}
+                    placeholder="Nom Complet"
+                    required
+                  />
+
                   <label htmlFor="sub">Sujet</label>
-                  <input type="text" id="sub" placeholder="Sujet" required />
+                  <input
+                    type="text"
+                    id="sub"
+                    name="sujet"
+                    value={contactForm.sujet}
+                    onChange={this.handleContactChange}
+                    placeholder="Sujet"
+                    required
+                  />
+
                   <label htmlFor="desc">Description</label>
-                  <textarea name="description" id="desc" required />
-                  <button type="submit" className="btnmodif">Envoyer</button>
-                  <button type="button" className="btnferm" onClick={this.togllecard}>Fermer</button>
+                  <textarea
+                    name="description"
+                    id="desc"
+                    value={contactForm.description}
+                    onChange={this.handleContactChange}
+                    required
+                  />
+
+                  <button type="submit" className="btnmodif" disabled={sendingEmail}>
+                    {sendingEmail ? 'Envoi en cours...' : 'Envoyer'}
+                  </button>
+                  <button type="button" className="btnferm" onClick={this.togllecard} disabled={sendingEmail}>
+                    Fermer
+                  </button>
                 </form>
               </div>
             </div>
@@ -186,7 +294,9 @@ class UserProfile extends Component {
               <div className="user-details">
                 <h2>
                   {userInfo.name}{' '}
-                  {userInfo.isVendeur && <span className="verified-badge">✔ Vendeur vérifié</span>}
+                  {userInfo.isVendeurVerified && (
+                    <span className="verified-badge">✔ Vendeur vérifié</span>
+                  )}
                 </h2>
                 <div className="user-rating">
                   ⭐ {userInfo.rating} <span className="reviews">({userInfo.reviewsCount} avis)</span>
@@ -235,7 +345,7 @@ class UserProfile extends Component {
                   : "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80";
                 const statusBoutique = b.status_boutique || b.status || "Fermée";
                 const isOpen = String(statusBoutique).toLowerCase() === "ouverte";
-                const certifie = b.certifiée === true || String(b.certifiée).toLowerCase() === "true";
+                const certifie = b.certifiée === true || b.certifiée === 1 || String(b.certifiée).toLowerCase() === "true";
                 const validStars = Math.min(5, Math.max(0, Number(b.stars) || 0));
                 const produitsCount = Array.isArray(b.produits) ? b.produits.length : 0;
 
@@ -343,7 +453,7 @@ class UserProfile extends Component {
                 </li>
                 <li>
                   <Clock size={18} color="#d97706" />
-                  <span>Horaires : {selectedBoutique.horaires || "09:00 - 20:00"}</span>
+                  <span>Horaires : {selectedBoutique.horaire || "09:00 - 20:00"}</span>
                 </li>
                 <li>
                   <CheckCircle size={18} color="#0284c7" />

@@ -3,7 +3,7 @@ import { Star, Store, Heart, Trash2, Eye } from 'lucide-react';
 import { CartContext } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import "../assets/carte.css"
-
+import { CreditCard } from 'lucide-react'; 
 class Carte extends Component {
     static contextType = CartContext;
 
@@ -130,8 +130,9 @@ class Carte extends Component {
                                     {cartTotal.toFixed(2)} DH
                                 </span>
                             </h2>
-                            <Link to="/checkout" className="btn-payer" style={{ textDecoration: "none", display: "inline-block", textAlign: "center" }}>
-                                Payer ({cartTotal.toFixed(2)} DH)
+                            <Link to="/checkout" className="btn-payer">
+                                <CreditCard size={18} />
+                                <span>Payer ({cartTotal.toFixed(2)} DH)</span>
                             </Link>
                         </div>
                     </>

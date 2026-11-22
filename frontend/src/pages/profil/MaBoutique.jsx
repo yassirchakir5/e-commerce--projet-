@@ -1,5 +1,4 @@
 import { Component } from "react";
-import Products from "../../data/product.json";
 import "./MaBoutique.css";
 import api from "../../api/api";
 import Swal from "sweetalert2";

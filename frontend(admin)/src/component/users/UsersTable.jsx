@@ -22,7 +22,7 @@ const UsersTable = ({ users, selectedUserId, onToggleUser, onRoleChange, onDelet
             {users.length === 0 ? (
               <tr>
                 <td colSpan="6" className="empty-cell">
-                  Aucun utilisateur trouvé dans la base de données.
+                  Aucun utilisateur trouvé.
                 </td>
               </tr>
             ) : (

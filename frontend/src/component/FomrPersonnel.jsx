@@ -111,7 +111,7 @@ class FomrPersonnel extends Component{
                     <div className="btn-bat basp" style={{marginTop: "20px"}}>
                         <button className="btnmod-deco" onClick={this.props.handlelogout}>Déconnexion</button>
                          <button className="btnmod" onClick={this.props.handlesubmit}>Modifier</button> 
-                        <button className="btnmod-suppri" onClick={this.props.handlesupprimer} >Supprimer Account</button>
+                        <button className="btnmod-suppri" onClick={this.props.handlesupprimer} >Supprimer le compte</button>
                     </div>
                 </div>
             </>

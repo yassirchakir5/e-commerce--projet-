@@ -1,312 +1,441 @@
 import { Component } from "react";
-import "./MaBoutique.css";
-import api from "../../api/api";
 import Swal from "sweetalert2";
-import Formajoutboutique from "../../component/MesBoutiques/Fomrajoutboutique";
+import api from "../../api/api";
 import ChekingVendeur from "../../component/MesBoutiques/ChekingVendeur";
 import FilteredBoutiques from "../../component/MesBoutiques/filteredBoutiques";
+import Formajoutboutique from "../../component/MesBoutiques/Fomrajoutboutique";
 import GérerMaBoutique from "../../component/MesBoutiques/Maboutique";
-
-const showAlert = () => {
-  Swal.fire({
-    title: "Demande envoyée",
-    text: "Votre demande pour devenir vendeur a été sauvegardée avec succès",
-    icon: "success",
-    confirmButtonText: "OK",
-    confirmButtonColor: "#007bff",
-  });
-};
+import "../../assets/MaBoutique.css";
 
 class MaBoutique extends Component {
   constructor(props) {
     super(props);
-    this.state = { boutiques: [], search: "", filterType: "all", checkingVendeur: true,
-      loading: false, vendeur: null, currentPage: "", nom: "", desc: "",
-      ville: "", email: "", numtel: "", categorie: null, logo_boutique: null,
-      selectedBoutiqueId: null, nomBoutique: "", description: "", telephone: "",
-      isOpen: false, savedMessage: false, message: "", myProducts: [],
-      errors: {}, errormessage: ""
+    this.state = {
+      vendeur: null,
+      checkingVendeur: true,
+      boutiques: [],
+      allProducts: [],
+      search: "",
+      currentPage: "liste",
+      loading: false,
+
+      nom: "",
+      desc: "",
+      numtel: "",
+      email: "",
+      ville: "",
+      horaire: "",
+      categorie: null,
+      logo_boutique: null,
+      errors: {},
+      errorMessage: "",
+
+      selectedBoutiqueId: null,
+      nomBoutique: "",
+      telephone: "",
+      description: "",
+      isOpen: false,
+      savedMessage: false,
+      message: "",
     };
   }
-
-  handleproduitboutique = async () => {
-    
-  }
-
-  checkvendeur = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      this.setState({ checkingVendeur: false });
-      return;
-    }
-
-    try {
-      const res = await api.get("/vendeur/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.data.existe) {
-        this.setState({ vendeur: res.data, checkingVendeur: false });
-      } else {
-        this.setState({ vendeur: null, checkingVendeur: false });
-      }
-    } catch (err) {
-      console.error("Erreur checkvendeur:", err);
-      this.setState({ checkingVendeur: false });
-    }
-  };
 
   componentDidMount() {
     this.checkvendeur();
     this.handleafficher();
-    this.handleproduitboutique();
+    this.fetchMyProducts();
   }
 
-  handleChange = (e) => {
-  if (e.target.type === "file") {
-    this.setState({ [e.target.name]: e.target.files[0] });
-  } else if (e.target.type === "checkbox") {
-    this.setState({ [e.target.name]: e.target.checked });
-  } else {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-};
-
-  handleafficher = async () => {
-    try {
-      const res = await api.get("/boutique");
-      const list = res.data.boutiques || res.data || [];
-      this.setState({ boutiques: Array.isArray(list) ? list : [] });
-    } catch (err) {
-      console.error("Erreur affichage boutiques:", err);
-    }
-  };
-
-  handlesubmit = async (e) => {
-    e.preventDefault();
+  getAuthHeaders = () => {
     const token = localStorage.getItem("token");
-    const formdata = new FormData();
-    formdata.append("nom", this.state.nom);
-    formdata.append("desc", this.state.desc);
-    formdata.append("ville", this.state.ville);
-    formdata.append("email", this.state.email);
-    formdata.append("numtel", this.state.numtel);
-    formdata.append(
-      "categorie",
-      this.state.categorie ? this.state.categorie.value : ""
-    );
-    if (this.state.logo_boutique) {
-      formdata.append("logo_boutique", this.state.logo_boutique);
-    }
-
-    try {
-      await api.post("/boutique", formdata, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      await Swal.fire("Succès!", "La boutique a été ajoutée avec succès", "success");
-      this.handleafficher();
-      this.setState({ currentPage: "",  nom: "",
-        desc: "", ville: "", email: "",
-        numtel: "", categorie: null, logo_boutique: null,
-      });
-    } catch (err) {
-      if(err.response && err.response.data){
-        this.setState({
-          errors: err.response.data.errors || {},
-          errormessage: err.response.data.message || "Erreur de validation"
-        });
-      }else{
-        Swal.fire("Erreur", "Impossible d'ajouter la boutique", "error");
-      }
-    }
+    return {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    };
   };
 
-  handlecategoriechange = (selectoption) => {
-    this.setState({ categorie: selectoption });
+  checkvendeur = async () => {
+    this.setState({ checkingVendeur: true });
+    try {
+      const res = await api.get("/vendeur/me", {
+        headers: this.getAuthHeaders(),
+      });
+      this.setState({ vendeur: res.data.vendeur || res.data || null });
+    } catch (err) {
+      if (err.response?.status === 404) {
+        this.setState({ vendeur: null });
+      } else {
+        console.error("Erreur checkvendeur:", err);
+      }
+    } finally {
+      this.setState({ checkingVendeur: false });
+    }
   };
 
   handledemandevendeur = async () => {
-    if (this.state.loading) return;
     this.setState({ loading: true });
-
-    const token = localStorage.getItem("token");
     try {
       const res = await api.get("/vendeur/demande", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: this.getAuthHeaders(),
       });
-
       this.setState({
-        vendeur: { existe: true, status: "en attente", ...res.data },
+        vendeur: res.data.vendeur || res.data,
         loading: false,
       });
-
-      showAlert();
     } catch (err) {
-      console.error("Erreur demande:", err);
+      console.error("Erreur demande vendeur:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: err.response?.data?.message || "Erreur lors de l'envoi de la demande.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#dc2626",
+      });
       this.setState({ loading: false });
     }
   };
 
-  openDetails = async (boutique) => {
-  const currentStatus = boutique.status_boutique || "ouverte";
-  this.setState({
-    currentPage: "mesboutiques", selectedBoutiqueId: boutique.id,
-    nomBoutique: boutique.nom || "", description: boutique.desc || boutique.description || "",
-    telephone: boutique.numtel || boutique.telephone || "", ville: boutique.ville || "",
-    isOpen: currentStatus.toLowerCase() === "ouverte", savedMessage: false,
-  });
-  try{
-      const res = await api.get('/boutique/produit/' + boutique.id);
-      this.setState({ myProducts: res.data.produit });
-    }catch(err){
-      console.log(err);
-    }
-};
-
-  handleSave = async (e) => {
-  e.preventDefault();
-  const { selectedBoutiqueId, boutiques, nomBoutique, description, telephone, ville, isOpen, } = this.state;
-  const statusb = this.state.isOpen ? "Ouverte" : "Fermée";
-
-  try{
-    const res = await api.put(`/boutique/modifier/${selectedBoutiqueId}`,{
-      nom: nomBoutique, desc: description, status_boutique: statusb, numtel: telephone, ville: ville
-    });
-  }catch(err){
-    console.log(err);
-    
-    
-  }
-
-  const updatedBoutiques = boutiques.map((b) =>
-    b.id === selectedBoutiqueId
-      ? {
-          ...b, nom: nomBoutique, desc: description,
-          description: description, numtel: telephone, telephone: telephone,
-          ville: ville, status_boutique: isOpen ? "ouverte" : "fermée",
-        }
-      : b
-   );
-
-    localStorage.setItem("mes_boutiques", JSON.stringify(updatedBoutiques));
-    this.setState({
-      boutiques: updatedBoutiques,
-      savedMessage: true,
-      message: "✓ Paramètres de la boutique enregistrés avec succès !"
-    });
-
-    setTimeout(() => this.setState({ savedMessage: false,currentPage: "" }), 3000);
-  };
-
-  handledelete = async () => {
-    const { selectedBoutiqueId } = this.state;
-    try{
-      const res = await api.delete(`/boutique/delete/${selectedBoutiqueId}`);
-      this.setState({ 
-        message: "✓ La boutique a été supprimer avec succes",
-        savedMessage: true 
-      });
-      
-    }catch(err){
-      console.log(err);
-    }
-    setTimeout(() => {this.setState({ savedMessage: false,currentPage: "" })}, 3000);
-    setTimeout(() => {this.handleafficher()},2500);
-  }
-
-  toggleProductStatus = async (prod, selectedStatus) => {
-    const newStatus =
-      selectedStatus ||
-      ((prod.status || "").toLowerCase() === "disponible" ? "En-révision" : "disponible");
-
+  handleafficher = async () => {
     try {
-      await api.put(`/produit/modifierstatus/${prod.id}`, {
-        status: newStatus,
+      const res = await api.get("/boutique", {
+        headers: this.getAuthHeaders(),
       });
-
-      this.setState((prevState) => ({
-        myProducts: prevState.myProducts.map((p) =>
-          p.id === prod.id ? { ...p, status: newStatus } : p
-        ),
-      }));
+      this.setState({ boutiques: res.data.boutiques || [] });
     } catch (err) {
-      console.error("Erreur lors de la mise à jour du statut :", err);
+      console.error("Erreur affichage boutiques:", err);
+      this.setState({ boutiques: [] });
     }
   };
 
-  toggleajoutcurrentpag = () => {
-    this.setState({ currentPage: "" });
-  }
+  fetchMyProducts = async () => {
+    try {
+      const res = await api.get("/produit/afficher", {
+        headers: this.getAuthHeaders(),
+      });
+      const list = res.data.produit || res.data.produits || [];
+      this.setState({ allProducts: Array.isArray(list) ? list : [] });
+    } catch (err) {
+      if (err.response?.status === 404) {
+        this.setState({ allProducts: [] });
+      } else {
+        console.error("Erreur produits:", err);
+      }
+    }
+  };
 
   toggleAjoutForm = () => {
-    this.setState((prevState) => ({
-      currentPage: prevState.currentPage === "ajoute_boutique" ? "" : "ajoute_boutique",
+    this.setState((prev) => ({
+      currentPage: prev.currentPage === "ajoute_boutique" ? "liste" : "ajoute_boutique",
+      errors: {},
+      errorMessage: "",
+      horaire: "",
     }));
   };
 
-  render() {
-    const { boutiques, search, filterType, nomBoutique,
-      description, telephone, ville, isOpen, savedMessage,
-      myProducts, currentPage, } = this.state;
+  toggleajoutcurrentpag = () => {
+    this.setState({
+      currentPage: "liste",
+      selectedBoutiqueId: null,
+      savedMessage: false,
+      message: "",
+    });
+  };
 
-    const filteredBoutiques = boutiques.filter((b) => {
-      const nom = (b.nom || "").toLowerCase();
-      const desc = (b.description || b.desc || "").toLowerCase();
-      const vend = (typeof b.vendeur === "string" ? b.vendeur : b.vendeur?.name || "").toLowerCase();
-      const term = (search || "").toLowerCase();
+  handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    if (type === "checkbox") {
+      this.setState({ [name]: checked });
+    } else if (type === "file") {
+      this.setState({ [name]: files[0] || null });
+    } else {
+      this.setState({ [name]: value });
+    }
+  };
 
-      const matchSearch =
-        nom.includes(term) || desc.includes(term) || vend.includes(term);
+  handlecategoriechange = (selectedOption) => {
+    this.setState({ categorie: selectedOption });
+  };
 
-      const status = (b.status_boutique || "").toLowerCase();
-      const isCertifie = b.certifiée === true || b.certifiée === "true";
+  handlesubmit = async (e) => {
+    e.preventDefault();
+    this.setState({ errors: {}, errorMessage: "" });
 
-      if (filterType === "all") return matchSearch;
-      if (filterType === "ouverte") return matchSearch && status === "ouverte";
-      if (filterType === "certifie") return matchSearch && isCertifie;
-      return (
-        matchSearch &&
-        (b.categorie || "").toLowerCase() === filterType.toLowerCase()
+    const formData = new FormData();
+    formData.append("nom", this.state.nom);
+    formData.append("desc", this.state.desc);
+    formData.append("numtel", this.state.numtel);
+    formData.append("email", this.state.email);
+    formData.append("ville", this.state.ville);
+    formData.append("horaire", this.state.horaire || "");
+    formData.append("categorie", this.state.categorie ? this.state.categorie.value : "");
+    if (this.state.logo_boutique) {
+      formData.append("logo_boutique", this.state.logo_boutique);
+    }
+
+    try {
+      await api.post("/boutique", formData, {
+        headers: {
+          ...this.getAuthHeaders(),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Boutique ajoutée !",
+        text: "Votre boutique a été créée avec succès.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#0284c7",
+      });
+
+      this.setState({
+        nom: "",
+        desc: "",
+        numtel: "",
+        email: "",
+        ville: "",
+        horaire: "",
+        categorie: null,
+        logo_boutique: null,
+        currentPage: "liste",
+      });
+      this.handleafficher();
+    } catch (err) {
+      if (err.response?.status === 422) {
+        this.setState({
+          errors: err.response.data.errors || {},
+          errorMessage: err.response.data.message || "Veuillez vérifier les champs.",
+        });
+      } else {
+        this.setState({
+          errorMessage: err.response?.data?.message || "Erreur lors de l'ajout de la boutique.",
+        });
+      }
+    }
+  };
+
+  openDetails = (b) => {
+    this.setState({
+      currentPage: "gerer_boutique",
+      selectedBoutiqueId: b.id,
+      nomBoutique: b.nom || "",
+      telephone: b.numtel || "",
+      ville: b.ville || "",
+      horaire: b.horaire || "",
+      description: b.desc || b.description || "",
+      isOpen: String(b.status_boutique || "").toLowerCase() === "ouverte",
+      savedMessage: false,
+      message: "",
+    });
+  };
+
+  handleSave = async (e) => {
+    e.preventDefault();
+    const { selectedBoutiqueId, nomBoutique, telephone, ville, horaire, description, isOpen } =
+      this.state;
+
+    try {
+      const res = await api.put(
+        `/boutique/modifier/${selectedBoutiqueId}`,
+        {
+          nom: nomBoutique,
+          numtel: telephone,
+          ville: ville,
+          horaire: horaire,
+          desc: description,
+          status_boutique: isOpen ? "Ouverte" : "Fermée",
+        },
+        { headers: this.getAuthHeaders() }
       );
+
+      this.setState({
+        savedMessage: true,
+        message: res.data.message || "Modifications enregistrées avec succès !",
+      });
+      this.handleafficher();
+      setTimeout(() => this.setState({ savedMessage: false }), 3000);
+    } catch (err) {
+      console.error("Erreur modification boutique:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: "Erreur lors de l'enregistrement des modifications.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#dc2626",
+      });
+    }
+  };
+
+  handledelete = async () => {
+    const result = await Swal.fire({
+      title: "Êtes-vous sûr ?",
+      text: "Voulez-vous vraiment supprimer cette boutique ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Oui, supprimer",
+      cancelButtonText: "Annuler",
     });
 
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.delete(`/boutique/delete/${this.state.selectedBoutiqueId}`, {
+        headers: this.getAuthHeaders(),
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Supprimée !",
+        text: "La boutique a été supprimée avec succès.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#0284c7",
+      });
+
+      this.setState({
+        currentPage: "liste",
+        selectedBoutiqueId: null,
+      });
+      this.handleafficher();
+    } catch (err) {
+      console.error("Erreur suppression boutique:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: "Erreur lors de la suppression de la boutique.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#dc2626",
+      });
+    }
+  };
+
+  toggleProductStatus = async (prod, newStatus) => {
+    try {
+      await api.put(
+        `/produit/modifierstatus/${prod.id}`,
+        { status: newStatus },
+        { headers: this.getAuthHeaders() }
+      );
+      this.fetchMyProducts();
+    } catch (err) {
+      console.error("Erreur changement statut produit:", err);
+    }
+  };
+
+  render() {
+    const {
+      vendeur,
+      checkingVendeur,
+      boutiques,
+      allProducts,
+      search,
+      currentPage,
+      loading,
+      selectedBoutiqueId,
+    } = this.state;
+
+    const filteredBoutiques = boutiques
+      .filter((b) => (b.nom || "").toLowerCase().includes(search.toLowerCase()))
+      .map((b) => ({
+        ...b,
+        produitsCount: b.produits_count ?? b.produitsCount ?? 0,
+      }));
+
+    const myProducts = allProducts.filter(
+      (p) => Number(p.id_boutique) === Number(selectedBoutiqueId)
+    );
     const dispoCount = myProducts.filter(
-      (p) => p.status === "disponible"
+      (p) => String(p.status || "").trim().toLowerCase() === "disponible"
     ).length;
-    const revCount = myProducts.length - dispoCount;
+    const revCount = myProducts.filter((p) => {
+      const s = String(p.status || "").trim().toLowerCase();
+      return s === "en-révision" || s === "en-revision" || s === "suspendu";
+    }).length;
 
     return (
-      <div>
-        <div style={{ marginBottom: "20px" }}>
-          {!this.state.checkingVendeur && (
-            <ChekingVendeur vendeur={this.state.vendeur} currentPage = {this.state.currentPage} loading={this.state.loading}
-            handledemandevendeur = {this.handledemandevendeur} toggleAjoutForm = {this.toggleAjoutForm} />
+      <div className="maboutique-wrapper">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+            flexWrap: "wrap",
+            gap: "10px",
+          }}
+        >
+          <h2 style={{ margin: 0 }}>Mes Boutiques</h2>
+
+          {!checkingVendeur && (
+            <ChekingVendeur
+              vendeur={vendeur}
+              toggleAjoutForm={this.toggleAjoutForm}
+              currentPage={currentPage}
+              loading={loading}
+              handledemandevendeur={this.handledemandevendeur}
+            />
           )}
         </div>
 
         {currentPage === "ajoute_boutique" && (
-          <Formajoutboutique  errorMessage={this.state.errormessage} errors={this.state.errors}
-          handlesubmit = {this.handlesubmit} nom = {this.state.nom} handleChange = {this.handleChange} 
-          desc = {this.state.desc} numtel = {this.state.numtel} email = {this.state.email}
-          ville = {this.state.ville} categorie = {this.state.categorie} handlecategoriechange = {this.handlecategoriechange} />
-          )}
-
-        <FilteredBoutiques filteredBoutiques={filteredBoutiques} openDetails={this.openDetails}/>
-
-        {filteredBoutiques.length === 0 && (
-          <div className="boutiques-empty">
-            <h3>Aucune boutique ne correspond à votre recherche.</h3>
-          </div>
+          <Formajoutboutique
+            nom={this.state.nom}
+            desc={this.state.desc}
+            numtel={this.state.numtel}
+            email={this.state.email}
+            ville={this.state.ville}
+            horaire={this.state.horaire}
+            categorie={this.state.categorie}
+            errors={this.state.errors}
+            errorMessage={this.state.errorMessage}
+            handleChange={this.handleChange}
+            handlecategoriechange={this.handlecategoriechange}
+            handlesubmit={this.handlesubmit}
+          />
         )}
 
-        {currentPage === "mesboutiques" && (
-          <GérerMaBoutique toggleajoutcurrentpag={this.toggleajoutcurrentpag}  myProducts={myProducts} 
-          dispoCount={dispoCount} revCount={revCount} handleSave={this.handleSave} isOpen={isOpen}
-          handleChange={this.handleChange} nomBoutique={nomBoutique} telephone={telephone} ville={ville} description={description} 
-          handledelete={this.handledelete} savedMessage={savedMessage} selectedBoutiqueId={this.state.selectedBoutiqueId}
-          message={this.state.message} toggleProductStatus={this.toggleProductStatus}/>
+        {currentPage === "gerer_boutique" && (
+          <GérerMaBoutique
+            selectedBoutiqueId={selectedBoutiqueId}
+            nomBoutique={this.state.nomBoutique}
+            telephone={this.state.telephone}
+            ville={this.state.ville}
+            horaire={this.state.horaire}
+            description={this.state.description}
+            isOpen={this.state.isOpen}
+            myProducts={myProducts}
+            dispoCount={dispoCount}
+            revCount={revCount}
+            savedMessage={this.state.savedMessage}
+            message={this.state.message}
+            handleChange={this.handleChange}
+            handleSave={this.handleSave}
+            handledelete={this.handledelete}
+            toggleProductStatus={this.toggleProductStatus}
+            toggleajoutcurrentpag={this.toggleajoutcurrentpag}
+          />
+        )}
+
+        {currentPage === "liste" && (
+          <>
+            {boutiques.length > 0 && (
+              <div style={{ marginBottom: "18px" }}>
+                <input
+                  type="text"
+                  placeholder="Rechercher une boutique..."
+                  value={search}
+                  onChange={(e) => this.setState({ search: e.target.value })}
+                  className="input-sea"
+                />
+              </div>
+            )}
+
+            <FilteredBoutiques
+              filteredBoutiques={filteredBoutiques}
+              openDetails={this.openDetails}
+            />
+          </>
         )}
       </div>
     );

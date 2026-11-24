@@ -71,7 +71,7 @@ class Bar extends Component{
             <div className="bar">
                 <h2><Link to="/" className="logo"><strong className="sb">Nex</strong>Market</Link></h2>
                 <div className="bar-btn">
-                    <Link to="/" className="bar-btn">Home</Link>
+                    <Link to="/" className="bar-btn">Accueil</Link>
                     <Link to="/shop" className="bar-btn">Boutique</Link>
                     <div className="dropdown">
                         <a className="dopdownbtn bar-btn categorie">Categorie <FaChevronDown size={12} /></a>

@@ -216,8 +216,10 @@ class MaBoutique extends Component {
     setTimeout(() => {this.handleafficher()},2500);
   }
 
-  toggleProductStatus = async (prod) => {
-    const newStatus = (prod.status || "") === "Disponible"  ? "En-révision" : "Disponible";
+  toggleProductStatus = async (prod, selectedStatus) => {
+    const newStatus =
+      selectedStatus ||
+      ((prod.status || "").toLowerCase() === "disponible" ? "En-révision" : "disponible");
 
     try {
       await api.put(`/produit/modifierstatus/${prod.id}`, {

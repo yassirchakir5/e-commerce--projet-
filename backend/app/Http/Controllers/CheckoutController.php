@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Produit;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -12,6 +13,47 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    private function ensureLigneCommandePreservesHistory()
+    {
+        try {
+            if (!Schema::hasTable('ligne_commande')) {
+                return;
+            }
+
+            if (!Schema::hasColumn('ligne_commande', 'nom_produit')) {
+                Schema::table('ligne_commande', function (Blueprint $table) {
+                    $table->string('nom_produit')->nullable()->after('id_produit');
+                });
+
+                DB::statement("
+                    UPDATE ligne_commande lc
+                    INNER JOIN produit p ON lc.id_produit = p.id
+                    SET lc.nom_produit = p.nom
+                    WHERE lc.nom_produit IS NULL
+                ");
+            }
+
+            $dbName = DB::getDatabaseName();
+            $cascades = DB::select("
+                SELECT kcu.CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE kcu
+                INNER JOIN information_schema.REFERENTIAL_CONSTRAINTS rc
+                    ON kcu.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+                    AND kcu.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
+                WHERE kcu.TABLE_SCHEMA = ?
+                  AND kcu.TABLE_NAME = 'ligne_commande'
+                  AND kcu.COLUMN_NAME = 'id_produit'
+                  AND rc.DELETE_RULE = 'CASCADE'
+            ", [$dbName]);
+
+            foreach ($cascades as $fk) {
+                DB::statement("ALTER TABLE `ligne_commande` DROP FOREIGN KEY `{$fk->CONSTRAINT_NAME}`");
+            }
+        } catch (\Throwable $e) {
+            \Log::warning("ensureLigneCommandePreservesHistory: " . $e->getMessage());
+        }
+    }
+
     private function getBoutiqueVendeurInfo($idBoutique)
     {
         $boutique = DB::table('boutique')->where('id', $idBoutique)->first();
@@ -64,6 +106,8 @@ class CheckoutController extends Controller
 
     public function passerCommande(Request $request)
     {
+        $this->ensureLigneCommandePreservesHistory();
+
         $request->validate([
             'items'             => 'required|array|min:1',
             'items.*.id'        => 'required|integer|exists:produit,id',
@@ -117,7 +161,13 @@ class CheckoutController extends Controller
             }
 
             $commandesCreees = [];
-            $emailsToSend = [];
+            $vendeursEmailsToSend = [];
+            $clientArticlesGlobal = [];
+            $totalGlobalClient = 0;
+
+            $isCarte = $request->methode_paiement === 'carte';
+            $modePaiementLabel = $isCarte ? 'Carte Bancaire' : 'Paiement à la livraison';
+            $clientNom = trim(($user->name ?? '') . ' ' . ($user->prenom ?? '')) ?: 'Client';
 
             foreach ($produitsParBoutique as $idBoutique => $lignes) {
                 $totalBoutique = 0;
@@ -127,16 +177,18 @@ class CheckoutController extends Controller
                     $sousTotal = $l['produit']->prix * $l['quantite'];
                     $totalBoutique += $sousTotal;
 
-                    $articlesDetails[] = [
+                    $articleItem = [
                         'nom'           => $l['produit']->nom,
                         'quantite'      => $l['quantite'],
                         'prix_unitaire' => $l['produit']->prix,
                         'sous_total'    => $sousTotal,
                     ];
+
+                    $articlesDetails[] = $articleItem;
+                    $clientArticlesGlobal[] = $articleItem;
                 }
 
-                $isCarte = $request->methode_paiement === 'carte';
-                $modePaiementLabel = $isCarte ? 'Carte Bancaire' : 'Paiement à la livraison';
+                $totalGlobalClient += $totalBoutique;
                 $refTransaction = $isCarte ? 'PAY-' . strtoupper(Str::random(10)) : null;
 
                 $commandeId = DB::table('commandes')->insertGetId([
@@ -165,14 +217,20 @@ class CheckoutController extends Controller
                     $prod = $l['produit'];
                     $qte  = $l['quantite'];
 
-                    DB::table('ligne_commande')->insert([
+                    $ligneData = [
                         'id_commande'   => $commandeId,
                         'id_produit'    => $prod->id,
                         'quantite'      => $qte,
                         'prix_unitaire' => $prod->prix,
                         'created_at'    => now(),
                         'updated_at'    => now(),
-                    ]);
+                    ];
+
+                    if (Schema::hasColumn('ligne_commande', 'nom_produit')) {
+                        $ligneData['nom_produit'] = $prod->nom;
+                    }
+
+                    DB::table('ligne_commande')->insert($ligneData);
 
                     $nouveauStock = max(0, $prod->stock - $qte);
                     DB::table('produit')->where('id', $prod->id)->update([
@@ -183,21 +241,21 @@ class CheckoutController extends Controller
                 }
 
                 $commandesCreees[] = $commandeId;
-                $pdfUrl = url("/api/commande/{$commandeId}/pdf?adresse=" . urlencode($request->adresse_livraison));
+                $pdfUrlVendeur = url("/api/commande/{$commandeId}/pdf?adresse=" . urlencode($request->adresse_livraison));
 
                 $infoB = $this->getBoutiqueVendeurInfo($idBoutique);
                 $boutique = $infoB['boutique'];
                 $vendeurEmail = $infoB['vendeurEmail'];
 
-                $emailsToSend[] = [
+                $vendeursEmailsToSend[] = [
                     'commandeId'   => $commandeId,
                     'total'        => $totalBoutique,
                     'modePaiement' => $modePaiementLabel,
                     'adresse'      => $request->adresse_livraison,
                     'articles'     => $articlesDetails,
-                    'pdfUrl'       => $pdfUrl,
+                    'pdfUrl'       => $pdfUrlVendeur,
                     'clientEmail'  => $user->email,
-                    'clientNom'    => trim(($user->name ?? '') . ' ' . ($user->prenom ?? '')) ?: 'Client',
+                    'clientNom'    => $clientNom,
                     'vendeurEmail' => $vendeurEmail,
                     'vendeurNom'   => $boutique->nom ?? 'Vendeur',
                 ];
@@ -205,26 +263,35 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            foreach ($emailsToSend as $mailData) {
-                try {
-                    if (!empty($mailData['clientEmail'])) {
-                        Mail::send('emails.commande_notification', [
-                            'destinataireType' => 'client',
-                            'nomDestinataire'  => $mailData['clientNom'],
-                            'clientNom'        => $mailData['clientNom'],
-                            'clientEmail'      => $mailData['clientEmail'],
-                            'commandeId'       => $mailData['commandeId'],
-                            'total'            => $mailData['total'],
-                            'modePaiement'     => $mailData['modePaiement'],
-                            'adresse'          => $mailData['adresse'],
-                            'articles'         => $mailData['articles'],
-                            'pdfUrl'           => $mailData['pdfUrl'],
-                        ], function ($msg) use ($mailData) {
-                            $msg->to($mailData['clientEmail'])
-                                ->subject("Confirmation de votre commande #" . $mailData['commandeId']);
-                        });
-                    }
+            $idsParam = implode(',', $commandesCreees);
+            $clientPdfUrl = url("/api/commande/{$idsParam}/pdf?adresse=" . urlencode($request->adresse_livraison));
 
+            if (!empty($user->email)) {
+                try {
+                    $commandesRefs = implode(', #', $commandesCreees);
+
+                    Mail::send('emails.commande_notification', [
+                        'destinataireType' => 'client',
+                        'nomDestinataire'  => $clientNom,
+                        'clientNom'        => $clientNom,
+                        'clientEmail'      => $user->email,
+                        'commandeId'       => $commandesRefs,
+                        'total'            => $totalGlobalClient,
+                        'modePaiement'     => $modePaiementLabel,
+                        'adresse'          => $request->adresse_livraison,
+                        'articles'         => $clientArticlesGlobal,
+                        'pdfUrl'           => $clientPdfUrl,
+                    ], function ($msg) use ($user, $commandesRefs) {
+                        $msg->to($user->email)
+                            ->subject("Confirmation de votre commande #" . $commandesRefs);
+                    });
+                } catch (\Exception $mailEx) {
+                    \Log::error("Erreur envoi email client: " . $mailEx->getMessage());
+                }
+            }
+
+            foreach ($vendeursEmailsToSend as $mailData) {
+                try {
                     if (!empty($mailData['vendeurEmail'])) {
                         Mail::send('emails.commande_notification', [
                             'destinataireType' => 'vendeur',
@@ -243,15 +310,15 @@ class CheckoutController extends Controller
                         });
                     }
                 } catch (\Exception $mailEx) {
-                    \Log::error("Erreur envoi email commande: " . $mailEx->getMessage());
+                    \Log::error("Erreur envoi email vendeur: " . $mailEx->getMessage());
                 }
             }
 
             return response()->json([
                 'message'       => 'Paiement validé !',
                 'commandes_id'  => $commandesCreees,
-                'pdf_url'       => $emailsToSend[0]['pdfUrl'] ?? null,
-                'vendeur_email' => $emailsToSend[0]['vendeurEmail'] ?? 'non trouvé',
+                'pdf_url'       => $clientPdfUrl,
+                'vendeur_email' => $vendeursEmailsToSend[0]['vendeurEmail'] ?? 'non trouvé',
             ], 201);
 
         } catch (\Exception $e) {
@@ -265,6 +332,8 @@ class CheckoutController extends Controller
 
     public function getCommandesVendeur(Request $request)
     {
+        $this->ensureLigneCommandePreservesHistory();
+
         $user = $request->user();
         $boutiqueIds = [];
         $boutiqueNoms = [];
@@ -335,32 +404,30 @@ class CheckoutController extends Controller
             return response()->json([
                 'boutique'  => '',
                 'commandes' => [],
-                'debug'     => [
-                    'user_id'          => $user->id,
-                    'user_role'        => $user->role ?? null,
-                    'vendeur'          => $vendeur,
-                    'boutique_columns' => $boutiqueCols,
-                    'boutiques_in_db'  => DB::table('boutique')->get(),
-                    'commandes_in_db'  => DB::table('commandes')->select('id', 'id_client', 'id_boutique', 'total', 'status')->get(),
-                ]
             ]);
         }
+
+        $hasNomProduitCol = Schema::hasColumn('ligne_commande', 'nom_produit');
 
         $commandes = DB::table('commandes')
             ->whereIn('id_boutique', $boutiqueIds)
             ->orderByDesc('id')
             ->get()
-            ->map(function ($cmd) {
+            ->map(function ($cmd) use ($hasNomProduitCol) {
                 $clientRow = DB::table('client')->where('id', $cmd->id_client)->first();
                 $uId = $clientRow->utilisateur_id ?? $cmd->id_client;
                 $clientUser = DB::table('utilisateur')->where('id', $uId)->first();
 
+                $nomSelect = $hasNomProduitCol
+                    ? DB::raw("COALESCE(NULLIF(ligne_commande.nom_produit, ''), produit.nom, CONCAT('Produit supprimé (#', ligne_commande.id_produit, ')')) as nom")
+                    : DB::raw("COALESCE(produit.nom, CONCAT('Produit supprimé (#', ligne_commande.id_produit, ')')) as nom");
+
                 $articles = DB::table('ligne_commande')
-                    ->join('produit', 'ligne_commande.id_produit', '=', 'produit.id')
+                    ->leftJoin('produit', 'ligne_commande.id_produit', '=', 'produit.id')
                     ->where('ligne_commande.id_commande', $cmd->id)
                     ->select(
-                        'produit.id as id_produit',
-                        'produit.nom',
+                        'ligne_commande.id_produit as id_produit',
+                        $nomSelect,
                         'ligne_commande.quantite',
                         'ligne_commande.prix_unitaire'
                     )
@@ -449,45 +516,77 @@ class CheckoutController extends Controller
 
     public function telechargerPdf(Request $request, $id)
     {
-        $commande = DB::table('commandes')->where('id', $id)->first();
-        if (!$commande) {
+        $this->ensureLigneCommandePreservesHistory();
+
+        $ids = array_filter(array_map('intval', explode(',', $id)));
+        if (empty($ids)) {
             abort(404, 'Commande introuvable');
         }
 
-        $clientRow = DB::table('client')->where('id', $commande->id_client)->first();
-        $userId = $clientRow->utilisateur_id ?? $commande->id_client;
+        $commandes = DB::table('commandes')->whereIn('id', $ids)->get();
+        if ($commandes->isEmpty()) {
+            abort(404, 'Commande introuvable');
+        }
+
+        $firstCommande = $commandes->first();
+        $commandeResume = clone $firstCommande;
+        $commandeResume->id = implode(', #', $ids);
+        $commandeResume->total = $commandes->sum('total');
+
+        $clientRow = DB::table('client')->where('id', $firstCommande->id_client)->first();
+        $userId = $clientRow->utilisateur_id ?? $firstCommande->id_client;
         $client = DB::table('utilisateur')->where('id', $userId)->first();
 
         if ($client && !isset($client->nom)) {
             $client->nom = $client->name ?? '';
         }
 
-        $boutique = DB::table('boutique')->where('id', $commande->id_boutique)->first();
+        $boutiqueIds = $commandes->pluck('id_boutique')->unique()->filter();
+        $boutiquesNoms = DB::table('boutique')->whereIn('id', $boutiqueIds)->pluck('nom')->filter()->toArray();
+        $boutiqueResume = (object) [
+            'nom' => implode(', ', $boutiquesNoms) ?: 'Boutique',
+        ];
 
         $paiement = Schema::hasTable('paiements')
-            ? DB::table('paiements')->where('id_commande', $id)->first()
+            ? DB::table('paiements')->whereIn('id_commande', $ids)->first()
             : null;
 
+        $hasNomProduitCol = Schema::hasColumn('ligne_commande', 'nom_produit');
+        $nomSelect = $hasNomProduitCol
+            ? DB::raw("COALESCE(NULLIF(ligne_commande.nom_produit, ''), produit.nom, CONCAT('Produit supprimé (#', ligne_commande.id_produit, ')')) as nom_produit")
+            : DB::raw("COALESCE(produit.nom, CONCAT('Produit supprimé (#', ligne_commande.id_produit, ')')) as nom_produit");
+
         $lignes = DB::table('ligne_commande')
-            ->join('produit', 'ligne_commande.id_produit', '=', 'produit.id')
-            ->where('ligne_commande.id_commande', $id)
+            ->leftJoin('produit', 'ligne_commande.id_produit', '=', 'produit.id')
+            ->whereIn('ligne_commande.id_commande', $ids)
             ->select(
-                'produit.nom as nom_produit',
+                $nomSelect,
                 'ligne_commande.quantite',
                 'ligne_commande.prix_unitaire'
             )
             ->get();
 
+        if ($lignes->isEmpty() && $commandeResume->total > 0) {
+            $lignes = collect([
+                (object) [
+                    'nom_produit'   => 'Produit (supprimé du catalogue)',
+                    'quantite'      => 1,
+                    'prix_unitaire' => $commandeResume->total,
+                ]
+            ]);
+        }
+
         $pdf = Pdf::loadView('pdf.facture_commande', [
-            'commande'     => $commande,
+            'commande'     => $commandeResume,
             'client'       => $client,
-            'boutique'     => $boutique,
+            'boutique'     => $boutiqueResume,
             'lignes'       => $lignes,
             'adresse'      => $request->query('adresse', $client->addresselocal ?? 'Adresse client'),
-            'modePaiement' => $paiement->mode ?? ($commande->status === 'Payée' ? 'Carte Bancaire' : 'Paiement à la livraison'),
+            'modePaiement' => $paiement->mode ?? ($firstCommande->status === 'Payée' ? 'Carte Bancaire' : 'Paiement à la livraison'),
             'reference'    => $paiement->reference_transaction ?? null,
         ]);
 
-        return $pdf->download("Recu_Commande_{$id}.pdf");
+        $fileNameIds = implode('_', $ids);
+        return $pdf->download("Recu_Commande_{$fileNameIds}.pdf");
     }
 }

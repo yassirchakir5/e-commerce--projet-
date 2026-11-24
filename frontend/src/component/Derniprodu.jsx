@@ -124,6 +124,44 @@ class Derrniprodu extends Component {
     return p.image || "https://via.placeholder.com/200?text=Produit";
   };
 
+  getBadgeStyle = (isDispo, isVendue, isRevision) => {
+    if (isDispo) {
+      return { textAlign: "center" };
+    }
+
+    const baseStyle = {
+      textAlign: "center",
+      padding: "6px 12px",
+      borderRadius: "9999px",
+      fontSize: "12px",
+      fontWeight: "700",
+      textTransform: "uppercase",
+      display: "block",
+    };
+
+    if (isRevision) {
+      return {
+        ...baseStyle,
+        backgroundColor: "#fef3c7",
+        color: "#b45309",
+      };
+    }
+
+    if (isVendue) {
+      return {
+        ...baseStyle,
+        backgroundColor: "#fee2e2",
+        color: "#b91c1c",
+      };
+    }
+
+    return {
+      ...baseStyle,
+      backgroundColor: "#f1f5f9",
+      color: "#475569",
+    };
+  };
+
   render() {
     const { addToCart } = this.context;
     const { search, sorto, categorie, products, favorisIds } = this.state;
@@ -205,7 +243,15 @@ class Derrniprodu extends Component {
             const isFavori = favorisIds.includes(p.id);
 
             const statusClean = String(p.status || "").trim().toLowerCase();
-            const isDispo = statusClean === "disponible";
+            const statusNoAccent = statusClean
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "");
+
+            const isDispo = statusNoAccent === "disponible";
+            const isVendue = statusNoAccent === "vendue" || statusNoAccent === "vendu";
+            const isRevision =
+              statusNoAccent === "en-revision" || statusNoAccent === "en revision";
+
             const hasStock = p.stock === undefined || Number(p.stock) > 0;
             const canBuy = isDispo && hasStock;
 
@@ -227,8 +273,12 @@ class Derrniprodu extends Component {
                 </div>
 
                 <h2
-                  className={`badge-statut ${p.status}`}
-                  style={{ textAlign: "center" }}
+                  className={`badge-statut ${statusClean} ${
+                    isDispo ? "disponible Disponible" : ""
+                  } ${isVendue ? "vendue Vendue" : ""} ${
+                    isRevision ? "en-revision En-révision" : ""
+                  }`}
+                  style={this.getBadgeStyle(isDispo, isVendue, isRevision)}
                 >
                   {p.status}
                 </h2>
@@ -276,7 +326,9 @@ class Derrniprodu extends Component {
 
                 <div className="vendu">
                   <Store /> &nbsp;&nbsp;
-                  <p>Vendu par : <strong>{boutiqueName}</strong></p>
+                  <p>
+                    Vendu par : <strong>{boutiqueName}</strong>
+                  </p>
                 </div>
               </div>
             );

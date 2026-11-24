@@ -69,7 +69,7 @@ class Bar extends Component{
         const info = this.state.user;
         return(
             <div className="bar">
-                <h2><Link to="/" className="logo"><strong className="sb">E</strong>-commerce</Link></h2>
+                <h2><Link to="/" className="logo"><strong className="sb">Nex</strong>Market</Link></h2>
                 <div className="bar-btn">
                     <Link to="/" className="bar-btn">Home</Link>
                     <Link to="/shop" className="bar-btn">Boutique</Link>

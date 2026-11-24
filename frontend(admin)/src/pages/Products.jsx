@@ -31,11 +31,24 @@ const Products = () => {
     }
   };
 
+  const normalizeStatus = (status) => {
+    const clean = (status || 'disponible').toString().trim().toLowerCase();
+    if (clean === 'en-révision' || clean === 'suspendu' || clean === 'suspendue') {
+      return 'En-révision';
+    }
+    if (clean === 'vendue') {
+      return 'Vendue';
+    }
+    return 'disponible';
+  };
+
   const handleStatusChange = async (id, newStatus) => {
+    const formattedStatus = normalizeStatus(newStatus);
     try {
-      await api.put(`/admin/produits/${id}/status`, { status: newStatus });
+      // يتم إرسال "Vendue" أو "En-révision" أو "disponible" إلى قاعدة البيانات
+      await api.put(`/admin/produits/${id}/status`, { status: formattedStatus });
       setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
+        prev.map((p) => (p.id === id ? { ...p, status: formattedStatus } : p))
       );
     } catch (err) {
       alert('Erreur lors de la modification du statut');
@@ -63,7 +76,10 @@ const Products = () => {
     const matchesSearch = `${p.nom} ${p.boutique?.nom || ''} ${p.categorie?.nom || ''}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+
+    const currentStatus = normalizeStatus(p.status);
+    const matchesStatus = statusFilter === 'all' || currentStatus === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -137,8 +153,8 @@ const Products = () => {
           {[
             { key: 'all', label: 'Tous' },
             { key: 'disponible', label: 'Disponibles' },
-            { key: 'vendue', label: 'Épuisés' },
-            { key: 'suspendu', label: 'Suspendus' },
+            { key: 'Vendue', label: 'Épuisés' },
+            { key: 'En-révision', label: 'En-révision' },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -206,12 +222,12 @@ const Products = () => {
                       <td>
                         <select
                           className="role-select"
-                          value={p.status || 'disponible'}
+                          value={normalizeStatus(p.status)}
                           onChange={(e) => handleStatusChange(p.id, e.target.value)}
                         >
                           <option value="disponible">Disponible</option>
-                          <option value="vendue">Épuisé (Vendue)</option>
-                          <option value="suspendu">Suspendu</option>
+                          <option value="Vendue">Épuisé (Vendue)</option>
+                          <option value="En-révision">En-révision</option>
                         </select>
                       </td>
 

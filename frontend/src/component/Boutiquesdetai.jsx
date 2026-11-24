@@ -17,6 +17,8 @@ class Boutiquedetail extends Component {
       addedId: null,
       boutique: null,
       boutiqueProduits: [],
+      ventesMois: 0,
+      avisPositifs: "0%",
       loading: true,
       hoverRating: 0,
       ratingMessage: "",
@@ -51,21 +53,37 @@ class Boutiquedetail extends Component {
     this.setState({ loading: true });
 
     try {
-      const [resBoutique, resProduits] = await Promise.all([
+      const [resBoutique, resProduits, resStats] = await Promise.all([
         api.get(`/boutique/${id}`),
         api.get(`/boutique/produit/${id}`).catch(() => ({ data: { produit: [] } })),
+        api.get(`/boutique/${id}/stats`).catch(() => ({ data: { ventes_mois: 0, avis_positifs: "0%" } })),
       ]);
 
       const prods = resProduits.data.produit || resProduits.data.produits || [];
+      const bData = resBoutique.data.boutique || null;
+
+      let fallbackAvisPositifs = "0%";
+      if (bData && Number(bData.count_avis ?? bData.avis ?? 0) > 0) {
+        const pct = Math.min(100, Math.max(0, Math.round((Number(bData.stars || 0) / 5) * 100)));
+        fallbackAvisPositifs = `${pct}%`;
+      }
 
       this.setState({
-        boutique: resBoutique.data.boutique || null,
+        boutique: bData,
         boutiqueProduits: Array.isArray(prods) ? prods : [],
+        ventesMois: resStats.data?.ventes_mois ?? 0,
+        avisPositifs: resStats.data?.avis_positifs ?? fallbackAvisPositifs,
         loading: false,
       });
     } catch (err) {
       console.log(err);
-      this.setState({ boutique: null, boutiqueProduits: [], loading: false });
+      this.setState({
+        boutique: null,
+        boutiqueProduits: [],
+        ventesMois: 0,
+        avisPositifs: "0%",
+        loading: false,
+      });
     }
   };
 
@@ -92,15 +110,31 @@ class Boutiquedetail extends Component {
         }
       );
 
+      const newStars = Number(res.data.stars ?? 0);
+      const newCountAvis = Number(res.data.count_avis ?? 0);
+      const updatedPct =
+        newCountAvis > 0
+          ? `${Math.min(100, Math.max(0, Math.round((newStars / 5) * 100)))}%`
+          : "0%";
+
       this.setState((prevState) => ({
         boutique: {
           ...prevState.boutique,
           stars: res.data.stars,
           count_avis: res.data.count_avis,
         },
+        avisPositifs: updatedPct,
         ratingMessage: res.data.message || "Merci pour votre avis !",
         submittingRating: false,
       }));
+
+      api.get(`/boutique/${id}/stats`)
+        .then((resStats) => {
+          if (resStats.data?.avis_positifs) {
+            this.setState({ avisPositifs: resStats.data.avis_positifs });
+          }
+        })
+        .catch(() => {});
 
       setTimeout(() => this.setState({ ratingMessage: "" }), 3000);
     } catch (err) {
@@ -125,6 +159,8 @@ class Boutiquedetail extends Component {
       addedId,
       boutique,
       boutiqueProduits,
+      ventesMois,
+      avisPositifs,
       loading,
       hoverRating,
       ratingMessage,
@@ -152,8 +188,6 @@ class Boutiquedetail extends Component {
       ? `http://127.0.0.1:8000/storage/${b.logo_boutique}`
       : "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80";
     const validStars = Math.min(5, Math.max(0, Math.round(stars)));
-    const ventesMois = 84;
-    const avisPositifs = "98%";
 
     return (
       <div className="pb-container">

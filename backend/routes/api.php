@@ -25,6 +25,59 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
+
+Route::get('/boutique/{id}/stats', function ($id) {
+    $boutique = DB::table('boutique')->where('id', $id)->first();
+    if (!$boutique) {
+        return response()->json([
+            'ventes_mois'   => 0,
+            'avis_positifs' => '0%',
+        ], 404);
+    }
+
+    $ventesMois = DB::table('ligne_commande')
+        ->join('commandes', 'ligne_commande.id_commande', '=', 'commandes.id')
+        ->where('commandes.id_boutique', $id)
+        ->where('commandes.status', '!=', 'Annulée')
+        ->whereMonth('commandes.created_at', now()->month)
+        ->whereYear('commandes.created_at', now()->year)
+        ->sum('ligne_commande.quantite');
+
+    $avisPositifsPct = 0;
+    $foundInTable = false;
+
+    foreach (['avis_boutique', 'boutique_avis', 'note_boutique', 'boutique_notes', 'evaluations', 'avis'] as $tbl) {
+        if (Schema::hasTable($tbl)) {
+            $cols = Schema::getColumnListing($tbl);
+            $bCol = in_array('id_boutique', $cols) ? 'id_boutique' : (in_array('boutique_id', $cols) ? 'boutique_id' : null);
+            $nCol = in_array('note', $cols) ? 'note' : (in_array('stars', $cols) ? 'stars' : (in_array('rating', $cols) ? 'rating' : null));
+
+            if ($bCol && $nCol) {
+                $totalAvis = DB::table($tbl)->where($bCol, $id)->count();
+                if ($totalAvis > 0) {
+                    $positifs = DB::table($tbl)->where($bCol, $id)->where($nCol, '>=', 4)->count();
+                    $avisPositifsPct = round(($positifs / $totalAvis) * 100);
+                }
+                $foundInTable = true;
+                break;
+            }
+        }
+    }
+
+    if (!$foundInTable) {
+        $countAvis = (int) ($boutique->count_avis ?? $boutique->avis ?? 0);
+        $stars = (float) ($boutique->stars ?? 0);
+        if ($countAvis > 0 && $stars > 0) {
+            $avisPositifsPct = min(100, max(0, round(($stars / 5) * 100)));
+        }
+    }
+
+    return response()->json([
+        'ventes_mois'   => (int) $ventesMois,
+        'avis_positifs' => $avisPositifsPct . '%',
+    ]);
+});
+
 Route::post('/forgot-password', function (Request $request) {
     $request->validate(['email' => 'required|email']);
 

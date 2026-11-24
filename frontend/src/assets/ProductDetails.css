@@ -26,9 +26,33 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.product-detail-container {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
 .product-gallery {
-  flex: 1;
-  position: relative;
+  width: 100%;
+  max-width: 600px; 
+  min-width: 0;
+}
+
+.thumbnails-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto; 
+  max-width: 100%;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.thumbnails-container img,
+.thumbnail-item {
+  flex-shrink: 0;
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
 }
 
 .main-image-container {
